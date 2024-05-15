@@ -1,8 +1,9 @@
+import WorkInProg from "../components/WorkInProg/WorkInProg"
 
 const Accelarator = () => {
   return (
     <div>
-      Accelator
+      <WorkInProg/>
     </div>
   )
 }

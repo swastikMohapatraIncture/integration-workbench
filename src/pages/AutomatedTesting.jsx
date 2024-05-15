@@ -1,8 +1,9 @@
+import WorkInProg from "../components/WorkInProg/WorkInProg"
 
 const AutomatedTesting = () => {
   return (
     <div>
-      Automated Testing
+      <WorkInProg/>
     </div>
   )
 }
