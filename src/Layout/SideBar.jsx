@@ -5,47 +5,50 @@ import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import {
-  AccountTreeOutlined,
-  AssessmentOutlined,
-  BugReportOutlined,
-  ExpandLess,
-  ExpandMore,
-  SpeedOutlined,
-  StarBorder,
-} from "@mui/icons-material";
-import { Collapse } from "@mui/material";
+import { useLocation, useNavigate } from "react-router-dom";
+import { GoHome, GoInfo } from "react-icons/go";
+import { AiOutlineCloudUpload } from "react-icons/ai";
+import { TbSettingsSearch } from "react-icons/tb";
+import { GiSpeedometer } from "react-icons/gi";
+import { BsTelephone } from "react-icons/bs";
+import { CiSquareQuestion } from "react-icons/ci";
+import { RiFileCloudLine } from "react-icons/ri";
 
-const SideBar = ({ drawerState }) => {
+const SideBar = () => {
   const [openSubmenu, setOpenSubmenu] = useState(false);
-  const [activeItem, setActiveItem] = useState("");
 
   const styles = {
     listItem: {
+      margin: "7px",
+      borderRadius: "4px",
+      backgroundColor: "#F2F2F2",
       "&:hover": {
-        backgroundColor: "white",
-        color: "black",
+        backgroundColor: "#0A6ED1",
+        color: "white",
       },
     },
     selectedItem: {
-      backgroundColor: "white",
-      color: "black",
+      backgroundColor: "#0A6ED1",
+      color: "white",
+      margin: "7px",
+      borderRadius: "4px",
       "&:hover": {
-        backgroundColor: "white",
-        color: "black",
+        backgroundColor: "#0A6ED1",
+        color: "white",
       },
     },
   };
 
-  const drawerWidth = drawerState ? 200 : 55;
+  //   const drawerWidth = drawerState ? 200 : 55;
+  const drawerWidth = 230;
 
-  const handleItemClick = (item) => {
-    setOpenSubmenu(false);
-    setActiveItem(item);
-  };
+  
 
-  const handleToggleMenu = (item) => {
-    setActiveItem(item);
+
+  const location = useLocation();
+  let navigate = useNavigate();
+  const isActiveRoute = (route) => {
+    return location.pathname.includes(route);
   };
 
   return (
@@ -58,12 +61,11 @@ const SideBar = ({ drawerState }) => {
             width: drawerWidth,
             zIndex: 95,
             boxSizing: "border-box",
-            backgroundColor: "#2A4862",
-            color: "white",
+            // backgroundColor: "#2A4862",
+            // color: "white",
             fontSize: "13px",
             transition: "width 0.3s ease",
-            overflow: "hidden"
-
+            overflow: "hidden",
           },
         }}
         variant="permanent"
@@ -74,150 +76,138 @@ const SideBar = ({ drawerState }) => {
         <List>
           <ListItem
             disablePadding
-            disabled
             onClick={() => {
-              handleItemClick("Migration Assessment");
+              navigate("/home");
+              setOpenSubmenu(false);
             }}
           >
             <ListItemButton
               sx={
-                activeItem === "Migration Assessment"
+                isActiveRoute("/home") ? styles.selectedItem : styles.listItem
+              }
+              className="flex flex-row justify-between items-center gap-4"
+            >
+              <GoHome size={20} />
+              <span className=" gap-4 ">Home</span>
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            disablePadding
+            onClick={() => {
+                navigate("/migrationAssessment");
+                setOpenSubmenu(false);
+            }}
+          >
+            <ListItemButton
+              sx={
+                isActiveRoute("/migrationAssessment") 
                   ? styles.selectedItem
                   : styles.listItem
               }
               className="flex flex-row justify-between items-center gap-4"
             >
-              <AssessmentOutlined size={20} className=" " />
+              <RiFileCloudLine size={20} className=" " />
               <span className=" gap-4 ">Migration Assessment </span>
             </ListItemButton>
           </ListItem>
           <ListItem
             disablePadding
             onClick={() => {
-              handleItemClick("Migration Process");
+              //   handleItemClick("Migration Process");
+              navigate("/migrationProcess");
               setOpenSubmenu(!openSubmenu);
             }}
           >
             <ListItemButton
               sx={
-                activeItem === "Migration Process"
+                isActiveRoute("/migrationProcess")
                   ? styles.selectedItem
                   : styles.listItem
               }
               className="flex flex-row justify-between items-center gap-4"
             >
-              <AccountTreeOutlined size={20} className=" " />
+              <AiOutlineCloudUpload size={20} className=" " />
               <span className=" gap-4 ">Migration Process </span>
-              {openSubmenu ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
           </ListItem>
-          <Collapse in={openSubmenu} timeout="auto" unmountOnExit>
-            <List component="div" disablePadding>
-              <ListItem
-                disablePadding
-                onClick={() => handleToggleMenu("PO to Integration Suite")}
-              >
-                <ListItemButton
-                  className="flex flex-row justify-between items-center gap-4"
-                  sx={{ pl: 4 }}
-                >
-                  <StarBorder />
-                  <span className=" gap-4 ">PO to Integration Suite </span>
-                </ListItemButton>
-              </ListItem>
-              <ListItem
-                disablePadding
-                onClick={() => handleToggleMenu("NEO to Cloud Foundry")}
-              >
-                <ListItemButton
-                  className="flex flex-row justify-between items-center gap-4 "
-                  sx={{ pl: 4 }}
-                >
-                  <StarBorder />
-                  <span className=" gap-4 ">NEO to Cloud Foundry </span>
-                </ListItemButton>
-              </ListItem>
-            </List>
-          </Collapse>
           <ListItem
             disablePadding
-            onClick={() => handleItemClick("Automated Testing")}
+            onClick={() =>{ navigate("/automatedTesting");
+            setOpenSubmenu(false);}}
           >
             <ListItemButton
               sx={
-                activeItem === "Automated Testing"
+                isActiveRoute("/automatedTesting")
                   ? styles.selectedItem
                   : styles.listItem
               }
               className="flex flex-row justify-between items-center gap-4"
             >
-              <BugReportOutlined size={20} className=" " />
+              <TbSettingsSearch size={20} className=" " />
               <span className=" gap-4 ">Automated Testing</span>
             </ListItemButton>
           </ListItem>
           <ListItem
             disablePadding
-            onClick={() => handleItemClick("Accelerator")}
+            onClick={() => {navigate("/accelarator");
+            setOpenSubmenu(false);}}
           >
             <ListItemButton
               sx={
-                activeItem === "Accelerator"
+                isActiveRoute("/accelarator")
                   ? styles.selectedItem
                   : styles.listItem
               }
               className="flex flex-row justify-between items-center gap-4"
             >
-              <SpeedOutlined size={20} className=" " />
+              <GiSpeedometer size={20} className=" " />
               <span className=" gap-4 ">Accelerator </span>
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding onClick={() => {navigate("/about");
+              setOpenSubmenu(false);}}>
+            <ListItemButton
+              sx={
+                isActiveRoute("/about") ? styles.selectedItem : styles.listItem
+              }
+              className="flex flex-row justify-between items-center gap-4"
+            >
+              <GoInfo size={20} className=" " />
+              <span className=" gap-4 ">About</span>
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding onClick={() => {navigate("/contacts");
+              setOpenSubmenu(false);}}>
+            <ListItemButton
+              sx={
+                isActiveRoute("/contacts")
+                  ? styles.selectedItem
+                  : styles.listItem
+              }
+              className="flex flex-row justify-between items-center gap-4"
+            >
+              <BsTelephone size={20} className=" " />
+              <span className=" gap-4 ">Contacts</span>
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding onClick={() => {navigate("/faqs");
+              setOpenSubmenu(false);}}>
+            <ListItemButton
+              sx={
+                isActiveRoute("/faqs")
+                  ? styles.selectedItem
+                  : styles.listItem
+              }
+              className="flex flex-row justify-between items-center gap-4"
+            >
+              <CiSquareQuestion size={20} className=" " />
+              <span className=" gap-4 ">FAQS</span>
             </ListItemButton>
           </ListItem>
           {/* ))} */}
         </List>
       </Drawer>
-      {/* {openSubmenu && (
-        <>
-          <div
-            style={{ height: "calc(100% - 50px )", fontSize: "14px" }}
-            className="left-[200px] w-[210px]  shadow-lg top-[50px] fixed bg-white z-[1200] flex flex-col  py-2 transition-transform duration-300 transform translate-x-0"
-          >
-            <IconButton
-              className="w-fit  font-semibold"
-              onClick={() => setOpenSubmenu(false)}
-            >
-              <MdOutlineArrowBack className="text-primary " size={20} />
-            </IconButton>
-            <List className="text-primary mx-2 ">
-              <ListItem
-                onClick={() => {
-                  setOpenSubmenu(false);
-                  // navigate("/admin/rule-engine");
-                }}
-                className=" hover:text-white hover:bg-[#2A4862] cursor-pointer"
-              >
-                <MdEngineering className="mr-2" size={24} />
-                <span>PO to Integration Suite </span>
-              </ListItem>
-              <ListItem
-                onClick={() => {
-                  setOpenSubmenu(false);
-                  // navigate("/admin/all-tasks");
-                }}
-                className=" hover:text-white hover:bg-[#2A4862] cursor-pointer"
-              >
-                <MdAdminPanelSettings className="mr-2" size={24} />
-                <span>NEO to Cloud Foundry </span>
-              </ListItem>
-            </List>
-          </div>
-          <div
-            style={{
-              width: "calc(100% - 200px)",
-              height: "calc(100% - 50px )",
-            }}
-            className="w-full h-full  bg-gray-200 opacity-60 absolute  top-[50px] left-[200px] z-[1000] "
-          ></div>
-        </>
-      )} */}
+      
     </>
   );
 };

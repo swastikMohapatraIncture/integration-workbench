@@ -1,15 +1,15 @@
 import {
   AppBar,
-  IconButton,
   Toolbar,
   Typography,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import Incture from '../assets/logos/InctureLogo.png'
+// import MenuIcon from "@mui/icons-material/Menu";
+// import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 
 // eslint-disable-next-line react/prop-types
-const Header = ({ drawerState, setDrawerState }) => {
+const Header = ( ) => {
   return (
     <>
       <AppBar
@@ -33,20 +33,33 @@ const Header = ({ drawerState, setDrawerState }) => {
               maxHeight: "50px",
             },
           }}
-          className="text-white min-h-[50px] max-h-[50px] ml-[-15px]  gap-5"
+          className="text-white min-h-[50px] max-h-[50px] mr-[-15px]  gap-5"
         >
-          <IconButton
+          {/* <IconButton
             aria-label="delete"
             sx={{ color: "white" }}
             onClick={() => setDrawerState(!drawerState)}
           >
             {drawerState ? <ChevronLeftIcon /> : <MenuIcon />}
-          </IconButton>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          </IconButton> */}
+          {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <h2 className="text-sm md:text-2xl text-left text-white py-2 px-4">
-              Incture Integration Workbench
+            Integration Workbench
             </h2>
+          </Typography> */}
+
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            <div className="flex items-center gap-16 sm:gap-6">
+              <img
+                src={Incture}
+                className="mt-1 "
+                alt="sii-group icon"
+              />
+              {/* <h1>Incture</h1> */}
+              <h1 className="text-xl ml-12 font-normal tracking-wider">Integration Workbench</h1>
+            </div>
           </Typography>
+          
         </Toolbar>
       </AppBar>
     </>

@@ -7,18 +7,19 @@ const Layout = ({ children }) => {
   const [drawerState, setDrawerState] = useState(false);
   return (
     <>
-      <div className="bg-primary flex ">
-        <TopBar drawerState={drawerState} setDrawerState={setDrawerState} />
+      <div className="bg-primary">
+      <TopBar drawerState={drawerState} setDrawerState={setDrawerState} />
+      <div className="flex flex-row">
         <SideBar drawerState={drawerState} setDrawerState={setDrawerState} />
         <div
-          style={{ width: "calc(100vw - 70px)", height: "calc(100vh - 50px)" }}
-          className=" overflow-hidden bg-primary mt-[50px]"
-        >
-          <div className="h-full w-full rounded-tl-xl overflow-hidden   overflow-y-auto">
-            <div style={{ minHeight: "100%" }} className="bg-secondary w-full ">
+          style={{ minWidth: "calc(100vw - 230px)", minHeight: "calc(100vh - 50px)" }}
+          className="bg-primary mt-[50px]">
+          <div className="h-full w-full overflow-hidden overflow-y-auto">
+            <div className="bg-secondary w-full ">
               {children}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </>
