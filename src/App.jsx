@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import "./App.css";
 import { Routes, Route } from "react-router-dom";
 import Layout from "./Layout/Layout";
@@ -9,10 +10,20 @@ import About from "./pages/About";
 import Contacts from "./pages/Contacts";
 import FAQ from "./pages/FAQ";
 import MigrationAssessment from "./pages/MigrationAssessment";
+=======
+import './App.css'
+import {
+  Routes,
+  Route
+} from "react-router-dom";
+import Layout from './Layout/Layout'
+import HomePage from './pages/HomePage';
+>>>>>>> Stashed changes
 
 function App() {
   return (
     <>
+<<<<<<< Updated upstream
       <Routes>
         <Route path="*" element={<Demo />} />
         <Route path="home" element={<Layout />} />
@@ -25,6 +36,13 @@ function App() {
         <Route path="faqs" element={<Layout ><FAQ/></Layout>} />
       </Routes>
       {/* <div>
+=======
+    <Routes>
+      <Route path="/" element={<HomePage/>}/>
+      <Route path="home" element={<Layout/>}/>
+    </Routes>
+    {/* <div>
+>>>>>>> Stashed changes
       <Layout/>
     </div> */}
     </>
