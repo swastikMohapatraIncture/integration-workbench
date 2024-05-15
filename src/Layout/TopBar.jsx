@@ -3,9 +3,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import Incture from '../assets/logos/InctureLogo.png'
-// import MenuIcon from "@mui/icons-material/Menu";
-// import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import Incture from '../assets/logos/InctureLogo.svg'
 
 
 // eslint-disable-next-line react/prop-types
@@ -49,11 +47,11 @@ const Header = ( ) => {
           </Typography> */}
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <div className="flex items-center gap-16 sm:gap-6">
+            <div className="flex items-center justify-between ">
               <img
                 src={Incture}
                 className="mt-1 "
-                alt="sii-group icon"
+                alt="Incture logo"
               />
               {/* <h1>Incture</h1> */}
               <h1 className="text-xl ml-12 font-normal tracking-wider">Integration Workbench</h1>
