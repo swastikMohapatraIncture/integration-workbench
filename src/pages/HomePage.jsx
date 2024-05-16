@@ -1,6 +1,7 @@
 import BannerImg from "../assets/Banner.png";
 import VectorCloud from "../assets/Vectorcloud.png";
 import Vector from "../assets/Vector.png";
+import InctureLogo from "../assets/InctureLogo.png";
 import { CSSTransition } from "react-transition-group";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -18,7 +19,8 @@ const HomePage = () => {
   return (
     <CSSTransition in={inProp} timeout={1000} classNames="fade">
     <div className="flex h-screen">
-      <div className="flex-1 w-3/5 flex items-center justify-center">
+      <div className="flex-1 w-3/5 flex items-center justify-center relative">
+        <img src={InctureLogo} className="absolute top-6 left-6 w-32"/>
         <img src={BannerImg} alt="Server" className="max-w-full h-auto w-[50%]"/>
       </div>
       <div className="w-2/5 flex flex-col justify-center border-l-2 border-[#A1A7AE] text-white p-2 relative">
