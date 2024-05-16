@@ -12,7 +12,7 @@ const Header = ( ) => {
     <>
       <AppBar
         position="fixed"
-        className="min-h-[50px] max-h-[50px]"
+        className="min-h-[50px] max-h-[50px] z-[100]"
         sx={{
           zIndex: 1000,
           backgroundColor: "#2A4862",
@@ -47,14 +47,14 @@ const Header = ( ) => {
           </Typography> */}
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <div className="flex items-center justify-between ">
+            <div className="flex items-center gap-16">
               <img
                 src={Incture}
                 className="mt-1 "
                 alt="Incture logo"
               />
               {/* <h1>Incture</h1> */}
-              <h1 className="text-xl ml-12 font-normal tracking-wider">Integration Workbench</h1>
+              <h1 className="text-xl ml-3 font-normal tracking-wider">Integration Workbench</h1>
             </div>
           </Typography>
           

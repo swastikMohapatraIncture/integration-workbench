@@ -19,7 +19,7 @@ const SideBar = () => {
 
   const styles = {
     listItem: {
-      margin: "7px",
+      margin: "6px",
       borderRadius: "4px",
       backgroundColor: "#F2F2F2",
       "&:hover": {
@@ -30,7 +30,7 @@ const SideBar = () => {
     selectedItem: {
       backgroundColor: "#0A6ED1",
       color: "white",
-      margin: "7px",
+      margin: "6px",
       borderRadius: "4px",
       "&:hover": {
         backgroundColor: "#0A6ED1",
@@ -73,7 +73,7 @@ const SideBar = () => {
       >
         <Toolbar />
 
-        <List>
+        <List sx={{marginTop:"-10px"}}>
           <ListItem
             disablePadding
             onClick={() => {

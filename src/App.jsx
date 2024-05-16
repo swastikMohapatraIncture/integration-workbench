@@ -23,6 +23,8 @@ function App() {
       <Route path="about" element={<Layout ><About/></Layout>} />
       <Route path="contacts" element={<Layout ><Contacts/></Layout>} />
       <Route path="faqs" element={<Layout ><FAQ/></Layout>} />
+      <Route path="migrationtable" element={<Layout ></Layout>} />
+      <Route path="migrationtable2" element={<Layout ></Layout>} />
     </Routes>
   
     {/* <div>
