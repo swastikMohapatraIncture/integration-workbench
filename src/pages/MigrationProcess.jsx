@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import WorkInProg from '../components/WorkInProg/WorkInProg';
 import MainPageMP from '../components/MigrationProcess/MainPageMP';
+import Table from "../components/Table";
 
 
 function CustomTabPanel(props) {
@@ -59,6 +60,7 @@ const MigrationProcess = () => {
       </Box>
       <CustomTabPanel value={value} index={0}>
         <MainPageMP/>
+        <Table />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <WorkInProg/>

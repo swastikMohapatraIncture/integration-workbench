@@ -21,14 +21,14 @@ const HomePage = () => {
       <div className="flex-1 w-3/5 flex items-center justify-center">
         <img src={BannerImg} alt="Server" className="max-w-full h-auto w-[50%]"/>
       </div>
-      <div className="w-2/5 flex flex-col justify-center bg-[#2A4862] text-white p-8 relative">
-        <div className="p-5">
-        <h1 className="text-6xl text-left font-bold">Integration Workbench</h1>
-        <p className="mt-4 text-xl">One stop solution for all your Integration needs</p>
+      <div className="w-2/5 flex flex-col justify-center border-l-2 border-[#A1A7AE] text-white p-2 relative">
+        <div className="p-1">
+        <h1 className="text-5xl text-center text-[#2A4862] font-black">Integration <span className="font-extralight">Workbench</span></h1>
+        <p className="mt-4 text-xl text-[#2A4862] text-center">One stop solution for all your Integration needs</p>
         <div className="flex justify-center">
-          
-          <button className="mt-36 text-xl font-semibold text-[#2A4862] bg-white w-full p-3 rounded" onClick={handleNavigation}><Link to="/home">Begin Integration Journey</Link></button>
-         
+        <Link to="/home" className="w-full flex justify-center">
+          <button className="mt-24 text-xl font-semibold text-white bg-[#0A6Ed1] w-[95%] p-3 rounded" onClick={handleNavigation}>Begin Integration Journey</button>
+        </Link>
         </div>
         </div>
         <img src={VectorCloud} alt="cloud" className="absolute top-10 right-0 w-24"/>

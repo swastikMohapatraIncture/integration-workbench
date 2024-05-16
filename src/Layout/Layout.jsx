@@ -8,19 +8,19 @@ const Layout = ({ children }) => {
   return (
     <>
       <div className="bg-primary">
-      <TopBar drawerState={drawerState} setDrawerState={setDrawerState} />
-      <div className="flex flex-row">
-        <SideBar drawerState={drawerState} setDrawerState={setDrawerState} />
-        <div
-          style={{ minWidth: "calc(100vw - 230px)", minHeight: "calc(100vh - 50px)" }}
-          className="bg-primary mt-[50px]">
-          <div className="h-full w-full overflow-hidden overflow-y-auto">
-            <div className="bg-secondary w-full ">
-              {children}
-            </div>
+        <TopBar drawerState={drawerState} setDrawerState={setDrawerState} />
+          <div className="flex flex-row">
+            <SideBar drawerState={drawerState} setDrawerState={setDrawerState} />
+              <div
+                style={{ minWidth: "calc(100vw - 230px)", minHeight: "calc(100vh - 50px)" }}
+                className="bg-primary mt-[50px]">
+                <div className="h-full w-full overflow-hidden overflow-y-auto">
+                  <div className="bg-secondary w-full ">
+                    {children}
+                  </div>
+                </div>
+              </div>
           </div>
-        </div>
-        </div>
       </div>
     </>
   );
