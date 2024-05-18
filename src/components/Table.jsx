@@ -3,7 +3,9 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 
 const Table = () => {
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto p-6">
+            {/* {icoList} */}
+            {/* {packageList} */}
       <table className="min-w-full divide-y divide-gray-200 border border-gray-300">
         <thead className="bg-gray-50">
           <tr>
@@ -37,6 +39,8 @@ const Table = () => {
           {/* Add more rows here */}
         </tbody>
       </table>
+      <button onClick={() => handleSubmit()}>test</button>
+      <button onClick={() => handleMigrate()}>migrate</button>
     </div>
   );
 }

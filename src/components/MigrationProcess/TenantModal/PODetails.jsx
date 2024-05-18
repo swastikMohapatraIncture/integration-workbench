@@ -1,6 +1,6 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { Autocomplete, IconButton, InputAdornment, OutlinedInput, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const top100Films = [
   { label: "The Shawshank Redemption", year: 1994 },
@@ -17,7 +17,7 @@ const top100Films = [
 ];
 
 const PODetails = () => {
-    const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
