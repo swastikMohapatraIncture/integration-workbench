@@ -87,7 +87,7 @@ export const handleIcoList = async (poData) => {
   try {
     const toPostData = poData;
     const response = await axios.post("http://localhost:8080/api/v1/metadata/get/ico/list", toPostData);
-    // console.log(response); // Log the response for debugging purposes
+    // console.log(response);
     if (response.data.status === 'Success') {
       return response?.data?.payload?.root?.key;
     } else {
@@ -150,7 +150,7 @@ export const handleIcoDetails = async (data) => {
     toast.error("Failed to fetch ICO details", {
       position: toast.POSITION.BOTTOM_CENTER,
     });
-    return { names: [], description: [] }; // Return default values or handle the error as needed
+    return { names: [], description: [] }; 
   }
 }
 
