@@ -1,39 +1,49 @@
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import  { useState } from "react";
 import {
-  Autocomplete,
   Button,
-  IconButton,
-  InputAdornment,
-  OutlinedInput,
   TextField,
+  InputAdornment,
+  IconButton,
+  OutlinedInput,
   styled,
+  Autocomplete,
 } from "@mui/material";
-import { useState } from "react";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { CloudUpload as CloudUploadIcon, Visibility, VisibilityOff } from "@mui/icons-material";
 
 const top100Films = [
-    { label: "The Shawshank Redemption", year: 1994 },
-    { label: "The Godfather", year: 1972 },
-    { label: "The Godfather: Part II", year: 1974 },
-    { label: "The Dark Knight", year: 2008 },
-    { label: "12 Angry Men", year: 1957 },
-    { label: "Schindler's List", year: 1993 },
-    { label: "Pulp Fiction", year: 1994 },
-    {
-      label: "The Lord of the Rings: The Return of the King",
-      year: 2003,
-    },
-  ];
+  { label: "The Shawshank Redemption", year: 1994 },
+  { label: "The Godfather", year: 1972 },
+  { label: "The Godfather: Part II", year: 1974 },
+  { label: "The Dark Knight", year: 2008 },
+  { label: "12 Angry Men", year: 1957 },
+  { label: "Schindler's List", year: 1993 },
+  { label: "Pulp Fiction", year: 1994 },
+  {
+    label: "The Lord of the Rings: The Return of the King",
+    year: 2003,
+  },
+];
+
+const VisuallyHiddenInput = styled("input")({
+  clip: "rect(0 0 0 0)",
+  clipPath: "inset(50%)",
+  height: 1,
+  overflow: "hidden",
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  whiteSpace: "nowrap",
+  width: 1,
+});
 
 const APIDetails = () => {
-    const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [fileName, setFileName] = useState("");
-  
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setFileName(file?.name);
+      setFileName(file.name);
     }
   };
 
@@ -43,39 +53,30 @@ const APIDetails = () => {
     event.preventDefault();
   };
 
-  const VisuallyHiddenInput = styled("input")({
-    clip: "rect(0 0 0 0)",
-    clipPath: "inset(50%)",
-    height: 1,
-    overflow: "hidden",
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    whiteSpace: "nowrap",
-    width: 1,
-  });
   return (
     <div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
+      <div className="grid grid-cols-2 text-sm gap-3 mb-2">
         <div className="flex flex-col">
-          <span>Name</span>
-          <TextField size="small" placeholder="Enter name" variant="outlined" />
+          <span className="mb-2">Name</span>
+          <TextField size="small" placeholder="Enter name" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>Client ID</span>
+          <span className="mb-2">Client ID</span>
           <TextField
             size="small"
             placeholder="Enter Client ID"
             variant="outlined"
+            sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}
           />
         </div>
         <div className="flex flex-col">
-          <span>Client Secret</span>
+          <span className="mb-2">Client Secret</span>
           <OutlinedInput
             id="outlined-adornment-password"
             type={showPassword ? "text" : "password"}
             placeholder="Enter Client secret"
             size="small"
+            sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -91,49 +92,52 @@ const APIDetails = () => {
           />
         </div>
         <div className="flex flex-col">
-          <span>Token URL</span>
-          <TextField size="small" placeholder="Token URL" variant="outlined" />
+          <span className="mb-2">Token URL</span>
+          <TextField size="small" placeholder="Token URL" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>URL</span>
-          <TextField size="small" placeholder="URL" variant="outlined" />
+          <span className="mb-2">URL</span>
+          <TextField size="small" placeholder="URL" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>Environment</span>
+          <span className="mb-2">Environment</span>
           <Autocomplete
             disablePortal
             size="small"
             id="combo-box-demo"
             options={top100Films}
-            // sx={{ width: 300 }}
+            sx={{ '& .MuiInputBase-input': { height: '1.2em', padding: '6px 12px' } }}
             renderInput={(params) => (
               <TextField {...params} placeholder="Select" />
             )}
           />
         </div>
         <div className="flex flex-col">
-          <span>Upload Security Key</span>
-          <div className="flex flex-row">
-          <Button
-            component="label"
-            variant="contained"
-            size="small"
-            startIcon={<CloudUploadIcon />}
-            sx={{width:"150px", fontSize:"10px"}}
-          >
-            Upload file
-            <VisuallyHiddenInput type="file" onChange={handleFileChange} />
-          </Button>
+          <span className="mb-2">Upload Security Key</span>
           <TextField
             size="small"
-            placeholder="URL"
+            placeholder="No File chosen"
             variant="outlined"
-            value={fileName} 
+            value={fileName}
+            sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}
             InputProps={{
-              readOnly: true, 
+              readOnly: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Button
+                    component="label"
+                    variant="contained"
+                    size="small"
+                    startIcon={<CloudUploadIcon />}
+                    sx={{ fontSize: "10px", marginLeft:"-13px", padding:"8px" }}
+                  >
+                    Upload File
+                    <VisuallyHiddenInput type="file" onChange={handleFileChange} />
+                  </Button>
+                </InputAdornment>
+              ),
             }}
           />
-          </div>
         </div>
       </div>
       <div className="mb-2 mt-4">
@@ -143,6 +147,6 @@ const APIDetails = () => {
       </div>
     </div>
   );
-}
+};
 
-export default APIDetails
+export default APIDetails;

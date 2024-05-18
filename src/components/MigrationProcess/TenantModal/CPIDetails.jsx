@@ -56,14 +56,15 @@ const CPIDetails = () => {
   });
   return (
     <div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
+      <div className="grid grid-cols-2 text-sm gap-3 mb-2">
         <div className="flex flex-col">
-          <span>Existing</span>
+          <span className="mb-2">Existing</span>
           <Autocomplete
             disablePortal
             size="small"
             id="combo-box-demo"
             options={top100Films}
+            sx={{ '& .MuiInputBase-input': { height: '1.2em', padding: '6px 12px' } }}
             // sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField {...params} placeholder="Select a name" />
@@ -71,22 +72,24 @@ const CPIDetails = () => {
           />
         </div>
         <div className="flex flex-col">
-          <span>Name</span>
-          <TextField size="small" placeholder="Enter name" variant="outlined" />
+          <span className="mb-2">Name</span>
+          <TextField size="small" placeholder="Enter name" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }} />
         </div>
         <div className="flex flex-col">
-          <span>Client ID</span>
+          <span className="mb-2">Client ID</span>
           <TextField
+           sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}
             size="small"
             placeholder="Enter Client ID"
             variant="outlined"
           />
         </div>
         <div className="flex flex-col">
-          <span>Client Secret</span>
+          <span className="mb-2">Client Secret</span>
           <OutlinedInput
             id="outlined-adornment-password"
             type={showPassword ? "text" : "password"}
+            sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}
             placeholder="Enter Client secret"
             size="small"
             endAdornment={
@@ -104,20 +107,21 @@ const CPIDetails = () => {
           />
         </div>
         <div className="flex flex-col">
-          <span>Token URL</span>
-          <TextField size="small" placeholder="Token URL" variant="outlined" />
+          <span className="mb-2">Token URL</span>
+          <TextField size="small" placeholder="Token URL" variant="outlined"  sx={{ '& .MuiInputBase-input': { height: '1.4em', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>URL</span>
-          <TextField size="small" placeholder="URL" variant="outlined" />
+          <span className="mb-2">URL</span>
+          <TextField size="small" placeholder="URL" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>Environment</span>
+          <span className="mb-2">Environment</span>
           <Autocomplete
             disablePortal
             size="small"
             id="combo-box-demo"
             options={top100Films}
+            sx={{ '& .MuiInputBase-input': { height: '1.2em', padding: '6px 12px' } }}
             // sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField {...params} placeholder="Select" />
@@ -125,25 +129,31 @@ const CPIDetails = () => {
           />
         </div>
         <div className="flex flex-col">
-          <span>Upload Security Key</span>
+          <span className="mb-2">Upload Security Key</span>
           <div className="flex flex-row">
-          <Button
-            component="label"
-            variant="contained"
-            size="small"
-            startIcon={<CloudUploadIcon />}
-            sx={{width:"150px", fontSize:"10px"}}
-          >
-            Upload file
-            <VisuallyHiddenInput type="file" onChange={handleFileChange} />
-          </Button>
           <TextField
             size="small"
-            placeholder="URL"
+            placeholder="No File chosen"
             variant="outlined"
-            value={fileName} 
+            fullWidth
+            value={fileName}
+            sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}
             InputProps={{
-              readOnly: true, 
+              readOnly: true,
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Button
+                    component="label"
+                    variant="contained"
+                    size="small"
+                    startIcon={<CloudUploadIcon />}
+                    sx={{ fontSize: "10px", marginLeft:"-14px", padding:"8px" }}
+                  >
+                    Upload File
+                    <VisuallyHiddenInput type="file" onChange={handleFileChange} />
+                  </Button>
+                </InputAdornment>
+              ),
             }}
           />
           </div>

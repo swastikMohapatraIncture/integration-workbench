@@ -8,10 +8,9 @@ import ListItemButton from "@mui/material/ListItemButton";
 import { useLocation, useNavigate } from "react-router-dom";
 import { GoHome, GoInfo } from "react-icons/go";
 import { AiOutlineCloudUpload } from "react-icons/ai";
-import { TbSettingsSearch } from "react-icons/tb";
+import { TbMessage2Question, TbSettingsSearch } from "react-icons/tb";
 import { GiSpeedometer } from "react-icons/gi";
 import { BsTelephone } from "react-icons/bs";
-import { CiSquareQuestion } from "react-icons/ci";
 import { RiFileCloudLine } from "react-icons/ri";
 
 const SideBar = () => {
@@ -200,7 +199,7 @@ const SideBar = () => {
               }
               className="flex flex-row justify-between items-center gap-4"
             >
-              <CiSquareQuestion size={20} className=" " />
+              <TbMessage2Question size={20} className=" " />
               <span className=" gap-4 ">FAQS</span>
             </ListItemButton>
           </ListItem>

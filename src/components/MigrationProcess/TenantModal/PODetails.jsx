@@ -27,14 +27,16 @@ const PODetails = () => {
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-2 mb-2">
+      <div className="grid grid-cols-2 text-sm gap-3 mb-2">
         <div className="flex flex-col">
-          <span>Existing</span>
+          <span className="mb-2">Existing</span>
           <Autocomplete
             disablePortal
             size="small"
             id="combo-box-demo"
             options={top100Films}
+            fullWidth
+            sx={{ '& .MuiInputBase-input': { height: '1.2em', padding: '6px 12px' } }}
             // sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField  {...params} placeholder="Select a name" />
@@ -42,20 +44,22 @@ const PODetails = () => {
           />
         </div>
         <div className="flex flex-col">
-          <span>Name</span>
-          <TextField size="small" placeholder="Enter name" variant="outlined" />
+          <span className="mb-2">Name</span>
+          <TextField fullWidth size="small" placeholder="Enter name" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>Username</span>
-          <TextField size="small" placeholder="Enter User name" variant="outlined" />
+          <span className="mb-2">Username</span>
+          <TextField fullWidth size="small" placeholder="Enter User name" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>Password</span>
+          <span className="mb-2">Password</span>
           <OutlinedInput
             id="outlined-adornment-password"
             type={showPassword ? 'text' : 'password'}
-            placeholder="Enter placeholder"
+            placeholder="Enter password"
+            fullWidth
             size="small"
+            sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -72,20 +76,22 @@ const PODetails = () => {
 
         </div>
         <div className="flex flex-col">
-          <span>Host</span>
-          <TextField size="small" placeholder="ex.SAP_Server" variant="outlined" />
+          <span className="mb-2">Host</span>
+          <TextField fullWidth size="small" placeholder="ex.SAP_Server" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>Port</span>
-          <TextField size="small" placeholder="ex.5050" variant="outlined" />
+          <span className="mb-2">Port</span>
+          <TextField size="small" placeholder="ex.5050" variant="outlined" sx={{ '& .MuiInputBase-input': { height: '1.4', padding: '6px 12px' } }}/>
         </div>
         <div className="flex flex-col">
-          <span>Environment</span>
+          <span className="mb-2">Environment</span>
           <Autocomplete
             disablePortal
             size="small"
             id="combo-box-demo"
+            fullWidth
             options={top100Films}
+            sx={{ '& .MuiInputBase-input': { height: '1.2em', padding: '6px 12px' } }}
             // sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField  {...params} placeholder="Select" />
@@ -94,7 +100,7 @@ const PODetails = () => {
         </div>
        
       </div>
-      <div className="mb-2">
+      <div className="mb-2 mt-4">
         <button
             className="py-1 px-3 hover:bg-modalColor hover:text-white transition duration-2s rounded-md border border-modalColor text-modalColor"
           >
