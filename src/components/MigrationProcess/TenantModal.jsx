@@ -3,22 +3,26 @@ import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
-import {
-  StepConnector,
-  stepConnectorClasses,
-  styled,
-} from "@mui/material";
+import { StepConnector, stepConnectorClasses, styled } from "@mui/material";
 import { useState } from "react";
 import IntroContent from "./TenantModal/IntroContent";
 import PODetails from "./TenantModal/PODetails";
 import CPIDetails from "./TenantModal/CPIDetails";
 import APIDetails from "./TenantModal/APIDetails";
+import { ToastContainer } from "react-toastify";
 
 const steps = ["Introduction", "PO details", "CPI details", "API details"];
 
 const TenantModal = ({ setOpenModal }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
+
+  const [showPassword, setShowPassword] = useState(false);
+  
+  const [disableNext, setDisableNext] = useState(true);
+  const [testingConn, setTestingConn] = useState(false);
+  // const [connectionStatus, setConnectionStatus] = useState(false);
+  // const [connectionMessage, setConnectionMessage] = useState("");
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -61,6 +65,7 @@ const TenantModal = ({ setOpenModal }) => {
     <>
       <div className="fixed inset-0 z-[1000] bg-black opacity-50"></div>
       <div className="justify-center items-center  flex overflow-x-hidden z-[1000] overflow-y-auto fixed inset-0 outline-none focus:outline-none">
+        <ToastContainer />
         <div className="relative w-auto  my-3 mx-auto ">
           {/*content*/}
           <div className="border-0  rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
@@ -80,27 +85,15 @@ const TenantModal = ({ setOpenModal }) => {
             </div>
             <div className="flex flex-row h-[60vh] w-[70vw]">
               <div className="flex flex-col items-center p-3  w-[170px] border-r border-gray-300">
-                <Box  sx={{ width: "100%" }}>
+                <Box sx={{ width: "100%" }}>
                   <Stepper
                     activeStep={activeStep}
                     orientation="vertical"
                     connector={<QontoConnector />}
                   >
                     {steps.map((label) => (
-                      <Step key={label} 
-                      // sx={{
-                      //   "& .MuiStepLabel-root": {
-                      //     paddingLeft: "4px",
-                      //     borderLeft: "4px solid red"
-                      //   },
-                      //   "& .Mui-disabled": {
-                      //     paddingLeft: "4px",
-                      //     borderLeft: "4px solid white"
-                      //   }
-
-                      // }}
-                      >
-                        <StepLabel >{label}</StepLabel>
+                      <Step key={label}>
+                        <StepLabel>{label}</StepLabel>
                       </Step>
                     ))}
                   </Stepper>
@@ -115,17 +108,51 @@ const TenantModal = ({ setOpenModal }) => {
                 )}
                 {activeStep === 1 && (
                   <div>
-                    <PODetails />
+                    <PODetails
+                      showPassword={showPassword}
+                      setShowPassword={setShowPassword}
+                      setDisableNext={setDisableNext}
+                      testingConn={testingConn}
+                      setTestingConn={setTestingConn}
+                      // connectionMessage={connectionMessage}
+                      // setConnectionMessage={setConnectionMessage}
+                      // connectionStatus={connectionStatus}
+                      // setConnectionStatus={setConnectionStatus}
+                    />
                   </div>
                 )}
                 {activeStep === 2 && (
                   <div>
-                    <CPIDetails />
+                    <CPIDetails
+                      showPassword={showPassword}
+                      setShowPassword={setShowPassword}
+                      setDisableNext={setDisableNext}
+                      // fileName={fileName}
+                      // setFileName={setFileName}
+                      testingConn={testingConn}
+                      setTestingConn={setTestingConn}
+                      // connectionMessage={connectionMessage}
+                      // setConnectionMessage={setConnectionMessage}
+                      // connectionStatus={connectionStatus}
+                      // setConnectionStatus={setConnectionStatus}
+                    />
                   </div>
                 )}
                 {activeStep === 3 && (
                   <div>
-                    <APIDetails />
+                    <APIDetails
+                      showPassword={showPassword}
+                      setShowPassword={setShowPassword}
+                      setDisableNext={setDisableNext}
+                      // fileName={fileName}
+                      // setFileName={setFileName}
+                      testingConn={testingConn}
+                      setTestingConn={setTestingConn}
+                      // connectionMessage={connectionMessage}
+                      // setConnectionMessage={setConnectionMessage}
+                      // connectionStatus={connectionStatus}
+                      // setConnectionStatus={setConnectionStatus}
+                    />
                   </div>
                 )}
               </div>
