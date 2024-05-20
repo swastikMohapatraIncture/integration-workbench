@@ -10,6 +10,7 @@ import FAQ from "./pages/FAQ";
 import MigrationAssessment from "./pages/MigrationAssessment";
 // import Table from "../src/components/Table"
 import HomePage from "./pages/HomePage";
+import Migrate from "./pages/Migrate";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
       <Route path="faqs" element={<Layout ><FAQ/></Layout>} />
       {/* <Route path="migrationtable" element={<Layout ><Table /></Layout>} /> */}
       <Route path="migrationtable2" element={<Layout ></Layout>} />
+      <Route path="migrate" element={<Layout><Migrate /></Layout>}></Route>
     </Routes>
   
     {/* <div>

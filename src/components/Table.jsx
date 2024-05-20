@@ -16,7 +16,7 @@ const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
                 Are you sure you want to delete?
               </p>
             </div>
-            <div className="flex items-center gap-3 justify-center p-2 border-solid border-blueGray-200 rounded-b">
+            <div className="flex items-center gap-3 justify-center p-1 border-solid border-blueGray-200 rounded-b">
               <button
                 className="text-white bg-gray-600 rounded hover:bg-[#0A6ED1] hover:text-white transition duration-150 px-3 py-2 outline-none focus:outline-none mr-1 mb-1 ease-linear"
                 type="button"
@@ -80,7 +80,7 @@ const Table = ({
     <>
       {agents && agents.length > 0 && (
         <div className="overflow-x-auto p-6">
-          <table className="min-w-full divide-y divide-gray-200 border border-gray-300 text-sm">
+          <table className="min-w-full divide-y  divide-gray-200 border border-gray-300 text-sm">
             <thead className="bg-[#F2F2F2]">
               <tr>
                 <th scope="col" className="px-5 py-2 border-gray-200 "></th>
@@ -164,7 +164,7 @@ const Table = ({
             <button
               className={`bg-[#0A6ED1]  rounded px-3 py-1  transition duration-200   ${
                 !agentSelected
-                  ? " bg-gray-300 text-black cursor-not-allowed"
+                  ? " bg-gray-300 text-black"
                   : "bg-[#0A6ED1] text-white hover:bg-gray-100 hover:text-black transition duration-500 "
               } mr-3`}
               disabled={!agentSelected}

@@ -245,23 +245,21 @@ export const handleIcoList = async (poData) => {
 };
 
 // Function to fetch the List of Packages
-export const handlePackageList = async (cpiData) => {
-  try {
-    const toPostData = cpiData;
-    const response = await axios.post(
-      "http://localhost:8080/api/v1/migration/designtime/get/package/list",
-      toPostData
-    );
-    if (response?.data?.status === "Success") {
-      return response?.data?.payload?.list;
-    } else {
-      throw new Error("Failed to Fetch Packages");
-    }
-  } catch (error) {
-    console.log("Error getting packages", error);
-    throw error;
-  }
-};
+export const handlePackageList = (cpiData) => {
+  const toPostData = cpiData;
+  return axios.post("http://localhost:8080/api/v1/migration/designtime/get/package/list", toPostData)
+    .then(response => {
+      if (response?.data?.status === "Success") {
+        return response?.data?.payload?.list;
+      } else {
+        throw new Error("Failed to Fetch Packages");
+      }
+    })
+    .catch(error => {
+      console.log("Error getting packages", error);
+      throw error;
+    });
+}
 
 // Function to create Package
 export const handleCreatePackage = async (data) => {
@@ -285,11 +283,8 @@ export const handleCreatePackage = async (data) => {
 // Function to fetch ICO Names and Description
 export const handleIcoDetails = async (data) => {
   try {
-    const toPostData = data.conventionData;
-    const response = await postApi(
-      "http://localhost:8080/api/v1/migration/designtime/get/iflow/details",
-      toPostData
-    );
+    const toPostData = data;
+    const response = await postApi("http://localhost:8080/api/v1/migration/designtime/get/iflow/details", toPostData);
 
     if (response && response.data) {
       const names = response.data.map((item) => item?.iflowName);
@@ -301,7 +296,7 @@ export const handleIcoDetails = async (data) => {
   } catch (error) {
     console.error("Error fetching ICO details:", error);
     toast.error("Failed to fetch ICO details", {
-      position: toast.POSITION.BOTTOM_CENTER,
+      // position: toast.POSITION.BOTTOM_CENTER,
     });
     return { names: [], description: [] };
   }

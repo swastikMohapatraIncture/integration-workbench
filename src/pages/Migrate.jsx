@@ -4,9 +4,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import WorkInProg from '../components/WorkInProg/WorkInProg';
-import MainPageMP from '../components/MigrationProcess/MainPageMP';
-
+import MigrateIcos from "../components/Migrate/MigrateIcos";
+import MigrateVm from "../components/Migrate/MigrateVm";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -41,7 +40,7 @@ function a11yProps(index) {
   };
 }
 
-const MigrationProcess = () => {
+const Migrate = () => {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -52,22 +51,17 @@ const MigrationProcess = () => {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab sx={{textTransform:"capitalize"}} label="PO to Integration Suite" {...a11yProps(0)} />
-          <Tab sx={{textTransform:"capitalize"}} label="NEO to Cloud Foundry" {...a11yProps(1)} />
-          {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
+          <Tab sx={{textTransform:"capitalize"}} label="Migrate ICOs" {...a11yProps(0)} />
+          <Tab sx={{textTransform:"capitalize"}} label="Migrate Value Mapping" {...a11yProps(1)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <MainPageMP/>
+        <MigrateIcos />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <WorkInProg/>
+        <MigrateVm />
       </CustomTabPanel>
-      {/* <CustomTabPanel value={value} index={2}>
-        Item Three
-      </CustomTabPanel> */}
     </Box>
   );
 }
-
-export default MigrationProcess
+export default Migrate;

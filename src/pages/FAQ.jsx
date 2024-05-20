@@ -1,8 +1,10 @@
-
+import Accordion from "../components/Accordion/Accordion"
 const FAQ = () => {
   return (
     <div>
-      FAQ
+      <header className="App-header">
+        <Accordion />
+      </header>
     </div>
   )
 }

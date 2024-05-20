@@ -4,6 +4,16 @@ export const stats = [
   { value: '900+', description: 'Passionate employees' }
 ];
 
+export const features = [
+  { text: "Significant reduction in migration effort.", borderColor: "#DD343B", bgColor: "#FFF5F6", width: "w-[233px]" },
+  { text: "Migrate multiple integrations simultaneously.", borderColor: "#C03A91", bgColor: "#FFF4FB", width: "w-[233px]" },
+  { text: "Automated migration of PO 7.5 integrations to CPI.", borderColor: "#01ABD3", bgColor: "#EAFBFF", width: "w-[233px]" },
+  { text: "Dynamic migration templates automatically applied by IW.", borderColor: "#F8B334", bgColor: "#FFF6E6", width: "w-[243px]" },
+  { text: "Migration report to validate the migrated and non-migrated components.", borderColor: "#E36828", bgColor: "#FFEFE6", width: "w-[320px]" },
+  { text: "Automatic implementation of error handling and payload logging across all integrations.", borderColor: "#79AF30", bgColor: "#F5FEE8", width: "w-[360px]" },
+  { text: "Migration support for components not available in SAP Migration.", borderColor: "#0A6ED1", bgColor: "#F0F7FE", width: "w-[340px]" },
+];
+
 export const officeLocations = [
   {
     name: "Incture Bhubaneswar, STPI",
@@ -26,5 +36,28 @@ export const officeLocations = [
     description: "STPI, Plot No. C-184, Sector-75 Industrial Area Phase-8A, S.A.S. Nagar (Mohali), Chandigarh, Punjab – 160071"
   }
 ]
+
+export const sections = [
+  {
+    sectionTitle: 'Migration Process',
+    items: [
+      { title: 'Question 1', content: 'a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.' },
+      { title: 'Question 2', content: 'a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.' },
+      { title: 'Question 3', content: 'a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.' },
+    ],
+  },
+  {
+    sectionTitle: 'Migration Assessment',
+    items: [
+      { title: 'Question 1', content: 'a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.' },
+      { title: 'Question 2', content: 'a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.' },
+      {
+        title: 'Question 3',
+        content:
+          'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.',
+      },
+    ],
+  },
+];
 
 
