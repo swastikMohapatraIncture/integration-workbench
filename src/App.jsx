@@ -11,6 +11,7 @@ import MigrationAssessment from "./pages/MigrationAssessment";
 // import Table from "../src/components/Table"
 import HomePage from "./pages/HomePage";
 import Migrate from "./pages/Migrate";
+import Monitoring from './pages/Monitroing'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="home" element={<Layout />} />
+      <Route path="monitoring" element={<Layout><Monitoring /></Layout >} />
       <Route path="migrationProcess" element={<Layout ><MigrationProcess/></Layout>} />
       <Route path="migrationAssessment" element={<Layout ><MigrationAssessment/></Layout>} />
       <Route path="automatedTesting" element={<Layout ><AutomatedTesting/></Layout>} />

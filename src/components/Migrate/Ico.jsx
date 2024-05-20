@@ -2,17 +2,13 @@ import React, { useEffect, useState } from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
-import Paper from '@mui/material/Paper';
 import { handleIcoList, handleIcoDetails } from '../../apis/apiService'; 
 
-
-const Ico = () => {
+const Ico = ({ onIcoDetailsReceived , setLoading}) => {
   const [icoList, setIcoList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIcos, setSelectedIcos] = useState([]);
-  const [icoDetails, setIcoDetails] = useState({ names: [], description: [] });
-
 
   const poData = {
     name: "IncturePO1",
@@ -24,41 +20,44 @@ const Ico = () => {
   };
 
   useEffect(() => {
-    const fetchIcoList = () => {
-      handleIcoList(poData)
-        .then(data => {
-          setIcoList(data);
-          setLoading(false);
-        })
-        .catch(error => {
-          setError(error);
-          setLoading(false);
-        });
+    const fetchIcoList = async () => {
+      setLoading(true)
+      try {
+        const data = await handleIcoList(poData);
+        setIcoList(data);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+        setLoading(false);
+      }
     };
 
     fetchIcoList();
-  }, []);
+  }, [setLoading]);
 
-  const handleChange = (event, value) => {
+  const handleChange = async (event, value) => {
     setSelectedIcos(value);
-
-    value.forEach(selectedIco => {
+    setLoading(true);
+    const details = await Promise.all(value.map(async (selectedIco) => {
       const postData = {
-        poAgent: poData,
-        icoKey: selectedIco
+        icoKey: selectedIco,
+        agent: poData
       };
-      console.log(postData);
-      handleIcoDetails(postData)
-        .then(details => {
-          setIcoDetails(prevDetails => ({
-            names: [...prevDetails.names, ...details.names],
-            description: [...prevDetails.description, ...details.description]
-          }));
-        })
-        .catch(error => {
-          console.error("Error fetching ICO details:", error);
-        });
-    });
+      try {
+        const response = await handleIcoDetails(postData);
+        return {
+          piObject: selectedIco,
+          artifactName: response.iflowName,
+          description: response.description
+        };
+      } catch (error) {
+        console.error("Error fetching ICO details:", error);
+        return { name: '', description: '' };
+      }
+    }));
+
+    onIcoDetailsReceived(details);
+    setLoading(false)
   };
 
   const renderTags = (value, getTagProps) => {
@@ -73,12 +72,12 @@ const Ico = () => {
     );
   };
 
-  if (loading) return <p>Loading...</p>;
+  // if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading ICO list: {error.message}</p>;
 
   return (
     <div className='w-full'>
-       <Autocomplete
+      <Autocomplete
         fullWidth
         multiple
         options={icoList}
@@ -94,28 +93,9 @@ const Ico = () => {
             placeholder="Select multiple ICOs"
           />
         )}
-        style={{}}
       />
-      <div style={{ marginTop: '1rem' }}>
-        <h2>ICO Details</h2>
-        {icoDetails.names.map((name, index) => (
-          <div key={index}>
-            <h3>{name}</h3>
-            <p>{icoDetails.description[index]}</p>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
-
-const CustomPaper = ({ children, ...other }) => {
-  return (
-    <Paper elevation={3} {...other} style={{ maxHeight: 100, overflow: 'auto' }}>
-      {children}
-    </Paper>
-  );
-};
-
 
 export default Ico;

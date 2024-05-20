@@ -12,6 +12,7 @@ import { TbMessage2Question, TbSettingsSearch } from "react-icons/tb";
 import { GiSpeedometer } from "react-icons/gi";
 import { BsTelephone } from "react-icons/bs";
 import { RiFileCloudLine } from "react-icons/ri";
+import { MdMonitor } from "react-icons/md";
 
 const SideBar = () => {
   const [openSubmenu, setOpenSubmenu] = useState(false);
@@ -88,6 +89,23 @@ const SideBar = () => {
             >
               <GoHome size={20} />
               <span className=" gap-4 ">Home</span>
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            disablePadding
+            onClick={() => {navigate("/monitoring");
+            setOpenSubmenu(false);}}
+          >
+            <ListItemButton
+              sx={
+                isActiveRoute("/monitoring")
+                  ? styles.selectedItem
+                  : styles.listItem
+              }
+              className="flex flex-row justify-between items-center gap-4"
+            >
+              <MdMonitor size={20} className=" " />
+              <span className=" gap-4 ">Monitoring </span>
             </ListItemButton>
           </ListItem>
           <ListItem

@@ -3,10 +3,10 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import { handlePackageList } from "../../apis/apiService";
 
-const Package = ({ onSelect }) => {
+const Package = ({ onSelect, setLoading }) => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [packageList, setPackageList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const cpiData = {
@@ -21,6 +21,7 @@ const Package = ({ onSelect }) => {
 
   useEffect(() => {
     const fetchPackageList = async () => {
+      setLoading(true);
       try {
         const packages = await handlePackageList(cpiData);
         setPackageList(packages);
@@ -28,22 +29,27 @@ const Package = ({ onSelect }) => {
       } catch (error) {
         setError(error);
         setLoading(false);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchPackageList();
-  }, []);
-
+  }, [setLoading]);
+  {console.log(packageList)}
   const handleChange = (event, value) => {
+    // console.log("value",value);
     setSelectedPackage(value);
+    // console.log("selected ",selectedPackage);
     onSelect(value);
   };
 
-  if (loading) return <p>Loading...</p>;
+  // if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading packages : {error.message}</p>;
 
   return (
     <div className="w-full">
+      {/* {selectedPackage.id}  */}
     <Autocomplete
       fullWidth
       value={selectedPackage}
