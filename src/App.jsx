@@ -8,7 +8,7 @@ import About from "./pages/About";
 import Contacts from "./pages/Contacts";
 import FAQ from "./pages/FAQ";
 import MigrationAssessment from "./pages/MigrationAssessment";
-import Table from "../src/components/Table"
+// import Table from "../src/components/Table"
 import HomePage from "./pages/HomePage";
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
       <Route path="about" element={<Layout ><About/></Layout>} />
       <Route path="contacts" element={<Layout ><Contacts/></Layout>} />
       <Route path="faqs" element={<Layout ><FAQ/></Layout>} />
-      <Route path="migrationtable" element={<Layout ><Table /></Layout>} />
+      {/* <Route path="migrationtable" element={<Layout ><Table /></Layout>} /> */}
       <Route path="migrationtable2" element={<Layout ></Layout>} />
     </Routes>
   

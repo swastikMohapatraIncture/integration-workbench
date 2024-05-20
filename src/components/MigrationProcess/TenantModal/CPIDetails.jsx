@@ -113,7 +113,7 @@ const CPIDetails = ({
 
   const handleCPITest = (event) => {
     event.preventDefault();
-    // setTestingConn(true);
+    setTestingConn(true);
     postCPIData(
       // { dataType: "cpiData", formData: cpiData },
       cpiData,

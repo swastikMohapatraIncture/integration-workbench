@@ -1,32 +1,32 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import { StepConnector, stepConnectorClasses, styled } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IntroContent from "./TenantModal/IntroContent";
 import PODetails from "./TenantModal/PODetails";
 import CPIDetails from "./TenantModal/CPIDetails";
 import APIDetails from "./TenantModal/APIDetails";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
+// import Table from "./Table";  // Import the Table component
 
 const steps = ["Introduction", "PO details", "CPI details", "API details"];
 
-const TenantModal = ({ setOpenModal }) => {
+const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditingAgentIdx }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
-
+  // const [editingAgentIdx, setEditingAgentIdx] = useState(-1);
   const [showPassword, setShowPassword] = useState(false);
-  
   const [disableNext, setDisableNext] = useState(true);
   const [testingConn, setTestingConn] = useState(false);
-  // const [connectionStatus, setConnectionStatus] = useState(false);
-  // const [connectionMessage, setConnectionMessage] = useState("");
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setCompletedSteps([...completedSteps, activeStep]);
+    setDisableNext(true);
   };
 
   const handleBack = () => {
@@ -34,9 +34,28 @@ const TenantModal = ({ setOpenModal }) => {
     setCompletedSteps(completedSteps.filter((step) => step !== activeStep));
   };
 
-  // const isStepCompleted = (step) => {
-  //   return completedSteps.includes(step);
-  // };
+
+  const handleSubmitAgent = () => {
+    const currAgent = JSON.parse(localStorage?.getItem("currAgent"));
+    let allPrevAgents = JSON.parse(localStorage?.getItem("agents")) || [];
+  
+    if (editingAgentIdx >= 0) {
+      allPrevAgents[editingAgentIdx] = currAgent;
+    } else {
+      allPrevAgents?.push(currAgent);
+    }
+  
+    localStorage.setItem("agents", JSON.stringify(allPrevAgents));
+    localStorage.removeItem("currAgent");
+  
+    setAgents(allPrevAgents);
+    setEditingAgentIdx(-1);
+    setOpenModal(false);
+  };
+  
+
+
+
 
   const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -64,12 +83,10 @@ const TenantModal = ({ setOpenModal }) => {
   return (
     <>
       <div className="fixed inset-0 z-[1000] bg-black opacity-50"></div>
-      <div className="justify-center items-center  flex overflow-x-hidden z-[1000] overflow-y-auto fixed inset-0 outline-none focus:outline-none">
+      <div className="justify-center items-center flex overflow-x-hidden z-[1000] overflow-y-auto fixed inset-0 outline-none focus:outline-none">
         <ToastContainer />
-        <div className="relative w-auto  my-3 mx-auto ">
-          {/*content*/}
-          <div className="border-0  rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-            {/*header*/}
+        <div className="relative w-auto my-3 mx-auto">
+          <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="flex items-start justify-between p-2 border-b border-solid border-blueGray-200 rounded-t">
               <div className="mb-1">
                 <h2 className="text-xl">System Configuration</h2>
@@ -84,7 +101,7 @@ const TenantModal = ({ setOpenModal }) => {
               </button>
             </div>
             <div className="flex flex-row h-[60vh] w-[70vw]">
-              <div className="flex flex-col items-center p-3  w-[170px] border-r border-gray-300">
+              <div className="flex flex-col items-center p-3 w-[170px] border-r border-gray-300">
                 <Box sx={{ width: "100%" }}>
                   <Stepper
                     activeStep={activeStep}
@@ -101,84 +118,64 @@ const TenantModal = ({ setOpenModal }) => {
               </div>
 
               <div className="p-3 w-full overflow-y-auto ">
-                {activeStep === 0 && (
-                  <div>
-                    <IntroContent />
-                  </div>
-                )}
+                {activeStep === 0 && <IntroContent />}
                 {activeStep === 1 && (
-                  <div>
-                    <PODetails
-                      showPassword={showPassword}
-                      setShowPassword={setShowPassword}
-                      setDisableNext={setDisableNext}
-                      testingConn={testingConn}
-                      setTestingConn={setTestingConn}
-                      // connectionMessage={connectionMessage}
-                      // setConnectionMessage={setConnectionMessage}
-                      // connectionStatus={connectionStatus}
-                      // setConnectionStatus={setConnectionStatus}
-                    />
-                  </div>
+                  <PODetails
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    setDisableNext={setDisableNext}
+                    testingConn={testingConn}
+                    setTestingConn={setTestingConn}
+                  />
                 )}
                 {activeStep === 2 && (
-                  <div>
-                    <CPIDetails
-                      showPassword={showPassword}
-                      setShowPassword={setShowPassword}
-                      setDisableNext={setDisableNext}
-                      // fileName={fileName}
-                      // setFileName={setFileName}
-                      testingConn={testingConn}
-                      setTestingConn={setTestingConn}
-                      // connectionMessage={connectionMessage}
-                      // setConnectionMessage={setConnectionMessage}
-                      // connectionStatus={connectionStatus}
-                      // setConnectionStatus={setConnectionStatus}
-                    />
-                  </div>
+                  <CPIDetails
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    setDisableNext={setDisableNext}
+                    testingConn={testingConn}
+                    setTestingConn={setTestingConn}
+                  />
                 )}
                 {activeStep === 3 && (
-                  <div>
-                    <APIDetails
-                      showPassword={showPassword}
-                      setShowPassword={setShowPassword}
-                      setDisableNext={setDisableNext}
-                      // fileName={fileName}
-                      // setFileName={setFileName}
-                      testingConn={testingConn}
-                      setTestingConn={setTestingConn}
-                      // connectionMessage={connectionMessage}
-                      // setConnectionMessage={setConnectionMessage}
-                      // connectionStatus={connectionStatus}
-                      // setConnectionStatus={setConnectionStatus}
-                    />
-                  </div>
+                  <APIDetails
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    setDisableNext={setDisableNext}
+                    testingConn={testingConn}
+                    setTestingConn={setTestingConn}
+                  />
                 )}
               </div>
             </div>
-            {/*footer*/}
             <div className="flex items-center gap-3 justify-end px-4 py-3 border-t border-solid border-blueGray-200 rounded-b">
+              {activeStep > 0 && (
+                <button
+                  className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  onClick={handleBack}
+                >
+                  Back
+                </button>
+              )}
+             {activeStep < steps.length - 1 ? (
+                <button
+                  className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  onClick={handleNext}
+                  // disabled={disableNext}
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  onClick={handleSubmitAgent}
+                  // disabled={disableNext}
+                >
+                  Submit
+                </button>
+              )}
               <button
-                className={` py-1 px-3 rounded-md border border-modalColor text-modalColor ${
-                  activeStep === 0 ? "bg-gray-300  cursor-not-allowed" : " "
-                }`}
-                onClick={handleBack}
-                disabled={activeStep === 0}
-              >
-                Back
-              </button>
-              <button
-                className={` py-1 px-3 rounded-md border border-modalColor text-modalColor ${
-                  activeStep === 3 ? "bg-gray-300 cursor-not-allowed" : " "
-                }`}
-                onClick={handleNext}
-                disabled={activeStep === 3}
-              >
-                Next
-              </button>
-              <button
-                className=" py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
                 onClick={() => setOpenModal(false)}
               >
                 Cancel

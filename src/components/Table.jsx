@@ -1,80 +1,198 @@
+/* eslint-disable react/prop-types */
 import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import TenantModal from "./MigrationProcess/TenantModal";
+import { useState } from "react";
 
-const Table = () => {
+const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
   return (
-    <div className="overflow-x-auto p-6">
-      {/* {icoList} */}
-      {/* {packageList} */}
-      <table className="min-w-full divide-y divide-gray-200 border border-gray-300">
-        <thead className="bg-gray-50">
-          <tr>
-            <th scope="col" className="px-5 py-3 border-r border-gray-200"></th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-s font-bold text-[#32363A] tracking-wider border-r border-gray-200"
-            >
-              PO Tenant
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-s font-bold  text-[#32363A] tracking-wider border-r border-gray-200"
-            >
-              PO Environment
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-s font-bold  text-[#32363A] tracking-wider border-r border-gray-200"
-            >
-              IS Tenant
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-s font-bold  text-[#32363A] tracking-wider border-r border-gray-200"
-            >
-              IS Environment
-            </th>
-            <th
-              scope="col"
-              className="px-6 py-3 text-left text-s font-bold  text-[#32363A] tracking-wider border-r border-gray-200"
-            >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          <tr className="hover:bg-gray-100">
-            <td className=" whitespace-nowrap border-r border-gray-200 text-center">
-              <input type="radio" />
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap border-r text-[#32363A]  text-s border-gray-200">
-              Data 1
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap border-r text-[#32363A]  text-s border-gray-200">
-              Data 2
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap border-r text-[#32363A]  text-s border-gray-200">
-              Data 3
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap border-r text-[#32363A]  text-s border-gray-200">
-              Data 4
-            </td>
-            <td className="px-6 py-4 whitespace-nowrap border-r text-[#32363A]  text-s border-gray-200">
-              <button className="text-blue-600 hover:text-blue-900 mr-2">
-                <MdOutlineModeEdit className="text-blue-600 text-2xl" />
+    <>
+      <div className="fixed inset-0 z-[1000] bg-black opacity-50"></div>
+      <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 outline-none focus:outline-none z-[1000]">
+        <div className="relative w-auto my-6 mx-auto max-w-3xl">
+          <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            <div className="relative p-8 flex-auto">
+              <p className="text-blueGray-500 text-bold text-4xl">
+                Are you sure you want to delete?
+              </p>
+            </div>
+            <div className="flex items-center gap-3 justify-center p-2 border-solid border-blueGray-200 rounded-b">
+              <button
+                className="text-white bg-gray-600 rounded hover:bg-[#0A6ED1] hover:text-white transition duration-150 px-3 py-2 outline-none focus:outline-none mr-1 mb-1 ease-linear"
+                type="button"
+                onClick={() => setDeleteModal(false)}
+              >
+                Close
               </button>
-              <button className="text-red-600 hover:text-red-900">
-                <RiDeleteBin6Line className="text-red-600 text-2xl" />
+              <button
+                className="bg-[#0A6ED1] text-white hover:bg-gray-300 hover:text-black transition duration-150 px-3 py-2 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear"
+                type="button"
+                onClick={() => {
+                  handleDeleteAgent(index);
+                  setDeleteModal(false);
+                }}
+              >
+                Delete
               </button>
-            </td>
-          </tr>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
-          {/* Add more rows here */}
-        </tbody>
-      </table>
-      <button onClick={() => handleSubmit()}>test</button>
-      <button onClick={() => handleMigrate()}>migrate</button>
-    </div>
+
+const Table = ({
+  openModal,
+  setOpenModal,
+  agents,
+  setAgents,
+  editingAgentIdx,
+  setEditingAgentIdx,
+}) => {
+  const [agentSelected, setAgentSelected] = useState(false);
+  const [deleteModal, setDeleteModal] = useState({ open: false, index: null });
+  const handleAddAgent = () => {
+    localStorage.removeItem("currAgent");
+    setAgentSelected(false);
+    setOpenModal((prev) => !prev);
+  };
+
+  const handleEditAgent = (idx) => {
+    setEditingAgentIdx(idx);
+    localStorage.setItem("currAgent", JSON?.stringify(agents[idx]));
+    setAgentSelected(false);
+    setOpenModal((prev) => !prev);
+  };
+
+  const handleDeleteAgent = (index) => {
+    const updatedAgents = [...agents];
+
+    if (index >= 0 && index < updatedAgents.length) {
+      updatedAgents.splice(index, 1);
+      setAgents(updatedAgents);
+      localStorage.setItem("agents", JSON?.stringify(updatedAgents));
+    }
+  };
+
+  return (
+    <>
+      {agents && agents.length > 0 && (
+        <div className="overflow-x-auto p-6">
+          <table className="min-w-full divide-y divide-gray-200 border border-gray-300 text-sm">
+            <thead className="bg-[#F2F2F2]">
+              <tr>
+                <th scope="col" className="px-5 py-2 border-gray-200 "></th>
+                <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
+                  PO Tenant
+                </th>
+                <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
+                  PO Environment
+                </th>
+                <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
+                  IS Tenant
+                </th>
+                <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
+                  IS Environment
+                </th>
+                <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {agents &&
+                agents.length > 0 &&
+                agents.map((agent, index) => (
+                  <tr key={index} className="hover:bg-gray-100">
+                    <td className="whitespace-nowrap  border-gray-200 text-center">
+                      <input
+                        type="radio"
+                        name="agent"
+                        onChange={() => {
+                          localStorage?.setItem(
+                            "currAgent",
+                            JSON?.stringify(agent)
+                          );
+                          setAgentSelected(true);
+                        }}
+                      />
+                    </td>
+                    <td className="px-6 py-3 whitespace-nowrap  text-[#32363A]  border-gray-200">
+                      {agent?.poData?.name}
+                    </td>
+                    <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
+                      {agent?.poData?.environment}
+                    </td>
+                    <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
+                      {agent?.cpiData?.name}
+                    </td>
+                    <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
+                      {agent?.cpiData?.environment}
+                    </td>
+                    <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
+                      <button
+                        className="text-blue-600 hover:text-blue-900 mr-2"
+                        onClick={() => handleEditAgent(index)}
+                      >
+                        <MdOutlineModeEdit className="text-blue-600 text-xl" />
+                      </button>
+                      <button
+                        className="text-red-600 hover:text-red-900"
+                        // onClick={() => handleDeleteAgent(index)}
+                        onClick={() => setDeleteModal({ open: true, index })}
+                      >
+                        <RiDeleteBin6Line className="text-red-600 text-xl" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+
+          <footer
+            className="border-t text-[#32363A] flex flex-row items-center justify-end gap-4 py-4 h-[60px]"
+            style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
+          >
+            <button
+              className="bg-[#0A6ED1] text-white rounded px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
+              onClick={handleAddAgent}
+            >
+              Add Agent
+            </button>
+            <button
+              className={`bg-[#0A6ED1]  rounded px-3 py-1  transition duration-200   ${
+                !agentSelected
+                  ? " bg-gray-300 text-black cursor-not-allowed"
+                  : "bg-[#0A6ED1] text-white hover:bg-gray-100 hover:text-black transition duration-500 "
+              } mr-3`}
+              disabled={!agentSelected}
+            >
+              Migrate
+            </button>
+            {/* <br /> */}
+          </footer>
+        </div>
+      )}
+      {openModal && (
+        <TenantModal
+          agents={agents}
+          setAgents={setAgents}
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          editingAgentIdx={editingAgentIdx}
+          setEditingAgentIdx={setEditingAgentIdx}
+        />
+      )}
+      {deleteModal.open && (
+        <DeleteModal
+        handleDeleteAgent={handleDeleteAgent}
+          setDeleteModal={(open) => setDeleteModal({ ...deleteModal, open })}
+          index={deleteModal.index}
+        />
+      )}
+    </>
   );
 };
 

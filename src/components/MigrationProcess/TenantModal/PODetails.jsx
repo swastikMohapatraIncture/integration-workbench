@@ -34,13 +34,8 @@ const PODetails = ({
   setDisableNext,
   testingConn,
   setTestingConn,
-  // connectionMessage,
-  // setConnectionMessage,
-  // connectionStatus,
-  // setConnectionStatus,
 }) => {
   const [poDetails, setPoDetails] = useState({});
-  const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -60,17 +55,13 @@ const PODetails = ({
   const handlePODetails = (event) => {
     event.preventDefault();
     setTestingConn(true);
-    // const formData = poDetails
     postESRConnection(
-      { dataType: "poData", formData: poDetails },
+      poDetails,
       setDisableNext,
-      setTestingConn
+      setTestingConn,
+      setConnectionMessage
     );
   };
-
-  // const handlePODetails = () => {
-  //   console.log(poDetails);
-  // };
 
   return (
     <div>

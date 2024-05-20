@@ -1,22 +1,32 @@
-import { useState } from "react";
+/* eslint-disable react/prop-types */
+// import { useState } from "react";
 import TenantModal from "./TenantModal";
 
-const Introduction = () => {
-  const [openModal, setOpenModal] = useState(false);
+const Introduction = ({
+  openModal,
+  setOpenModal,
+  agents,
+  setAgents,
+  editingAgentIdx,
+  setEditingAgentIdx,
+}) => {
+  // const [openModal, setOpenModal] = useState(false);
   return (
     <div className="text-[#32363A]">
       <div>
         <p>
-          <strong>Integration Workbench</strong> facilitates the seamless migration of
-          integrations from SAP PO 7.5 to IS through an interactive user
-          interface. This migration tool is crafted to drastically reduce manual
-          migration efforts and eliminate the possibility of human error in the
-          process.
+          <strong>Integration Workbench</strong> facilitates the seamless
+          migration of integrations from SAP PO 7.5 to IS through an interactive
+          user interface. This migration tool is crafted to drastically reduce
+          manual migration efforts and eliminate the possibility of human error
+          in the process.
         </p>
       </div>
 
       <div className="mt-6 text-[#32363A]">
-        <h3 className="text-xl font-semibold text-[#32363A]">Salient Features</h3>
+        <h3 className="text-xl font-semibold text-[#32363A]">
+          Salient Features
+        </h3>
         <ul className="mt-2 list-disc mx-4">
           <li>Significant reduction in migration effort.</li>
           <li>Migrate multiple integrations simultaneously.</li>
@@ -52,7 +62,13 @@ const Introduction = () => {
         </button>
       </div>
       {openModal && (
-        <TenantModal openModal={openModal} setOpenModal={setOpenModal} />
+        <TenantModal
+          agents={agents}
+          setAgents={setAgents}
+          setOpenModal={setOpenModal}
+          editingAgentIdx={editingAgentIdx}
+          setEditingAgentIdx={setEditingAgentIdx}
+        />
       )}
     </div>
   );

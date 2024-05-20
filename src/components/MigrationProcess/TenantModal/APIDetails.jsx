@@ -74,7 +74,7 @@ const APIDetails = ({
 
   const handleAPITest = (event) => {
     event.preventDefault();
-    // setTestingConn(true);
+    setTestingConn(true);
     postAPIData(
       // { dataType: "cpiData", formData: cpiData },
       apiData,

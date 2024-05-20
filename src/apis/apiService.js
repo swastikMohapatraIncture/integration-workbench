@@ -14,32 +14,71 @@ export const postApi = async (apiURL, toPostData) => {
 export const postESRConnection = async (
   formData,
   setDisableNext,
-  setTestingConn
+  setTestingConn,
+  setConnectionMessage
 ) => {
-  try {
-    const response = await postApi(
-      "http://localhost:8080/api/v1/migration/configuration/connect/esr",
-      formData
-    );
-    if (response.data.status === "Success") {
-      await postApi(
+ await postApi(
+    "http://localhost:8080/api/v1/migration/configuration/connect/esr",
+    formData
+  ).then((data)=>{
+    if(data && data.status === "Success"){
+       postApi(
         "http://localhost:8080/api/v1/migration/configuration/connect/id",
         formData
-      );
-      const prevData = JSON.parse(localStorage.getItem("currAgent")) || {};
-      const newData = { ...(prevData ? prevData : null), poData: formData };
-      localStorage.setItem("currAgent", JSON.stringify(newData));
-      setDisableNext(false);
-    } else {
+      ).then((data2)=>{
+        if(data2 && data2.status==="Success"){
+          const prevData = JSON.parse(localStorage.getItem("currAgent")) || {};
+          const newData = { ...(prevData ? prevData : null), poData: formData };
+          localStorage.setItem("currAgent", JSON.stringify(newData));
+          setConnectionMessage({
+            text: "Connection successful",
+            type: "success",
+          });
+          setDisableNext(false);
+        } else {
+          setConnectionMessage({
+            text: data?.message || "Connection unsuccessful",
+            type: "error",
+          });
+          setDisableNext(true);
+        }
+        // notification(data.status);
+      }).catch((error)=>{
+        console.error("API call failed:", error);
+      // setConnectionStatus(false);
+      setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
       setDisableNext(true);
+      }).finally(()=>{
+        setTestingConn(false);
+      })
     }
-    notification(response.data.status);
-  } catch (error) {
-    handleConnectionError(error, setTestingConn);
-  } finally {
-    setTestingConn(false);
-  }
+  })
+  // try {
+  //   const response = await postApi(
+  //     "http://localhost:8080/api/v1/migration/configuration/connect/esr",
+  //     formData
+  //   );
+  //   if (response.data.status === "Success") {
+  //     await postApi(
+  //       "http://localhost:8080/api/v1/migration/configuration/connect/id",
+  //       formData
+  //     );
+  //     const prevData = JSON.parse(localStorage.getItem("currAgent")) || {};
+  //     const newData = { ...(prevData ? prevData : null), poData: formData };
+  //     localStorage.setItem("currAgent", JSON.stringify(newData));
+  //     setDisableNext(false);
+  //   } else {
+  //     setDisableNext(true);
+  //   }
+  //   notification(response.data.status);
+  // } catch (error) {
+  //   handleConnectionError(error, setTestingConn);
+  // } finally {
+  //   setTestingConn(false);
+  // }
 };
+
+
 
 export const postCPIData = async (
   formData,
@@ -124,7 +163,7 @@ export const postAPIData = async (
         const newData = {
           ...(prevData ? prevData : null),
           apiData: formData,
-          adapter: [],
+          // adapter: [],
         };
         // const newData = { ...(prevData ? prevData : null), formData, adapter: [] };
         localStorage.setItem("currAgent", JSON.stringify(newData));
@@ -170,20 +209,20 @@ export const postAPIData = async (
   // }
 };
 
-const notification = (type) => {
-  const message =
-    type === "Success" ? "Connection Successful" : "Connection Failed";
-  const toastType = type === "Success" ? toast.success : toast.error;
-  toastType(message, { position: toast.POSITION.BOTTOM_CENTER });
-};
+// const notification = (type) => {
+//   const message =
+//     type === "Success" ? "Connection Successful" : "Connection Failed";
+//   const toastType = type === "Success" ? toast.success : toast.error;
+//   toastType(message, { position: toast.POSITION.BOTTOM_CENTER });
+// };
 
-const handleConnectionError = (error, setTestingConn) => {
-  console.error("Error testing connection:", error?.message);
-  toast.error("Connection Failed - " + error.message, {
-    position: toast?.POSITION.BOTTOM_CENTER,
-  });
-  setTestingConn(false);
-};
+// const handleConnectionError = (error, setTestingConn) => {
+//   console.error("Error testing connection:", error?.message);
+//   toast.error("Connection Failed - " + error.message, {
+//     position: toast?.POSITION.BOTTOM_CENTER,
+//   });
+//   setTestingConn(false);
+// };
 
 // Funciton to fetch the list of ICos
 export const handleIcoList = async (poData) => {
