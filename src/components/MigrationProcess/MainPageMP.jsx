@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import Introduction from "./Introduction";
-import Table from "../Table";
+import Table from "../Table/Table";
 
 const MainPageMP = () => {
-  const [tenants, setTenants] = useState([]);
+  const [tenants, setTenants] = useState([1]);
   return (
     <>
       {
