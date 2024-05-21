@@ -16,7 +16,7 @@ const Package = ({ onSelect, setLoading }) => {
     clientSecret:
       "31bc3d8a-39c6-486d-ba7d-7ebcdbae828c$pSj79Jx1okSPRJlG87zXIckAsy-8Av9NGWsjZsqjajk=",
     tokenUrl:
-      "https://196e1fd0trial.authentication.us10.hana.ondemand.com/oauth/token"
+      "https://196e1fd0trial.authentication.us10.hana.ondemand.com/oauth/token",
   };
 
   useEffect(() => {
@@ -36,7 +36,9 @@ const Package = ({ onSelect, setLoading }) => {
 
     fetchPackageList();
   }, [setLoading]);
-  {console.log(packageList)}
+  {
+    console.log(packageList);
+  }
   const handleChange = (event, value) => {
     // console.log("value",value);
     setSelectedPackage(value);
@@ -50,22 +52,26 @@ const Package = ({ onSelect, setLoading }) => {
   return (
     <div className="w-full">
       {/* {selectedPackage.id}  */}
-    <Autocomplete
-      fullWidth
-      value={selectedPackage}
-      onChange={handleChange}
-      options={packageList}
-      getOptionLabel={(option) => option.name}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          label="Package"
-          variant="outlined"
-          placeholder="Select Package"
-        />
-      )}
-      style={{ }}
-    />
+      <label className="block mb-3">Select Package</label>
+      <Autocomplete
+        fullWidth
+        value={selectedPackage}
+        onChange={handleChange}
+        size="small"
+        options={packageList}
+        getOptionLabel={(option) => option.name}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            // label="Package"
+            variant="outlined"
+            placeholder="Select Package"
+          />
+        )}
+        sx={{
+          "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
+        }}
+      />
     </div>
   );
 };
