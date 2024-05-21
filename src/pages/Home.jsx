@@ -16,11 +16,11 @@ const Home = () => {
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta quae, quidem voluptate in animi expedita porro illum ullam provident quasi voluptatum harum similique! Doloremque ad veritatis animi? Autem, ducimus libero?
           Officia incidunt maiores voluptates pariatur modi, voluptas qui! Facilis tenetur, in temporibus ad, voluptates eligendi odio aperiam accusamus ea est quas laborum officiis architecto asperiores quasi debitis maiores obcaecati nulla.
         </p>
-        {/* <h3 className="mt-6 mb-2 font-bold text-xl">Automated Testing</h3>
+        <h3 className="mt-6 mb-2 font-bold text-xl">Automated Testing</h3>
         <p>
           Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta quae, quidem voluptate in animi expedita porro illum ullam provident quasi voluptatum harum similique! Doloremque ad veritatis animi? Autem, ducimus libero?
           Officia incidunt maiores voluptates pariatur modi, voluptas qui! Facilis tenetur, in temporibus ad, voluptates eligendi odio aperiam accusamus ea est quas laborum officiis architecto asperiores quasi debitis maiores obcaecati nulla.
-        </p> */}
+        </p>
       </div>
     </div>
   );

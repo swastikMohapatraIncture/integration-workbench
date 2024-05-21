@@ -280,36 +280,6 @@ export const handleCreatePackage = async (data) => {
   }
 };
 
-// Function to fetch ICO Names and Description
-<<<<<<< Updated upstream
-// export const handleIcoDetails = async (data) => {
-//   try {
-//     const toPostData = data.conventionData;
-//     const response = await postApi(
-//       "http://localhost:8080/api/v1/migration/designtime/get/iflow/details",
-//       toPostData
-//     );
-=======
-export const handleIcoDetails = async (data) => {
-  try {
-    const toPostData = data;
-    const response = await postApi("http://localhost:8080/api/v1/migration/designtime/get/iflow/details", toPostData);
->>>>>>> Stashed changes
-
-//     if (response && response.data) {
-//       const names = response.data.map((item) => item?.iflowName);
-//       const description = response.data.map((item) => item?.description);
-//       return { names, description };
-//     } else {
-//       throw new Error("Empty response received");
-//     }
-//   } catch (error) {
-//     console.error("Error fetching ICO details:", error);
-//     toast.error("Failed to fetch ICO details", {
-//       // position: toast.POSITION.BOTTOM_CENTER,
-//     });
-//     return { names: [], description: [] };
-//   }
 export const handleIcoDetails = (data) => {
   const toPostData = data;
   return postApi("http://localhost:8080/api/v1/migration/designtime/get/iflow/details", toPostData)
