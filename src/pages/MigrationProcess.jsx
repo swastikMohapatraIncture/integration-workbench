@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import WorkInProg from '../components/WorkInProg/WorkInProg';
 import MainPageMP from '../components/MigrationProcess/MainPageMP';
+import Introduction from '../components/NeoToCloudFoundry/Introduction';
 
 
 function CustomTabPanel(props) {
@@ -61,7 +62,7 @@ const MigrationProcess = () => {
         <MainPageMP/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <WorkInProg/>
+        <Introduction/>
       </CustomTabPanel>
       {/* <CustomTabPanel value={value} index={2}>
         Item Three

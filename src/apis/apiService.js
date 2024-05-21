@@ -281,6 +281,7 @@ export const handleCreatePackage = async (data) => {
 };
 
 // Function to fetch ICO Names and Description
+<<<<<<< Updated upstream
 // export const handleIcoDetails = async (data) => {
 //   try {
 //     const toPostData = data.conventionData;
@@ -288,6 +289,12 @@ export const handleCreatePackage = async (data) => {
 //       "http://localhost:8080/api/v1/migration/designtime/get/iflow/details",
 //       toPostData
 //     );
+=======
+export const handleIcoDetails = async (data) => {
+  try {
+    const toPostData = data;
+    const response = await postApi("http://localhost:8080/api/v1/migration/designtime/get/iflow/details", toPostData);
+>>>>>>> Stashed changes
 
 //     if (response && response.data) {
 //       const names = response.data.map((item) => item?.iflowName);
