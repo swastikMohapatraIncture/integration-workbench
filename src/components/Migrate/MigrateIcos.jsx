@@ -2,26 +2,97 @@ import Package from "./Package"
 import Ico from './Ico'
 import { useState } from "react"
 import { handleMigration } from "../../apis/apiService";
+import MigrationReport from "./MigrationReport";
+import { MdOutlineModeEdit } from "react-icons/md";
 import Loader from '../Loader';
 
-const Table = ({ icoDetails }) => {
-  console.log(icoDetails);
+const Table = ({ icoDetails, setIcoDetails }) => {
+  const [editIndex, setEditIndex] = useState(null);
+  const [editName, setEditName] = useState('');
+  const [editDescription, setEditDescription] = useState('');
+
+  const handleEdit = (index, detail) => {
+    setEditIndex(index);
+    setEditName(detail.artifactName);
+    setEditDescription(detail.description);
+  };
+
+  const handleSave = (index) => {
+    const updatedDetails = [...icoDetails];
+    updatedDetails[index].artifactName = editName;
+    updatedDetails[index].description = editDescription;
+    setIcoDetails(updatedDetails);
+    setEditIndex(null);
+  };
+
+  const handleCancel = () => {
+    setEditIndex(null);
+  };
+
   return (
     <div className="overflow-x-auto p-3">
       <table className="table-auto w-full text-[#32363A]">
         <thead className="bg-gray-50">
           <tr>
-            <th className="border border-gray-200 px-2 py-2 text-left">No.</th>
-            <th className="border border-gray-200 px-2 py-2 w-[50%] text-left">Iflow Name</th>
-            <th className="border border-gray-200 px-2 py-2 w-[45%] text-left">Description</th>
+            <th className="border border-gray-200 px-2 py-2 text-center w-[5%]">No.</th>
+            <th className="border border-gray-200 px-2 py-2 w-[20%] text-left">Iflow Name</th>
+            <th className="border border-gray-200 px-2 py-2 w-[20%] text-left">Description</th>
+            <th className="border border-gray-200 px-2 py-2 text-left w-[5%]">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="max-h-40 overflow-y-auto">
           {icoDetails.map((detail, index) => (
             <tr key={index}>
-              <td className="border border-gray-200 px-2">{index + 1}</td>
-              <td className="border border-gray-200 overflow-hidden px-2">{splitName(detail.artifactName)}</td>
-              <td className="border border-gray-200 overflow-hidden px-2">{splitName(detail.description)}</td>
+              <td className="border border-gray-200 px-2 text-center">{index + 1}</td>
+              <td className="border border-gray-200 overflow-hidden px-2">
+                {editIndex === index ? (
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300"
+                  />
+                ) : (
+                  splitName(detail.artifactName)
+                )}
+              </td>
+              <td className="border border-gray-200 overflow-hidden px-2 h-20">
+                {editIndex === index ? (
+                  <input
+                    type="text"
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    className="w-full px-2 py-1 border border-gray-300"
+                  />
+                ) : (
+                  detail.description
+                )}
+              </td>
+              <td className="border border-gray-200 overflow-hidden px-2">
+                {editIndex === index ? (
+                  <>
+                    <button
+                      className="bg-green-500 text-white px-2 py-1 mr-2"
+                      onClick={() => handleSave(index)}
+                    >
+                      Save
+                    </button>
+                    <button
+                      className="bg-red-500 text-white px-2 py-1"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    className=" text-white px-2 py-1"
+                    onClick={() => handleEdit(index, detail)}
+                  >
+                    <MdOutlineModeEdit className="text-blue-600 text-xl" />
+                  </button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -29,24 +100,6 @@ const Table = ({ icoDetails }) => {
     </div>
   );
 };
-
-const poData = {
-  name: "IncturePO1",
-  username: "INC02525",
-  password: "Integration@#1",
-  host: "sapserver",
-  port: "50000",
-  environment: "DEV"
-};
-
-const apiData = {
-  name: "INCISAPI",
-  clientId: "sb-8beebca2-1263-4d16-ab02-5782b2e44871!b278993|it!b26655",
-  clientSecret: "da1ac9c0-1a72-4bd0-8a6f-cb8c6e9eabc3$hA60bwRYtdIxbRFAJgd1W65T-2hIkCqFVSolZgTChmI=",
-  tokenUrl: "https://38eb3176trial.authentication.us10.hana.ondemand.com/oauth/token",
-  url: "https://38eb3176trial.it-cpitrial05.cfapps.us10-001.hana.ondemand.com",
-  environment: "DEV"
-}
 
 const splitName = (name) => {
   const maxCharactersPerLine = 45;
@@ -67,6 +120,9 @@ const MigrateIcos = () => {
   const [selectedValue, setSelectedValue] = useState();
   const [icoDetails, setIcoDetails] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [responseData, setResponseData] = useState([]);
+  const [reportBase64, setReportBase64] = useState('');
 
   const handleDropDownChange = (value) => {
     setSelectedValue(value.id)
@@ -79,20 +135,38 @@ const MigrateIcos = () => {
   }
 
   const handleMigrate = async () => {
+
+    const storedCurrAgent = localStorage.getItem("currAgent");
+    const currAgent = storedCurrAgent  ? JSON.parse(storedCurrAgent) : null;
+
+    if(!currAgent) {
+      console.log("Tenant Data missing, kindly login and try again");
+      return ;
+    }
+
     const data = {
-      poAgent: poData,
-      apiAgent: apiData,
+      poAgent: currAgent.poData,
+      apiAgent: currAgent.apiData,
       migrationDetails: {
         artifactList: icoDetails,
         packageId: selectedValue
       }
     }
 
+    console.log(data);
+
+    if(icoDetails.length === 0 || selectedValue === undefined) {
+      return ;
+    }
+
     setIsLoading(true);
 
     try {
-      await handleMigration(data, "icos");
-      console.log(data);
+      const response = await handleMigration(data, "icos");
+      console.log(response);
+      setResponseData(response.icoDetailsList);
+      setReportBase64(response.reportBase64);
+      setIsModalOpen(true);
     } catch (error) {
       console.error("Error during migration:", error);
     } finally {
@@ -102,12 +176,8 @@ const MigrateIcos = () => {
 
   return (
     <>
-      {isLoading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
-          <Loader />
-        </div>
-      )}
-      <div className={`flex justify-between gap-5 p-3 ${isLoading ? 'blur-sm' : ''}`}>
+      
+      <div className="flex justify-between gap-5 p-3">
         <Ico onIcoDetailsReceived={handleIcoDetailsReceived} setLoading={setIsLoading}/>
         <Package onSelect={handleDropDownChange} setLoading={setIsLoading}/>
       </div>
@@ -121,23 +191,42 @@ const MigrateIcos = () => {
       </div>
       {icoDetails.length > 0 && (
         <div className="mt-5">
-          <Table icoDetails={icoDetails} />
+          <Table icoDetails={icoDetails} setIcoDetails={setIcoDetails}/>
         </div>
       )}
-      <div className="z-50 fixed bottom-14 border-t border-[#E5E5E5] w-[85%] flex items-end pt-3 justify-end pb-2 text-sm">
-        <div className="flex gap-2 mr-12">
-          <button className="border border-[#0A6Ed1] rounded-sm px-6 py-2 text-[#0A6Ed1]">
-            Back
-          </button>
-          <button
-            className="text-white bg-[#0A6Ed1] rounded-sm px-6 py-2"
-            onClick={handleMigrate}
-            disabled={isLoading}
-          >
-            Migrate
-          </button>
+
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[999]">
+          <Loader />
         </div>
-      </div>
+      )}
+      
+      <footer
+            className="border-t text-[#32363A] flex flex-row items-center justify-end gap-4 py-4 h-[60px] bg-white"
+            style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
+          >
+            <button
+              className="bg-[#0A6ED1] text-white rounded-sm px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
+              // onClick={handleAddAgent}
+            >
+              Back
+            </button>
+            
+            <button
+              className="bg-[#0A6ED1]  rounded-sm px-6 py-1  transition duration-200 mr-3 text-white"
+              // disabled={!agentSelected}
+              onClick={handleMigrate}
+            >
+              Migrate
+            </button>
+            {/* <br /> */}
+          </footer>
+          <MigrationReport 
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              responseData={responseData}
+              reportBase64={reportBase64}
+           />
     </>
   )
 }

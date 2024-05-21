@@ -153,25 +153,25 @@ const Table = ({
           </table>
 
           <footer
-            className="border-t text-[#32363A] flex flex-row items-center justify-end gap-4 py-4 h-[60px]"
+            className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px]"
             style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
           >
             <button
-              className="bg-[#0A6ED1] text-white rounded px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
+              className="bg-[#0A6ED1] text-white rounded-sm px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
               onClick={handleAddAgent}
             >
-              Add Agent
+              Add System
             </button>
             <Link to ="/Migrate">
             <button
-              className={`bg-[#0A6ED1]  rounded px-3 py-1  transition duration-200   ${
+              className={`bg-[#0A6ED1]  rounded-sm px-6 py-1  transition duration-200   ${
                 !agentSelected
                   ? " bg-gray-300 text-black"
                   : "bg-[#0A6ED1] text-white hover:bg-gray-100 hover:text-black transition duration-500 "
               } mr-3`}
               disabled={!agentSelected}
             >
-              Migrate
+              Next
             </button>
             </Link>
             {/* <br /> */}

@@ -53,32 +53,7 @@ export const postESRConnection = async (
       })
     }
   })
-  // try {
-  //   const response = await postApi(
-  //     "http://localhost:8080/api/v1/migration/configuration/connect/esr",
-  //     formData
-  //   );
-  //   if (response.data.status === "Success") {
-  //     await postApi(
-  //       "http://localhost:8080/api/v1/migration/configuration/connect/id",
-  //       formData
-  //     );
-  //     const prevData = JSON.parse(localStorage.getItem("currAgent")) || {};
-  //     const newData = { ...(prevData ? prevData : null), poData: formData };
-  //     localStorage.setItem("currAgent", JSON.stringify(newData));
-  //     setDisableNext(false);
-  //   } else {
-  //     setDisableNext(true);
-  //   }
-  //   notification(response.data.status);
-  // } catch (error) {
-  //   handleConnectionError(error, setTestingConn);
-  // } finally {
-  //   setTestingConn(false);
-  // }
 };
-
-
 
 export const postCPIData = async (
   formData,
@@ -119,31 +94,6 @@ export const postCPIData = async (
       setTestingConn(false); // Ensure this is called regardless of success or failure
     }
   });
-  // try {
-  //   const response = await postApi("http://localhost:8080/api/v1/migration/configuration/connect/is/cpi", formData);
-  //   console.log("API Response:", response); // Log API response
-  //   if (response.status === 'Success') {
-  //     const prevData = JSON.parse(localStorage.getItem('currAgent')) || {};
-  //     const newData = { ...(prevData ? prevData : null), cpiData: formData };
-  //     // const newData = { ...(prevData ? prevData : null), formData };
-  //     localStorage.setItem("currAgent", JSON.stringify(newData));
-  //     setConnectionStatus(true);
-  //     setConnectionMessage("Connection successful");
-  //     setDisableNext(false);
-  //   } else {
-  //     setDisableNext(true);
-  //     setConnectionStatus(false);
-  //     setConnectionMessage("Connection unsuccessful");
-  //   }
-  //   notification(response?.data?.status);
-  // } catch (error) {
-  //   setConnectionStatus(false);
-  //   setDisableNext(true);
-  //   setConnectionMessage("Connection unsuccessful");
-  //   handleConnectionError(error, setTestingConn);
-  // } finally {
-  //   setTestingConn(false);
-  // }
 };
 
 export const postAPIData = async (
@@ -190,39 +140,7 @@ export const postAPIData = async (
       setTestingConn(false); // Ensure this is called regardless of success or failure
     }
   });
-  // try {
-  //   const response = await postApi("http://localhost:8080/api/v1/migration/configuration/connect/is/api", formData);
-  //   if (response.data.status === 'Success') {
-  //     const prevData = JSON.parse(localStorage.getItem("currAgent")) || {};
-  //     // const newData = { ...(prevData ? prevData : null), apiData: formData, adapter: [] };
-  //     const newData = { ...(prevData ? prevData : null), formData, adapter: [] };
-  //     localStorage.setItem('currAgent', JSON.stringify(newData));
-  //     setDisableNext(false);
-  //   } else {
-  //     setDisableNext(true);
-  //   }
-  //   notification(response.data.status);
-  // } catch (error) {
-  //   handleConnectionError(error, setTestingConn);
-  // } finally {
-  //   setTestingConn(false);
-  // }
 };
-
-// const notification = (type) => {
-//   const message =
-//     type === "Success" ? "Connection Successful" : "Connection Failed";
-//   const toastType = type === "Success" ? toast.success : toast.error;
-//   toastType(message, { position: toast.POSITION.BOTTOM_CENTER });
-// };
-
-// const handleConnectionError = (error, setTestingConn) => {
-//   console.error("Error testing connection:", error?.message);
-//   toast.error("Connection Failed - " + error.message, {
-//     position: toast?.POSITION.BOTTOM_CENTER,
-//   });
-//   setTestingConn(false);
-// };
 
 // Funciton to fetch the list of ICos
 export const handleIcoList = async (poData) => {
@@ -247,7 +165,7 @@ export const handleIcoList = async (poData) => {
 // Function to fetch the List of Packages
 export const handlePackageList = (cpiData) => {
   const toPostData = cpiData;
-  return axios.post("http://localhost:8080/api/v1/migration/designtime/get/package/list", toPostData)
+   return axios.post("http://localhost:8080/api/v1/migration/designtime/get/package/list", toPostData)
     .then(response => {
       if (response?.data?.status === "Success") {
         return response?.data?.payload?.list;
@@ -325,7 +243,7 @@ export const handleMigration = async (data, type) => {
     }
 
     const response = await postApi(apiUrl, toPostData);
-    return response
+    return response;
   } catch (error) {
     console.error("Error during migration:", error);
   }

@@ -4,11 +4,11 @@ import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
 import { handleIcoList, handleIcoDetails } from '../../apis/apiService'; 
 
-const Ico = ({ onIcoDetailsReceived , setLoading}) => {
+const Ico = ({ onIcoDetailsReceived, setLoading }) => {
   const [icoList, setIcoList] = useState([]);
-  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedIcos, setSelectedIcos] = useState([]);
+  const [icoDetails, setIcoDetails] = useState([]);
 
   const poData = {
     name: "IncturePO1",
@@ -21,7 +21,7 @@ const Ico = ({ onIcoDetailsReceived , setLoading}) => {
 
   useEffect(() => {
     const fetchIcoList = async () => {
-      setLoading(true)
+      setLoading(true);
       try {
         const data = await handleIcoList(poData);
         setIcoList(data);
@@ -36,29 +36,41 @@ const Ico = ({ onIcoDetailsReceived , setLoading}) => {
   }, [setLoading]);
 
   const handleChange = async (event, value) => {
-    setSelectedIcos(value);
-    setLoading(true);
-    const details = await Promise.all(value.map(async (selectedIco) => {
-      const postData = {
-        icoKey: selectedIco,
-        agent: poData
-      };
-      try {
-        const response = await handleIcoDetails(postData);
-        return {
-          piObject: selectedIco,
-          artifactName: response.iflowName,
-          description: response.description
-        };
-      } catch (error) {
-        console.error("Error fetching ICO details:", error);
-        return { name: '', description: '' };
-      }
-    }));
+    const newSelectedIcos = value.filter(ico => !selectedIcos.includes(ico));
+    const deselectedIcos = selectedIcos.filter(ico => !value.includes(ico));
 
-    onIcoDetailsReceived(details);
-    setLoading(false)
+    setSelectedIcos(value);
+
+    if (newSelectedIcos.length > 0) {
+      const newDetails = await Promise.all(newSelectedIcos.map(async (selectedIco) => {
+        const postData = {
+          icoKey: selectedIco,
+          agent: poData
+        };
+        try {
+          const response = await handleIcoDetails(postData);
+          return {
+            piObject: selectedIco,
+            artifactName: response?.iflowName,
+            description: response?.description
+          };
+        } catch (error) {
+          console.error("Error fetching ICO details:", error);
+          return { name: '', description: '' };
+        }
+      }));
+
+      setIcoDetails(prevDetails => [...prevDetails, ...newDetails]);
+    }
+
+    if (deselectedIcos.length > 0) {
+      setIcoDetails(prevDetails => prevDetails.filter(detail => !deselectedIcos.includes(detail.piObject)));
+    }
   };
+
+  useEffect(() => {
+    onIcoDetailsReceived(icoDetails);
+  }, [icoDetails, onIcoDetailsReceived]);
 
   const renderTags = (value, getTagProps) => {
     const maxTags = 1;
@@ -72,7 +84,6 @@ const Ico = ({ onIcoDetailsReceived , setLoading}) => {
     );
   };
 
-  // if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading ICO list: {error.message}</p>;
 
   return (
