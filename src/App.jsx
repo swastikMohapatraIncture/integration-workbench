@@ -9,7 +9,8 @@ import Contacts from "./pages/Contacts";
 import FAQ from "./pages/FAQ";
 import MigrationAssessment from "./pages/MigrationAssessment";
 // import Table from "../src/components/Table"
-import HomePage from "./pages/HomePage";
+import LandingPage from "./pages/LandingPage";
+import Home from "./pages/Home";
 import Migrate from "./pages/Migrate";
 import Monitoring from './pages/Monitroing'
 
@@ -17,8 +18,8 @@ function App() {
   return (
     <>
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="home" element={<Layout />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="home" element={<Layout><Home /></Layout>} />
       <Route path="monitoring" element={<Layout><Monitoring /></Layout >} />
       <Route path="migrationProcess" element={<Layout ><MigrationProcess/></Layout>} />
       <Route path="migrationAssessment" element={<Layout ><MigrationAssessment/></Layout>} />
@@ -28,7 +29,7 @@ function App() {
       <Route path="contacts" element={<Layout ><Contacts/></Layout>} />
       <Route path="faqs" element={<Layout ><FAQ/></Layout>} />
       {/* <Route path="migrationtable" element={<Layout ><Table /></Layout>} /> */}
-      <Route path="migrationtable2" element={<Layout ></Layout>} />
+      {/* <Route path="migrationtable2" element={<Layout ></Layout>} /> */}
       <Route path="migrate" element={<Layout><Migrate /></Layout>}></Route>
     </Routes>
   

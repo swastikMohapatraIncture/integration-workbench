@@ -5,7 +5,7 @@ const IntroContent = () => {
         <h2 className="text-xl">Welcome to the Tenant Setup Wizard</h2>
         <p className="mt-2">
           This wizard will guide you through the setup process to connect PO 7.5
-          and CPI tenants with Jacana
+          and IS tenants with Integration Workbench
         </p>
       </div>
       <div className="mt-5">
@@ -13,28 +13,28 @@ const IntroContent = () => {
           <li>
             <p>Step 1: Introduction</p>
             <p className="text-xs text-gray-500">
-              Provides the guidelines to configure and connect PO 7.5 and CPI
-              with Jacana.
+              Provides the guidelines to configure and connect PO 7.5 and IS
+              with Integration Workbench.
             </p>
           </li>
           <li>
             <p>Step 2: Process Orchestration</p>
             <p className="text-xs text-gray-500">
-              Configure Jacana to connect with the PO 7.5 tenant and test
+              Configure Integration Workbench to connect with the PO 7.5 tenant and test
               connectivity.
             </p>
           </li>
           <li>
             <p>Step 3: SAP Integration Suite</p>
             <p className="text-xs text-gray-500">
-              Configure Jacana to connect with the CPI tenant and test
+              Configure Integration Workbench to connect with the CPI tenant and test
               connectivity.
             </p>
           </li>
           <li>
             <p>Step 4: Integration Suite API</p>
             <p className="text-xs text-gray-500">
-              Configure Jacana to connect with the CPI tenant and test
+              Configure Integration Workbench to connect with the CPI tenant and test
               connectivity.
             </p>
           </li>

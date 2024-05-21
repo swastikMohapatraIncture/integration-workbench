@@ -3,29 +3,30 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import TenantModal from "./MigrationProcess/TenantModal";
 import { useState } from "react";
+import {Link} from "react-router-dom";
 
 const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
   return (
     <>
       <div className="fixed inset-0 z-[1000] bg-black opacity-50"></div>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 outline-none focus:outline-none z-[1000]">
-        <div className="relative w-auto my-6 mx-auto max-w-3xl">
-          <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+        <div className="relative my-6 mx-auto max-w-3xl">
+          <div className="border-0 rounded shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
             <div className="relative p-8 flex-auto">
-              <p className="text-blueGray-500 text-bold text-4xl">
+              <p className="text-blueGray-500 text-bold text-xl">
                 Are you sure you want to delete?
               </p>
             </div>
-            <div className="flex items-center gap-3 justify-center p-1 border-solid border-blueGray-200 rounded-b">
+            <div className="flex items-center gap-2 justify-center p-1 border-solid border-blueGray-200 ">
               <button
-                className="text-white bg-gray-600 rounded hover:bg-[#0A6ED1] hover:text-white transition duration-150 px-3 py-2 outline-none focus:outline-none mr-1 mb-1 ease-linear"
+                className="text-white bg-gray-600 rounded hover:bg-[#0A6ED1] hover:text-white transition duration-150 px-4 py-1 outline-none focus:outline-none mr-1 mb-1 ease-linear"
                 type="button"
                 onClick={() => setDeleteModal(false)}
               >
                 Close
               </button>
               <button
-                className="bg-[#0A6ED1] text-white hover:bg-gray-300 hover:text-black transition duration-150 px-3 py-2 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear"
+                className="bg-red-600 text-white hover:bg-gray-300 hover:text-black transition duration-150 px-4 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear"
                 type="button"
                 onClick={() => {
                   handleDeleteAgent(index);
@@ -161,6 +162,7 @@ const Table = ({
             >
               Add Agent
             </button>
+            <Link to ="/Migrate">
             <button
               className={`bg-[#0A6ED1]  rounded px-3 py-1  transition duration-200   ${
                 !agentSelected
@@ -171,6 +173,7 @@ const Table = ({
             >
               Migrate
             </button>
+            </Link>
             {/* <br /> */}
           </footer>
         </div>

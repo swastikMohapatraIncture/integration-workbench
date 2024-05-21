@@ -6,7 +6,7 @@ import { CSSTransition } from "react-transition-group";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-const HomePage = () => {
+const LandingPage = () => {
   const [inProp, setInProp] = useState(false);
   const navigate = useNavigate();
 
@@ -41,4 +41,4 @@ const HomePage = () => {
   )
 }
 
-export default HomePage;
+export default LandingPage;
