@@ -1,6 +1,6 @@
 import { useState } from "react";
 import TenantModal from "./TenantModal";
-import { features } from "../../constants/data";
+import { NEOToCFfeatures, features } from "../../constants/data";
 
 const FeatureBox = ({ text, borderColor, bgColor, width }) => (
   <div className={`border-l-2 border-[${borderColor}] bg-[${bgColor}] rounded h-16 flex items-center p-4 font-semibold ${width}`}>
@@ -16,7 +16,7 @@ const Introduction = () => {
       <div className="bg-[#EBf5FF] p-5 rounded">
         <h3 className="text-xl font-bold mb-4 text-[#2A4862]">Integration Workbench</h3>
         <p className="text-[#32363A]">
-          Integration Workbench facilitates the seamless migration of integrations from SAP PO 7.5 to IS through an interactive user interface. This migration tool is crafted to drastically reduce manual migration efforts and eliminate the possibility of human error in the process.
+        Integration Workbench facilitates the seamless migration of integrations from SAP NEO Data Centers to SAP Integration Suite (Cloud Foundry) through an interactive user interface. This migration tool is crafted to drastically reduce manual migration efforts and eliminate the possibility of human error in the process.
         </p>
         <div className="flex justify-end mt-4">
           <button
@@ -30,7 +30,7 @@ const Introduction = () => {
       <div className="mt-4 p-5 border border-[#BBC7D2] rounded">
         <h3 className="text-xl font-bold mb-4 text-[#2A4862]">Salient Features</h3>
         <div className="flex flex-wrap text-[14px] gap-3 justify-between">
-          {features.map((feature, index) => (
+          {NEOToCFfeatures.map((feature, index) => (
             <FeatureBox
               key={index}
               text={feature.text}

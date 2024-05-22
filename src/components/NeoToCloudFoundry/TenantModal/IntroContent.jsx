@@ -4,8 +4,7 @@ const IntroContent = () => {
       <div>
         <h2 className="text-xl">Welcome to the Tenant Setup Wizard</h2>
         <p className="mt-2">
-          This wizard will guide you through the setup process to connect PO 7.5
-          and CPI tenants with Jacana
+          This wizard will guide you through the setup process to connect NEO to CF with Jacana
         </p>
       </div>
       <div className="mt-5">
@@ -13,28 +12,28 @@ const IntroContent = () => {
           <li>
             <p>Step 1: Introduction</p>
             <p className="text-xs text-gray-500">
-              Provides the guidelines to configure and connect PO 7.5 and CPI
+              Provides the guidelines to configure and connect NEO and CF
               with Jacana.
             </p>
           </li>
           <li>
-            <p>Step 2: Process Orchestration</p>
+            <p>Step 2: NEO</p>
             <p className="text-xs text-gray-500">
-              Configure Jacana to connect with the PO 7.5 tenant and test
+              Configure Jacana to connect with the NEO tenant and test
               connectivity.
             </p>
           </li>
           <li>
-            <p>Step 3: SAP Integration Suite</p>
+            <p>Step 3: Cloud Foundry</p>
             <p className="text-xs text-gray-500">
-              Configure Jacana to connect with the CPI tenant and test
+              Configure Jacana to connect with the CF tenant and test
               connectivity.
             </p>
           </li>
           <li>
-            <p>Step 4: Integration Suite API</p>
+            <p>Step 4: Cloud Foundry API</p>
             <p className="text-xs text-gray-500">
-              Configure Jacana to connect with the CPI tenant and test
+              Configure Jacana to connect with the CF tenant and test
               connectivity.
             </p>
           </li>
@@ -43,8 +42,8 @@ const IntroContent = () => {
       <div className="mt-5">
         <p>
           Follow these steps using the &ldquo;Next&rdquo; and &ldquo;Back&rdquo; buttons to smoothly
-          transition from your existing Process Orchestration system to the
-          Integration Suite Cloud Platform. Integration and leverage API
+          transition from your existing NEO system to the
+          Cloud Foundry Platform. Integration and leverage API
           integrations to supercharge your business operations.
         </p>
       </div>

@@ -32,7 +32,7 @@ const VisuallyHiddenInput = styled("input")({
   width: 1,
 });
 
-const APIDetails = ({
+const CFDetails = ({
   showPassword,
   setShowPassword,
   setDisableNext,
@@ -93,7 +93,7 @@ const APIDetails = ({
     fileReader.onload = (e) => {
       try {
         const jsonData = JSON.parse(e.target.result);
-        // console.log("Parsed JSON data:", jsonData); // Debugging statement
+        console.log("Parsed JSON data:", jsonData); // Debugging statement
         fillFormFields(jsonData);
       } catch (error) {
         console.error("Error parsing JSON file:", error);
@@ -114,7 +114,7 @@ const APIDetails = ({
         url: url,
         tokenUrl: tokenurl,
       }));
-      // console.log("Updated apiData:", { clientid, clientsecret, url, tokenurl }); // Debugging statement
+      console.log("Updated apiData:", { clientid, clientsecret, url, tokenurl }); // Debugging statement
     } else {
       console.error("Invalid JSON structure:", data); // Debugging statement
     }
@@ -288,4 +288,4 @@ const APIDetails = ({
   );
 };
 
-export default APIDetails;
+export default CFDetails;

@@ -14,6 +14,12 @@ export const features = [
   { text: "Migration support for components not available in SAP Migration.", borderColor: "#0A6ED1", bgColor: "#F0F7FE", width: "w-[340px]" },
 ];
 
+export const NEOToCFfeatures = [
+  { text: "Multiple Tenant Support.", borderColor: "#DD343B", bgColor: "#FFF5F6", width: "w-[233px]" },
+  { text: "Full Migration of all integrations components.", borderColor: "#C03A91", bgColor: "#FFF4FB", width: "w-[233px]" },
+  { text: "Custom Migration of all integrations components.", borderColor: "#01ABD3", bgColor: "#EAFBFF", width: "w-[233px]" },
+  
+];
 export const officeLocations = [
   {
     name: "Incture Bhubaneswar, STPI",

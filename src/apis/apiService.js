@@ -198,6 +198,10 @@ export const handleCreatePackage = async (data) => {
   }
 };
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 export const handleIcoDetails = (data) => {
   const toPostData = data;
   return postApi("http://localhost:8080/api/v1/migration/designtime/get/iflow/details", toPostData)
