@@ -28,7 +28,7 @@ const MigrateVm = () => {
           {/* <VMPackage /> */}
         </div>
       </div>
-      <div className="px-3 text-[#0A6ED1] flex justify-end text-sm mt-3">
+      <div className="px-6 text-[#0A6ED1] flex justify-end text-sm mt-3">
         {/* <button className="pr-2">
           Add Alert Notification
         </button> */}

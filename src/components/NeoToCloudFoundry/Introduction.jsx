@@ -1,16 +1,29 @@
-import { useState } from "react";
+/* eslint-disable react/prop-types */
+// import { useState } from "react";
 import TenantModal from "./TenantModal";
 import { NEOToCFfeatures, features } from "../../constants/data";
 
 const FeatureBox = ({ text, borderColor, bgColor, width }) => (
+<<<<<<< HEAD
   <div className={`rounded h-16 flex items-center p-4 font-semibold ${width}`}
   style={{ borderLeft: `2px solid ${borderColor}`, backgroundColor: bgColor }}>
+=======
+  <div
+    className={`rounded h-16 flex items-center p-4 font-semibold ${width}`}
+    style={{ borderLeft: `2px solid ${borderColor}`, backgroundColor: bgColor }}
+  >
+>>>>>>> 195a2e530b46165dc1ae93705b4a63a970e4577c
     <p>{text}</p>
   </div>
 );
 
-const Introduction = () => {
-  const [openModal, setOpenModal] = useState(false);
+const Introduction = ({openModal,
+  setOpenModal,
+  agents,
+  setAgents,
+  editingAgentIdx,
+  setEditingAgentIdx,}) => {
+  // const [openModal, setOpenModal] = useState(false);
 
   return (
     <div className="p-5">
@@ -29,7 +42,9 @@ const Introduction = () => {
         </div>
       </div>
       <div className="mt-4 p-5 border border-[#BBC7D2] rounded">
-        <h3 className="text-xl font-bold mb-4 text-[#2A4862]">Salient Features</h3>
+        <h3 className="text-xl font-bold mb-4 text-[#2A4862]">
+          Salient Features
+        </h3>
         <div className="flex flex-wrap text-[14px] gap-3 justify-between">
           {NEOToCFfeatures.map((feature, index) => (
             <FeatureBox
@@ -43,7 +58,13 @@ const Introduction = () => {
         </div>
       </div>
       {openModal && (
-        <TenantModal openModal={openModal} setOpenModal={setOpenModal} />
+        <TenantModal
+          agents={agents}
+          setAgents={setAgents}
+          setOpenModal={setOpenModal}
+          editingAgentIdx={editingAgentIdx}
+          setEditingAgentIdx={setEditingAgentIdx}
+        />
       )}
     </div>
   );
