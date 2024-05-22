@@ -157,17 +157,17 @@ const Table = ({
             style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
           >
             <button
-              className="bg-[#0A6ED1] text-white rounded-sm px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
+              className="hover:bg-[#0A6ED1] text-[#0A6ED1] text-sm rounded-sm px-3 py-1 border border-[#0A6ED1] hover:text-white transition duration-200 "
               onClick={handleAddAgent}
             >
               Add System
             </button>
             <Link to ="/Migrate">
             <button
-              className={`bg-[#0A6ED1]  rounded-sm px-6 py-1  transition duration-200   ${
+              className={`bg-[#0A6ED1] border border-[#0A6ED1] rounded-sm px-6 py-1  transition duration-200 text-sm ${
                 !agentSelected
-                  ? " bg-gray-300 text-black"
-                  : "bg-[#0A6ED1] text-white hover:bg-gray-100 hover:text-black transition duration-500 "
+                  ? " bg-[#0A6ED1] opacity-50 text-white cursor-not-allowed"
+                  : "bg-[#0A6ED1] text-white"
               } mr-3`}
               disabled={!agentSelected}
             >

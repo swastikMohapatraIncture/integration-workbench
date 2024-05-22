@@ -1,25 +1,22 @@
-import hologram from "../assets/hologram.jpg";
+import Hologram from "../assets/Hologram.svg";
 import "../index.css"
 
 const Home = () => {
   return (
     <div className="relative h-screen overflow-x-hidden"> {/* Full height and overflow */}
       <div className="flex animate-scroll flex-col w-[95%] mx-auto">
-        <img src={hologram} alt="Cloud" className="h-[250px] object-cover border border-gray-200 mt-6" />
-        <h3 className="mt-6 mb-2 font-bold text-xl">Migration Process</h3>
+        <img src={Hologram} alt="Cloud" className="h-[280px] object-cover border border-gray-200 mt-6" />
+        <h3 className="mt-6 mb-2 font-bold text-xl text-[#32363A]">Migration Process</h3>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta quae, quidem voluptate in animi expedita porro illum ullam provident quasi voluptatum harum similique! Doloremque ad veritatis animi? Autem, ducimus libero?
-          Officia incidunt maiores voluptates pariatur modi, voluptas qui! Facilis tenetur, in temporibus ad, voluptates eligendi odio aperiam accusamus ea est quas laborum officiis architecto asperiores quasi debitis maiores obcaecati nulla.
+          This process ensures all type of integration are optimized and rationalized for the new environment leveraging SAP Integration Suite's enhanced capabilities. The objective is a smooth transition with enhanced scalability and performance. It supports migrating from SAP PO 7.5 to Integration Suite & Neo to Cloud Foundry.
         </p>
-        <h3 className="mt-6 mb-2 font-bold text-xl">Migration Assessment</h3>
+        <h3 className="mt-6 mb-2 font-bold text-xl text-[#32363A]">Migration Assessment</h3>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta quae, quidem voluptate in animi expedita porro illum ullam provident quasi voluptatum harum similique! Doloremque ad veritatis animi? Autem, ducimus libero?
-          Officia incidunt maiores voluptates pariatur modi, voluptas qui! Facilis tenetur, in temporibus ad, voluptates eligendi odio aperiam accusamus ea est quas laborum officiis architecto asperiores quasi debitis maiores obcaecati nulla.
+          This assessment helps to plan overall migration process to enhance integration performance. It identifies the technical & time efforts while extracting design artifacts from current landscape. It assess dependencies, compatibility, mapping to ensure seamless transition.
         </p>
-        <h3 className="mt-6 mb-2 font-bold text-xl">Automated Testing</h3>
+        <h3 className="mt-6 mb-2 font-bold text-xl text-[#32363A]">Automated Testing</h3>
         <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta quae, quidem voluptate in animi expedita porro illum ullam provident quasi voluptatum harum similique! Doloremque ad veritatis animi? Autem, ducimus libero?
-          Officia incidunt maiores voluptates pariatur modi, voluptas qui! Facilis tenetur, in temporibus ad, voluptates eligendi odio aperiam accusamus ea est quas laborum officiis architecto asperiores quasi debitis maiores obcaecati nulla.
+          This automated testing help to expand the test coverage which ensures the quality & performance. This process involves creating and executing automated multiple test scripts to validate with migrated integration iFlow to reduce manual testing efforts.
         </p>
       </div>
     </div>

@@ -4,6 +4,10 @@ import { useState } from "react"
 import { handleMigration } from "../../apis/apiService";
 import MigrationReport from "./MigrationReport";
 import { MdOutlineModeEdit } from "react-icons/md";
+import { FaRegCircleCheck } from "react-icons/fa6";
+import { ImCancelCircle } from "react-icons/im";
+
+
 import Loader from '../Loader';
 
 const Table = ({ icoDetails, setIcoDetails }) => {
@@ -30,7 +34,7 @@ const Table = ({ icoDetails, setIcoDetails }) => {
   };
 
   return (
-    <div className="overflow-x-auto p-3">
+    <div className="overflow-x-auto p-3 text-sm">
       <table className="table-auto w-full text-[#32363A]">
         <thead className="bg-gray-50">
           <tr>
@@ -72,21 +76,21 @@ const Table = ({ icoDetails, setIcoDetails }) => {
                 {editIndex === index ? (
                   <>
                     <button
-                      className="bg-green-500 text-white px-2 py-1 mr-2"
+                      className="text-green-500 mx-6 text-2xl"
                       onClick={() => handleSave(index)}
                     >
-                      Save
+                      <FaRegCircleCheck />
                     </button>
                     <button
-                      className="bg-red-500 text-white px-2 py-1"
+                      className="text-red-600 text-2xl"
                       onClick={handleCancel}
                     >
-                      Cancel
+                      <ImCancelCircle />
                     </button>
                   </>
                 ) : (
                   <button
-                    className=" text-white px-2 py-1"
+                    className=" text-white px-2 py-1 ml-6"
                     onClick={() => handleEdit(index, detail)}
                   >
                     <MdOutlineModeEdit className="text-blue-600 text-xl" />
@@ -103,6 +107,12 @@ const Table = ({ icoDetails, setIcoDetails }) => {
 
 const splitName = (name) => {
   const maxCharactersPerLine = 45;
+
+  if (!name) {
+    // Return an empty string or a placeholder if name is undefined or null
+    return '';
+  }
+
   if (name.length > maxCharactersPerLine) {
     return (
       <>
@@ -135,7 +145,6 @@ const MigrateIcos = () => {
   }
 
   const handleMigrate = async () => {
-
     const storedCurrAgent = localStorage.getItem("currAgent");
     const currAgent = storedCurrAgent  ? JSON.parse(storedCurrAgent) : null;
 
@@ -176,7 +185,6 @@ const MigrateIcos = () => {
 
   return (
     <>
-      
       <div className="flex justify-between gap-5 p-3">
         <Ico onIcoDetailsReceived={handleIcoDetailsReceived} setLoading={setIsLoading}/>
         <Package onSelect={handleDropDownChange} setLoading={setIsLoading}/>
@@ -202,31 +210,29 @@ const MigrateIcos = () => {
       )}
       
       <footer
-            className="border-t text-[#32363A] flex flex-row items-center justify-end gap-4 py-4 h-[60px] bg-white"
-            style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
-          >
-            <button
-              className="bg-[#0A6ED1] text-white rounded-sm px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
-              // onClick={handleAddAgent}
-            >
-              Back
-            </button>
-            
-            <button
-              className="bg-[#0A6ED1]  rounded-sm px-6 py-1  transition duration-200 mr-3 text-white"
-              // disabled={!agentSelected}
-              onClick={handleMigrate}
-            >
-              Migrate
-            </button>
-            {/* <br /> */}
-          </footer>
-          <MigrationReport 
-              isOpen={isModalOpen}
-              onClose={() => setIsModalOpen(false)}
-              responseData={responseData}
-              reportBase64={reportBase64}
-           />
+        className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px] bg-white"
+        style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
+      >
+        <button
+          className="border border-[#0A6ED1] text-[#0A6ED1] rounded-sm px-3 py-1 text-sm hover:text-white hover:bg-[#0A6ED1] transition duration-200 "
+        >
+          Back
+        </button>
+        
+        <button
+          className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
+          onClick={handleMigrate}
+        >
+          Migrate
+        </button>
+      </footer>
+      
+      <MigrationReport 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        responseData={responseData}
+        reportBase64={reportBase64}
+      />
     </>
   )
 }

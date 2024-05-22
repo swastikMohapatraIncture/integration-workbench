@@ -21,7 +21,7 @@ const Layout = ({ children }) => {
           </div> 
         </div>
         </div>
-        <footer className="bg-[#F2F2F2] text-[#32363A] text-center py-4 z-[100] h-[50px]" style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}>
+        <footer className="bg-[#F2F2F2] text-[#32363A] text-center py-4 z-[100] h-[50px] text-sm" style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}>
           © 2024 Incture. All rights reserved.
         </footer>
       </div>
