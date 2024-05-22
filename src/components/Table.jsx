@@ -3,7 +3,7 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import TenantModal from "./MigrationProcess/TenantModal";
 import { useState } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
   return (
@@ -43,7 +43,6 @@ const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
   );
 };
 
-
 const Table = ({
   openModal,
   setOpenModal,
@@ -51,8 +50,10 @@ const Table = ({
   setAgents,
   editingAgentIdx,
   setEditingAgentIdx,
+  removeFooter = true,
+  agentSelected,setAgentSelected
 }) => {
-  const [agentSelected, setAgentSelected] = useState(false);
+  // const [agentSelected, setAgentSelected] = useState(false);
   const [deleteModal, setDeleteModal] = useState({ open: false, index: null });
   const handleAddAgent = () => {
     localStorage.removeItem("currAgent");
@@ -151,31 +152,31 @@ const Table = ({
                 ))}
             </tbody>
           </table>
-
-          <footer
-            className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px]"
-            style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
-          >
-            <button
-              className="bg-[#0A6ED1] text-white rounded-sm px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
-              onClick={handleAddAgent}
+          {removeFooter && (
+            <footer
+              className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px]"
+              style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
             >
-              Add System
-            </button>
-            <Link to ="/Migrate">
-            <button
-              className={`bg-[#0A6ED1]  rounded-sm px-6 py-1  transition duration-200   ${
-                !agentSelected
-                  ? " bg-gray-300 text-black"
-                  : "bg-[#0A6ED1] text-white hover:bg-gray-100 hover:text-black transition duration-500 "
-              } mr-3`}
-              disabled={!agentSelected}
-            >
-              Next
-            </button>
-            </Link>
-            {/* <br /> */}
-          </footer>
+              <button
+                className="bg-[#0A6ED1] text-white rounded-sm px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
+                onClick={handleAddAgent}
+              >
+                Add System
+              </button>
+              <Link to="/migrate">
+                <button
+                  className={`bg-[#0A6ED1]  rounded-sm px-6 py-1  transition duration-200   ${
+                    !agentSelected
+                      ? " bg-gray-300 text-black"
+                      : "bg-[#0A6ED1] text-white hover:bg-gray-100 hover:text-black transition duration-500 "
+                  } mr-3`}
+                  disabled={!agentSelected}
+                >
+                  Next
+                </button>
+              </Link>
+            </footer>
+          )}
         </div>
       )}
       {openModal && (
@@ -190,9 +191,9 @@ const Table = ({
       )}
       {deleteModal.open && (
         <DeleteModal
-        handleDeleteAgent={handleDeleteAgent}
+          handleDeleteAgent={handleDeleteAgent}
           setDeleteModal={(open) => setDeleteModal({ ...deleteModal, open })}
-          index={deleteModal.index}
+          index={deleteModal?.index}
         />
       )}
     </>

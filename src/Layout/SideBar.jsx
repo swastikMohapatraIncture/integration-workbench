@@ -39,16 +39,12 @@ const SideBar = () => {
     },
   };
 
-  //   const drawerWidth = drawerState ? 200 : 55;
   const drawerWidth = 230;
-
-  
-
-
   const location = useLocation();
-  let navigate = useNavigate();
-  const isActiveRoute = (route) => {
-    return location.pathname.includes(route);
+  const navigate = useNavigate();
+
+  const isActiveRoute = (routes) => {
+    return routes.some(route => location.pathname.includes(route));
   };
 
   return (
@@ -61,8 +57,6 @@ const SideBar = () => {
             width: drawerWidth,
             zIndex: 95,
             boxSizing: "border-box",
-            // backgroundColor: "#2A4862",
-            // color: "white",
             fontSize: "13px",
             transition: "width 0.3s ease",
             overflow: "hidden",
@@ -72,8 +66,7 @@ const SideBar = () => {
         anchor="left"
       >
         <Toolbar />
-
-        <List sx={{marginTop:"-10px"}}>
+        <List sx={{ marginTop: "-10px" }}>
           <ListItem
             disablePadding
             onClick={() => {
@@ -82,149 +75,135 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={
-                isActiveRoute("/home") ? styles.selectedItem : styles.listItem
-              }
+              sx={isActiveRoute(["/home"]) ? styles.selectedItem : styles.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <GoHome size={20} />
-              <span className=" gap-4 ">Home</span>
-            </ListItemButton>
-          </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => {navigate("/monitoring");
-            setOpenSubmenu(false);}}
-          >
-            <ListItemButton
-              sx={
-                isActiveRoute("/monitoring")
-                  ? styles.selectedItem
-                  : styles.listItem
-              }
-              className="flex flex-row justify-between items-center gap-4"
-            >
-              <MdMonitor size={20} className=" " />
-              <span className=" gap-4 ">Monitoring </span>
+              <span className="gap-4">Home</span>
             </ListItemButton>
           </ListItem>
           <ListItem
             disablePadding
             onClick={() => {
-                navigate("/migrationAssessment");
-                setOpenSubmenu(false);
+              navigate("/monitoring");
+              setOpenSubmenu(false);
             }}
           >
             <ListItemButton
-              sx={
-                isActiveRoute("/migrationAssessment") 
-                  ? styles.selectedItem
-                  : styles.listItem
-              }
+              sx={isActiveRoute(["/monitoring"]) ? styles.selectedItem : styles.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
-              <RiFileCloudLine size={20} className=" " />
-              <span className=" gap-4 ">Migration Assessment </span>
+              <MdMonitor size={20} />
+              <span className="gap-4">Monitoring</span>
             </ListItemButton>
           </ListItem>
           <ListItem
             disablePadding
             onClick={() => {
-              //   handleItemClick("Migration Process");
+              navigate("/migrationAssessment");
+              setOpenSubmenu(false);
+            }}
+          >
+            <ListItemButton
+              sx={isActiveRoute(["/migrationAssessment"]) ? styles.selectedItem : styles.listItem}
+              className="flex flex-row justify-between items-center gap-4"
+            >
+              <RiFileCloudLine size={20} />
+              <span className="gap-4">Migration Assessment</span>
+            </ListItemButton>
+          </ListItem>
+          <ListItem
+            disablePadding
+            onClick={() => {
               navigate("/migrationProcess");
               setOpenSubmenu(!openSubmenu);
             }}
           >
             <ListItemButton
-              sx={
-                isActiveRoute("/migrationProcess")
-                  ? styles.selectedItem
-                  : styles.listItem
-              }
+              sx={isActiveRoute(["/migrationProcess", "/migrate"]) ? styles.selectedItem : styles.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
-              <AiOutlineCloudUpload size={20} className=" " />
-              <span className=" gap-4 ">Migration Process </span>
+              <AiOutlineCloudUpload size={20} />
+              <span className="gap-4">Migration Process</span>
             </ListItemButton>
           </ListItem>
           <ListItem
             disablePadding
-            onClick={() =>{ navigate("/automatedTesting");
-            setOpenSubmenu(false);}}
+            onClick={() => {
+              navigate("/automatedTesting");
+              setOpenSubmenu(false);
+            }}
           >
             <ListItemButton
-              sx={
-                isActiveRoute("/automatedTesting")
-                  ? styles.selectedItem
-                  : styles.listItem
-              }
+              sx={isActiveRoute(["/automatedTesting"]) ? styles.selectedItem : styles.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
-              <TbSettingsSearch size={20} className=" " />
-              <span className=" gap-4 ">Automated Testing</span>
+              <TbSettingsSearch size={20} />
+              <span className="gap-4">Automated Testing</span>
             </ListItemButton>
           </ListItem>
           <ListItem
             disablePadding
-            onClick={() => {navigate("/accelarator");
-            setOpenSubmenu(false);}}
+            onClick={() => {
+              navigate("/accelerator");
+              setOpenSubmenu(false);
+            }}
           >
             <ListItemButton
-              sx={
-                isActiveRoute("/accelarator")
-                  ? styles.selectedItem
-                  : styles.listItem
-              }
+              sx={isActiveRoute(["/accelerator"]) ? styles.selectedItem : styles.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
-              <GiSpeedometer size={20} className=" " />
-              <span className=" gap-4 ">Accelerator </span>
+              <GiSpeedometer size={20} />
+              <span className="gap-4">Accelerator</span>
             </ListItemButton>
           </ListItem>
-          <ListItem disablePadding onClick={() => {navigate("/about");
-              setOpenSubmenu(false);}}>
+          <ListItem
+            disablePadding
+            onClick={() => {
+              navigate("/about");
+              setOpenSubmenu(false);
+            }}
+          >
             <ListItemButton
-              sx={
-                isActiveRoute("/about") ? styles.selectedItem : styles.listItem
-              }
+              sx={isActiveRoute(["/about"]) ? styles.selectedItem : styles.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
-              <GoInfo size={20} className=" " />
-              <span className=" gap-4 ">About</span>
+              <GoInfo size={20} />
+              <span className="gap-4">About</span>
             </ListItemButton>
           </ListItem>
-          <ListItem disablePadding onClick={() => {navigate("/contacts");
-              setOpenSubmenu(false);}}>
+          <ListItem
+            disablePadding
+            onClick={() => {
+              navigate("/contacts");
+              setOpenSubmenu(false);
+            }}
+          >
             <ListItemButton
-              sx={
-                isActiveRoute("/contacts")
-                  ? styles.selectedItem
-                  : styles.listItem
-              }
+              sx={isActiveRoute(["/contacts"]) ? styles.selectedItem : styles.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
-              <BsTelephone size={20} className=" " />
-              <span className=" gap-4 ">Contacts</span>
+              <BsTelephone size={20} />
+              <span className="gap-4">Contacts</span>
             </ListItemButton>
           </ListItem>
-          <ListItem disablePadding onClick={() => {navigate("/faqs");
-              setOpenSubmenu(false);}}>
+          <ListItem
+            disablePadding
+            onClick={() => {
+              navigate("/faqs");
+              setOpenSubmenu(false);
+            }}
+          >
             <ListItemButton
-              sx={
-                isActiveRoute("/faqs")
-                  ? styles.selectedItem
-                  : styles.listItem
-              }
+              sx={isActiveRoute(["/faqs"]) ? styles.selectedItem : styles.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
-              <TbMessage2Question size={20} className=" " />
-              <span className=" gap-4 ">FAQS</span>
+              <TbMessage2Question size={20} />
+              <span className="gap-4">FAQs</span>
             </ListItemButton>
           </ListItem>
-          {/* ))} */}
         </List>
       </Drawer>
-      
     </>
   );
 };

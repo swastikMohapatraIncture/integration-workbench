@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { useEffect, useState } from "react";
 import Introduction from "./Introduction";
 import Table from "../Table";
 
-const MainPageMP = () => {
+const MainPageMP = ({removeFooter,agentSelected,setAgentSelected}) => {
   const [agents, setAgents] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [editingAgentIdx, setEditingAgentIdx] = useState(-1);
@@ -32,9 +33,12 @@ const MainPageMP = () => {
           openModal={openModal}
           setOpenModal={setOpenModal}
           agents={agents}
+          removeFooter={removeFooter}
           setAgents={setAgents}
           editingAgentIdx={editingAgentIdx}
           setEditingAgentIdx={setEditingAgentIdx}
+          agentSelected={agentSelected}
+          setAgentSelected={setAgentSelected}
         />
       )}
     </>
