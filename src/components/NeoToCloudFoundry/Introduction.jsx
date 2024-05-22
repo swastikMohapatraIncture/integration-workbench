@@ -3,7 +3,8 @@ import TenantModal from "./TenantModal";
 import { NEOToCFfeatures, features } from "../../constants/data";
 
 const FeatureBox = ({ text, borderColor, bgColor, width }) => (
-  <div className={`border-l-2 border-[${borderColor}] bg-[${bgColor}] rounded h-16 flex items-center p-4 font-semibold ${width}`}>
+  <div className={`rounded h-16 flex items-center p-4 font-semibold ${width}`}
+  style={{ borderLeft: `2px solid ${borderColor}`, backgroundColor: bgColor }}>
     <p>{text}</p>
   </div>
 );
