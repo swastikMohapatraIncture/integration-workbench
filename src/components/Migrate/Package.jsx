@@ -23,12 +23,22 @@ const Package = ({ onSelect, setLoading }) => {
     const fetchPackageList = async () => {
       setLoading(true);
       try {
-        const packages = await handlePackageList(cpiData);
-        setPackageList(packages);
-        setLoading(false);
+        const localData = localStorage.getItem("currAgent");
+        if (localData) {
+          const data = JSON.parse(localData);
+          const apiData = data.apiData;
+          
+          if (apiData) {
+            const packages = await handlePackageList(apiData);
+            setPackageList(packages);
+          } else {
+            setError(new Error("apiData is missing or invalid"));
+          }
+        } else {
+          setError(new Error("No data found in localStorage for 'currAgent'"));
+        }
       } catch (error) {
         setError(error);
-        setLoading(false);
       } finally {
         setLoading(false);
       }

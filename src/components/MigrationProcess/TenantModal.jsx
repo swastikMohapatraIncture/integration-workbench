@@ -13,7 +13,7 @@ import APIDetails from "./TenantModal/APIDetails";
 import { ToastContainer, toast } from "react-toastify";
 // import Table from "./Table";  // Import the Table component
 
-const steps = ["Introduction", "PO details", "CPI details", "API details"];
+const steps = ["Introduction", "PO details", "IS details", "API details"];
 
 const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditingAgentIdx }) => {
   const [activeStep, setActiveStep] = useState(0);

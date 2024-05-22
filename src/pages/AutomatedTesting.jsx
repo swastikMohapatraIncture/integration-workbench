@@ -1,9 +1,12 @@
 import WorkInProg from "../components/WorkInProg/WorkInProg"
+import Capturetest from "../assets/CaptureTest.png"
 
 const AutomatedTesting = () => {
   return (
     <div>
-      <WorkInProg/>
+      {/* <WorkInProg/> */}
+
+      <img src={Capturetest} className=""  />
     </div>
   )
 }

@@ -32,8 +32,8 @@ const top100Films = [
 
 const VMOptions = () => {
   return (
-    <div className="">
-      <span className="block mb-3">Select value mapping</span>
+    <div className="w-full">
+      <label className="block mb-1 text-sm">Select Value Mapping</label>
       <Autocomplete
         multiple
         limitTags={2}
@@ -45,10 +45,17 @@ const VMOptions = () => {
           <TextField {...params} placeholder="Add Options" />
         )}
         sx={{
-            "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
-          }}
+          "& .MuiInputBase-input": {
+            height: "1.8em",
+            padding: "6px 12px",
+            fontSize: 14,
+            maxWidth: 'calc(100% - 40px)', // Adjusting the max width of the input
+          },
+        }}
       />
     </div>
+
+    
   );
 };
 

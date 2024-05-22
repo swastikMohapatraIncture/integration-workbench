@@ -27,14 +27,14 @@ const IntroContent = () => {
           <li>
             <p>Step 3: SAP Integration Suite</p>
             <p className="text-xs text-gray-500">
-              Configure Integration Workbench to connect with the CPI tenant and test
+              Configure Integration Workbench to connect with the IS tenant and test
               connectivity.
             </p>
           </li>
           <li>
             <p>Step 4: Integration Suite API</p>
             <p className="text-xs text-gray-500">
-              Configure Integration Workbench to connect with the CPI tenant and test
+              Configure Integration Workbench to connect with the IS tenant and test
               connectivity.
             </p>
           </li>
