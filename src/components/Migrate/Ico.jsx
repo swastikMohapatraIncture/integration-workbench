@@ -10,6 +10,7 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
   const [selectedIcos, setSelectedIcos] = useState([]);
   const [icoDetails, setIcoDetails] = useState([]);
 
+
   const poData = {
     name: "IncturePO1",
     username: "INC02525",
@@ -88,11 +89,13 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
 
   return (
     <div className='w-full'>
+      <label className="block mb-1 text-sm">Select ICOs</label>
       <Autocomplete
         fullWidth
         multiple
         options={icoList}
         disableCloseOnSelect
+        size="small"
         getOptionLabel={(option) => option}
         value={selectedIcos}
         onChange={handleChange}
@@ -100,10 +103,21 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
         renderInput={(params) => (
           <TextField
             {...params}
-            label="Select ICOs"
-            placeholder="Select multiple ICOs"
+            placeholder="Select ICOs"
+            InputProps={{
+              ...params.InputProps,
+              style: { whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
+            }}
           />
         )}
+        sx={{
+          "& .MuiInputBase-input": {
+            height: "1.8em",
+            padding: "6px 12px",
+            fontSize: 14,
+            maxWidth: 'calc(100% - 40px)', // Adjusting the max width of the input
+          },
+        }}
       />
     </div>
   );

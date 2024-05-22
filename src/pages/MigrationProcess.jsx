@@ -1,12 +1,12 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-// import WorkInProg from '../components/WorkInProg/WorkInProg';
-import MainPageMP from "../components/MigrationProcess/MainPageMP";
-import Introduction from "../components/NeoToCloudFoundry/Introduction";
+import { useState } from 'react';
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import MainPageMP from '../components/MigrationProcess/MainPageMP';
+import Introduction from '../components/NeoToCloudFoundry/Introduction';
+
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;

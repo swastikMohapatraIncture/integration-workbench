@@ -47,12 +47,12 @@ const Package = ({ onSelect, setLoading }) => {
   };
 
   // if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error loading packages : {error.message}</p>;
+  // if (error) return <p>Error loading packages : {error.message}</p>;
 
   return (
     <div className="w-full">
       {/* {selectedPackage.id}  */}
-      <label className="block mb-3">Select Package</label>
+      <label className="block mb-1 text-sm">Select Package</label>
       <Autocomplete
         fullWidth
         value={selectedPackage}
@@ -69,7 +69,7 @@ const Package = ({ onSelect, setLoading }) => {
           />
         )}
         sx={{
-          "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
+          "& .MuiInputBase-input": { height: "1.8em", padding: "6px 12px", fontSize: 14 },
         }}
       />
     </div>

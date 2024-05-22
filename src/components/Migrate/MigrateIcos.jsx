@@ -4,6 +4,10 @@ import { useState } from "react"
 import { handleMigration } from "../../apis/apiService";
 import MigrationReport from "./MigrationReport";
 import { MdOutlineModeEdit } from "react-icons/md";
+import { FaRegCircleCheck } from "react-icons/fa6";
+import { ImCancelCircle } from "react-icons/im";
+
+
 import Loader from '../Loader';
 
 const Table = ({ icoDetails, setIcoDetails }) => {
@@ -30,7 +34,7 @@ const Table = ({ icoDetails, setIcoDetails }) => {
   };
 
   return (
-    <div className="overflow-x-auto p-3">
+    <div className="overflow-x-auto p-3 text-sm">
       <table className="table-auto w-full text-[#32363A]">
         <thead className="bg-gray-50">
           <tr>
@@ -72,21 +76,21 @@ const Table = ({ icoDetails, setIcoDetails }) => {
                 {editIndex === index ? (
                   <>
                     <button
-                      className="bg-green-500 text-white px-2 py-1 mr-2"
+                      className="text-green-500 mx-6 text-2xl"
                       onClick={() => handleSave(index)}
                     >
-                      Save
+                      <FaRegCircleCheck />
                     </button>
                     <button
-                      className="bg-red-500 text-white px-2 py-1"
+                      className="text-red-600 text-2xl"
                       onClick={handleCancel}
                     >
-                      Cancel
+                      <ImCancelCircle />
                     </button>
                   </>
                 ) : (
                   <button
-                    className=" text-white px-2 py-1"
+                    className=" text-white px-2 py-1 ml-6"
                     onClick={() => handleEdit(index, detail)}
                   >
                     <MdOutlineModeEdit className="text-blue-600 text-xl" />
@@ -206,17 +210,17 @@ const MigrateIcos = () => {
       )}
       
       <footer
-        className="border-t text-[#32363A] flex flex-row items-center justify-end gap-4 py-4 h-[60px] bg-white"
+        className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px] bg-white"
         style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
       >
         <button
-          className="bg-[#0A6ED1] text-white rounded-sm px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
+          className="border border-[#0A6ED1] text-[#0A6ED1] rounded-sm px-3 py-1 text-sm hover:text-white hover:bg-[#0A6ED1] transition duration-200 "
         >
           Back
         </button>
         
         <button
-          className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white"
+          className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
           onClick={handleMigrate}
         >
           Migrate
