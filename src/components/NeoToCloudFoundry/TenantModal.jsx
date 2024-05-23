@@ -6,12 +6,12 @@ import StepLabel from "@mui/material/StepLabel";
 import { StepConnector, stepConnectorClasses, styled } from "@mui/material";
 import { useState } from "react";
 import IntroContent from "./TenantModal/IntroContent";
-import PODetails from "./TenantModal/PODetails";
+import NeoDetails from "./TenantModal/NeoDetails";
 import CPIDetails from "./TenantModal/CPIDetails";
-import APIDetails from "./TenantModal/APIDetails";
+import CFDetails from "./TenantModal/CFDetails";
 import { ToastContainer } from "react-toastify";
 
-const steps = ["Introduction", "PO details", "CPI details", "API details"];
+const steps = ["Introduction", "NEO details", "CF details"];
 
 const TenantModal = ({ setOpenModal }) => {
   const [activeStep, setActiveStep] = useState(0);
@@ -108,7 +108,7 @@ const TenantModal = ({ setOpenModal }) => {
                 )}
                 {activeStep === 1 && (
                   <div>
-                    <PODetails
+                    <NeoDetails
                       showPassword={showPassword}
                       setShowPassword={setShowPassword}
                       setDisableNext={setDisableNext}
@@ -121,7 +121,7 @@ const TenantModal = ({ setOpenModal }) => {
                     />
                   </div>
                 )}
-                {activeStep === 2 && (
+                {/* {activeStep === 2 && (
                   <div>
                     <CPIDetails
                       showPassword={showPassword}
@@ -137,10 +137,10 @@ const TenantModal = ({ setOpenModal }) => {
                       // setConnectionStatus={setConnectionStatus}
                     />
                   </div>
-                )}
-                {activeStep === 3 && (
+                )} */}
+                {activeStep === 2 && (
                   <div>
-                    <APIDetails
+                    <CFDetails
                       showPassword={showPassword}
                       setShowPassword={setShowPassword}
                       setDisableNext={setDisableNext}
