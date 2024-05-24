@@ -1,13 +1,14 @@
 import {useState} from 'react';
 import Introduction from "./Introduction";
-import Table from "../Table/Table";
+import Table from "../Table";
 
-const MainPageMP = () => {
+const MainPageMPNeoToCf = () => {
   const [tenants, setTenants] = useState([1]);
+
+
   return (
     <>
-      {
-        !tenants || tenants.length <= 0 ? (
+       {(!tenants || tenants.length <= 0 )?(
           <Introduction />
         ) : (<Table/>)
        }
@@ -15,4 +16,4 @@ const MainPageMP = () => {
   )
 }
 
-export default MainPageMP
+export default MainPageMPNeoToCf

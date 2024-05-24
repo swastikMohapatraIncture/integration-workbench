@@ -55,6 +55,35 @@ export const postESRConnection = async (
   })
 };
 
+export const postNEOConnection = async (
+  formData,
+  setDisableNext,
+  setTestingConn,
+  setConnectionMessage
+) => {
+ await postApi(
+    "https://webhook.site/3d69f502-16c9-4316-bc63-e0caa1e6fd61",
+    formData
+  ).then((data)=>{
+    if(true){
+      const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
+      const newData = { ...(prevData ? prevData : null), NeoData: formData };
+      localStorage.setItem("currNeoAgent", JSON.stringify(newData));
+      setConnectionMessage({
+        text: "Connection successful",
+        type: "success",
+      });
+      setDisableNext(false);
+    } else {
+      setConnectionMessage({
+        text: data?.message || "Connection unsuccessful",
+        type: "error",
+      });
+      setDisableNext(true);
+    }
+  })
+};
+
 export const postCPIData = async (
   formData,
   setDisableNext,
