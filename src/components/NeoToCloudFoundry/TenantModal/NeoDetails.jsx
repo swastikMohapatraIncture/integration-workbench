@@ -58,17 +58,19 @@ const NeoDetails = ({
     console.log(Neodetails);
   };
 
-  // const handleNeodetails = (event) => {
-  //   event.preventDefault();
-  //   setTestingConn(true);
-  //   // const formData = Neodetails
-  //   postNEOConnection(
-  //     { dataType: "NeoData", formData: Neodetails },
-  //     setDisableNext,
-  //     setTestingConn,
-  //     setConnectionMessage
-  //   );
-  // };
+  const handleNeodetails = (event) => {
+    event.preventDefault();
+    setTestingConn(true);
+    // const formData = Neodetails
+    postNEOConnection(
+      { dataType: "NeoData", formData: Neodetails },
+      setDisableNext,
+      setTestingConn,
+      setConnectionMessage
+    );
+    setTestingConn(false);
+    
+  };
 
   return (
     <div>
@@ -201,8 +203,7 @@ const NeoDetails = ({
       <div className="mb-2 mt-4 flex flex-row gap-4 items-center">
         <button
           className="py-1 px-3 hover:bg-modalColor hover:text-white transition duration-2s rounded-md border border-modalColor text-modalColor"
-          onClick={()=>{console.log("submit button clicked")
-          }}
+          onClick={handleNeodetails}
           disabled={testingConn}
         >
           {testingConn ? "Testing..." : "Test Connection"}

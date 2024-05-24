@@ -12,7 +12,7 @@ import { ToastContainer } from "react-toastify";
 
 const steps = ["Introduction", "NEO details", "CF details"];
 
-const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditingAgentIdx }) => {
+const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditingAgentIdx }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
 
@@ -34,19 +34,19 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
   };
 
   const handleSubmitAgent = () => {
-    const currAgent = JSON.parse(localStorage?.getItem("currAgent"));
-    let allPrevAgents = JSON.parse(localStorage?.getItem("agents")) || [];
+    const currNeoData = JSON.parse(localStorage?.getItem("currNeoAgent"));
+    let allPrevAgents = JSON.parse(localStorage?.getItem("tenants")) || [];
   
     if (editingAgentIdx >= 0) {
-      allPrevAgents[editingAgentIdx] = currAgent;
+      allPrevAgents[editingAgentIdx] = currNeoData;
     } else {
-      allPrevAgents?.push(currAgent);
+      allPrevAgents?.push(currNeoData);
     }
   
-    localStorage.setItem("agents", JSON.stringify(allPrevAgents));
-    localStorage.removeItem("currAgent");
+    localStorage.setItem("tenants", JSON.stringify(allPrevAgents));
+    localStorage.removeItem("currNeoAgent");
   
-    setAgents(allPrevAgents);
+    setTenants(allPrevAgents);
     setEditingAgentIdx(-1);
     setOpenModal(false);
   };
@@ -196,7 +196,7 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
               ) : (
                 <button
                   className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
-                  onClick={()=>{alert("submit clicked")}}
+                  onClick={handleSubmitAgent}
                   // disabled={disableNext}
                 >
                   Submit

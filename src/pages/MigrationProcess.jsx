@@ -62,7 +62,7 @@ const MigrationProcess = () => {
         <MainPageMP/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <Introduction/>
+        <MainPageMPNeoToCf/>
       </CustomTabPanel>
       {/* <CustomTabPanel value={value} index={2}>
         Item Three
