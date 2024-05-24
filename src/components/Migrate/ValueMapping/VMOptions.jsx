@@ -49,13 +49,11 @@ const VMOptions = () => {
             height: "1.8em",
             padding: "6px 12px",
             fontSize: 14,
-            maxWidth: 'calc(100% - 40px)', // Adjusting the max width of the input
+            maxWidth: "calc(100% - 40px)",
           },
         }}
       />
     </div>
-
-    
   );
 };
 

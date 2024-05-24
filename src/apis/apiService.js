@@ -208,18 +208,16 @@ export const handleIcoDetails = (data) => {
 };
 
 // Function to create Exception Service
-export const handleExceptionServices = async (data, value) => {
+export const handleExceptionServices = async (data) => {
   try {
     const toPostData = data;
     const response = await postApi(
-      "http://localhost:8080/api/v1/migration/designtime/create/exception/adapter",
+      "http://localhost:8080/api/v1/migration/designtime/create/exception/service",
       toPostData
     );
-
-    if (response.data.status === "Success") {
-      const currAgent = JSON.parse(localStorage.getItem("currAgent"));
-      const updatedCurrentAgent = { ...currAgent, adapter: value };
-      localStorage.setItem("currAgent", JSON.stringify(updatedCurrentAgent));
+    if (response) {
+      // console.log("response", response);
+      return response;
     } else {
       throw new Error("Failed to create exception adapter");
     }

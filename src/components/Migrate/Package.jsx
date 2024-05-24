@@ -1,23 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import { handlePackageList } from "../../apis/apiService";
 
-const Package = ({ onSelect, setLoading }) => {
+const Package = ({ onSelect, setLoading, refreshList }) => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [packageList, setPackageList] = useState([]);
-  // const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  const cpiData = {
-    name: "inc",
-    clientId: "sb-7489d894-5a54-4e09-b5bc-05d2a67da302!b285446|it!b55215",
-    url: "https://196e1fd0trial.it-cpitrial06.cfapps.us10-001.hana.ondemand.com",
-    clientSecret:
-      "31bc3d8a-39c6-486d-ba7d-7ebcdbae828c$pSj79Jx1okSPRJlG87zXIckAsy-8Av9NGWsjZsqjajk=",
-    tokenUrl:
-      "https://196e1fd0trial.authentication.us10.hana.ondemand.com/oauth/token",
-  };
+  const cachedPackageList = useRef(null);
 
   useEffect(() => {
     const fetchPackageList = async () => {
@@ -29,8 +19,11 @@ const Package = ({ onSelect, setLoading }) => {
           const apiData = data.apiData;
           
           if (apiData) {
-            const packages = await handlePackageList(apiData);
-            setPackageList(packages);
+            if(!cachedPackageList.current) {
+              const packages = await handlePackageList(apiData);
+              cachedPackageList.current = packages;
+            }
+            setPackageList(cachedPackageList.current);
           } else {
             setError(new Error("apiData is missing or invalid"));
           }
@@ -45,23 +38,17 @@ const Package = ({ onSelect, setLoading }) => {
     };
 
     fetchPackageList();
-  }, [setLoading]);
-  {
-    console.log(packageList);
-  }
+  }, [setLoading, refreshList]);
+  // {
+  //   console.log(packageList);
+  // }
   const handleChange = (event, value) => {
-    // console.log("value",value);
     setSelectedPackage(value);
-    // console.log("selected ",selectedPackage);
     onSelect(value);
   };
 
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error loading packages : {error.message}</p>;
-
   return (
     <div className="w-full">
-      {/* {selectedPackage.id}  */}
       <label className="block mb-1 text-sm">Select Package</label>
       <Autocomplete
         fullWidth
@@ -73,7 +60,6 @@ const Package = ({ onSelect, setLoading }) => {
         renderInput={(params) => (
           <TextField
             {...params}
-            // label="Package"
             variant="outlined"
             placeholder="Select Package"
           />
