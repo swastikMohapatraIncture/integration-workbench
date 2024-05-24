@@ -7,13 +7,12 @@ import { StepConnector, stepConnectorClasses, styled } from "@mui/material";
 import { useState } from "react";
 import IntroContent from "./TenantModal/IntroContent";
 import NeoDetails from "./TenantModal/NeoDetails";
-import CPIDetails from "./TenantModal/CPIDetails";
 import CFDetails from "./TenantModal/CFDetails";
 import { ToastContainer } from "react-toastify";
 
 const steps = ["Introduction", "NEO details", "CF details"];
 
-const TenantModal = ({ setOpenModal }) => {
+const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditingAgentIdx }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
 
@@ -34,6 +33,24 @@ const TenantModal = ({ setOpenModal }) => {
     setCompletedSteps(completedSteps.filter((step) => step !== activeStep));
   };
 
+  const handleSubmitAgent = () => {
+    const currNeoData = JSON.parse(localStorage?.getItem("currNeoAgent"));
+    let allPrevAgents = JSON.parse(localStorage?.getItem("tenants")) || [];
+  
+    if (editingAgentIdx >= 0) {
+      allPrevAgents[editingAgentIdx] = currNeoData;
+    } else {
+      allPrevAgents?.push(currNeoData);
+    }
+  
+    localStorage.setItem("tenants", JSON.stringify(allPrevAgents));
+    localStorage.removeItem("currNeoAgent");
+  
+    setTenants(allPrevAgents);
+    setEditingAgentIdx(-1);
+    setOpenModal(false);
+  };
+  
   // const isStepCompleted = (step) => {
   //   return completedSteps.includes(step);
   // };
@@ -168,15 +185,23 @@ const TenantModal = ({ setOpenModal }) => {
               >
                 Back
               </button>
-              <button
-                className={` py-1 px-3 rounded-md border border-modalColor text-modalColor ${
-                  activeStep === 3 ? "bg-gray-300 cursor-not-allowed" : " "
-                }`}
-                onClick={handleNext}
-                disabled={activeStep === 3}
-              >
-                Next
-              </button>
+              {activeStep < steps.length - 1 ? (
+                <button
+                  className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  onClick={handleNext}
+                  // disabled={disableNext}
+                >
+                  Next
+                </button>
+              ) : (
+                <button
+                  className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  onClick={handleSubmitAgent}
+                  // disabled={disableNext}
+                >
+                  Submit
+                </button>
+              )}
               <button
                 className=" py-1 px-3 rounded-md border border-modalColor text-modalColor"
                 onClick={() => setOpenModal(false)}

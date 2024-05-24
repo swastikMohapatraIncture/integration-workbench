@@ -55,6 +55,94 @@ export const postESRConnection = async (
   })
 };
 
+
+//NEO to  CF functions
+
+export const postNEOConnection = async (
+  formData,
+  setDisableNext,
+  setTestingConn,
+  setConnectionMessage
+) => {
+ await postApi(
+    "https://webhook.site/3d69f502-16c9-4316-bc63-e0caa1e6fd61",
+   
+    formData
+  ).then((data)=>{
+    if(true){
+      const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
+      const newData = { ...(prevData ? prevData : null), NeoData: formData };
+      localStorage.setItem("currNeoAgent", JSON.stringify(newData));
+      setConnectionMessage({
+        text: "Connection successful",
+        type: "success",
+      });
+      setDisableNext(false);
+    } else {
+      setConnectionMessage({
+        text: data?.message || "Connection unsuccessful",
+        type: "error",
+      });
+      setDisableNext(true);
+    }
+  })
+  .catch((error)=>{
+    console.error("API call failed:", error);
+  // setConnectionStatus(false);
+  setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
+  setDisableNext(true);
+  }).finally(()=>{
+    setTestingConn(false);
+  })
+};
+
+export const postCFData = async (
+  formData,
+  setDisableNext,
+  setTestingConn,
+  // setConnectionStatus,
+  setConnectionMessage
+) => {
+  await postApi(
+    "http://localhost:8080/api/v1/migration/configuration/connect/is/api",
+    formData
+  ).then((data) => {
+    try {
+      if (data && data.status === "Success") {
+        const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
+        const newData = {
+          ...(prevData ? prevData : null),
+          CFdata: formData,
+          // adapter: [],
+        };
+        // const newData = { ...(prevData ? prevData : null), formData, adapter: [] };
+        localStorage.setItem("currNeoAgent", JSON.stringify(newData));
+        // setConnectionStatus(true);
+        setConnectionMessage({
+          text: "Connection successful",
+          type: "success",
+        });
+        setDisableNext(false);
+      } else {
+        // setConnectionStatus(false);
+        setConnectionMessage({
+          text: data?.message || "Connection unsuccessful",
+          type: "error",
+        });
+        setDisableNext(true);
+      }
+    } catch (error) {
+      console.error("API call failed:", error);
+      // setConnectionStatus(false);
+      setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
+      setDisableNext(true);
+    } finally {
+      setTestingConn(false); // Ensure this is called regardless of success or failure
+    }
+  });
+};
+
+//--------------------------------------------------------------------------------------------------
 export const postCPIData = async (
   formData,
   setDisableNext,

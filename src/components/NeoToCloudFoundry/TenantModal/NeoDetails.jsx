@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { postESRConnection } from "../../../apis/apiService";
+import { postNEOConnection } from "../../../apis/apiService";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
@@ -55,22 +55,22 @@ const NeoDetails = ({
 
   const handleChange = (e, name) => {
     setNeodetails((prevState) => ({ ...prevState, [name]: e.target.value }));
+    console.log(Neodetails);
   };
 
   const handleNeodetails = (event) => {
     event.preventDefault();
     setTestingConn(true);
     // const formData = Neodetails
-    postESRConnection(
-      { dataType: "poData", formData: Neodetails },
+    postNEOConnection(
+      { dataType: "NeoData", formData: Neodetails },
       setDisableNext,
-      setTestingConn
+      setTestingConn,
+      setConnectionMessage
     );
+    setTestingConn(false);
+    
   };
-
-  // const handleNeodetails = () => {
-  //   console.log(Neodetails);
-  // };
 
   return (
     <div>
@@ -114,10 +114,10 @@ const NeoDetails = ({
           <TextField
             fullWidth
             size="small"
-            placeholder="Enter User name"
+            placeholder="Enter Host Name"
             variant="outlined"
-            value={Neodetails?.username || ""}
-            onChange={(e) => handleChange(e, "username")}
+            value={Neodetails?.Integration_Host || ""}
+            onChange={(e) => handleChange(e, "Integration_Host")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -128,11 +128,11 @@ const NeoDetails = ({
           <OutlinedInput
             id="outlined-adornment-password"
             type="text"
-            placeholder="Enter password"
+            placeholder="Enter Oauth Host"
             fullWidth
             size="small"
-            value={Neodetails?.password || ""}
-            onChange={(e) => handleChange(e, "password")}
+            value={Neodetails?.Oauth_Host || ""}
+            onChange={(e) => handleChange(e, "Oauth_Host")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -155,10 +155,10 @@ const NeoDetails = ({
           <TextField
             fullWidth
             size="small"
-            placeholder="ex.SAP_Server"
+            placeholder="Oauth Client Id"
             variant="outlined"
-            value={Neodetails?.host || ""}
-            onChange={(e) => handleChange(e, "host")}
+            value={Neodetails?.Oauth_Clientid || ""}
+            onChange={(e) => handleChange(e, "Oauth_Clientid")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -168,10 +168,10 @@ const NeoDetails = ({
           <span className="mb-2">Oauth Secret</span>
           <TextField
             size="small"
-            placeholder="ex.5050"
+            placeholder="Oauth Secret"
             variant="outlined"
-            value={Neodetails?.port || ""}
-            onChange={(e) => handleChange(e, "port")}
+            value={Neodetails?.Oauth_Secret || ""}
+            onChange={(e) => handleChange(e, "Oauth_Secret")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}

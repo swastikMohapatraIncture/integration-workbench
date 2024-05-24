@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-// import { useState } from "react";
+import { useState } from "react";
 import TenantModal from "./TenantModal";
 import { featuresNeo } from "../../constants/data";
 
@@ -12,13 +12,14 @@ const FeatureBox = ({ text, borderColor, bgColor, width }) => (
   </div>
 );
 
-const Introduction = ({openModal,
-  setOpenModal,
+const Introduction = ({
   agents,
   setAgents,
   editingAgentIdx,
-  setEditingAgentIdx,}) => {
-  // const [openModal, setOpenModal] = useState(false);
+  setEditingAgentIdx}) => {
+  const [openModal, setOpenModal] = useState(false);
+
+
 
   return (
     <div className="p-5">
@@ -30,7 +31,9 @@ const Introduction = ({openModal,
         <div className="flex justify-end mt-4">
           <button
             className="bg-[#0A6ED1] text-white rounded p-2 px-6 hover:bg-gray-300 hover:text-black transition duration-200"
-            onClick={() => setOpenModal(!openModal)}
+            onClick={() =>
+              setOpenModal(!openModal)
+            }
           >
             Start Configuration
           </button>

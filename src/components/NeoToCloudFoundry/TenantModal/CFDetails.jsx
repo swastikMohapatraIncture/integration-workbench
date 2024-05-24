@@ -14,7 +14,7 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
-import { postAPIData } from "../../../apis/apiService";
+import { postCFData } from "../../../apis/apiService";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
@@ -45,7 +45,7 @@ const CFDetails = ({
   // connectionStatus,
   // setConnectionStatus,
 }) => {
-  const [apiData, setApiData] = useState({});
+  const [CFData, setCFData] = useState({});
   const [fileName, setFileName] = useState(null);
   // const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
@@ -65,19 +65,19 @@ const CFDetails = ({
   };
 
   const handleChangeInput = (value, name) => {
-    setApiData((prevState) => ({ ...prevState, [name]: value }));
+    setCFData((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleChange = (e, name) => {
-    setApiData((prevState) => ({ ...prevState, [name]: e.target.value }));
+    setCFData((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
 
   const handleAPITest = (event) => {
     event.preventDefault();
     // setTestingConn(true);
-    postAPIData(
+    postCFData(
       // { dataType: "cpiData", formData: cpiData },
-      apiData,
+      CFData,
       setDisableNext,
       setTestingConn,
       setConnectionMessage
@@ -85,7 +85,7 @@ const CFDetails = ({
   };
 
   // const handleAPITest = () => {
-  //   console.log(apiData);
+  //   console.log(CFData);
   // };
 
   const handleFileUpload = (file) => {
@@ -107,14 +107,14 @@ const CFDetails = ({
     const { oauth } = data;
     if (oauth) {
       const { clientid, clientsecret, url, tokenurl } = oauth;
-      setApiData((prevState) => ({
+      setCFData((prevState) => ({
         ...prevState,
         clientId: clientid,
         clientSecret: clientsecret,
         url: url,
         tokenUrl: tokenurl,
       }));
-      console.log("Updated apiData:", { clientid, clientsecret, url, tokenurl }); // Debugging statement
+      console.log("Updated CFData:", { clientid, clientsecret, url, tokenurl }); // Debugging statement
     } else {
       console.error("Invalid JSON structure:", data); // Debugging statement
     }
@@ -129,7 +129,7 @@ const CFDetails = ({
             size="small"
             placeholder="Enter name"
             variant="outlined"
-            value={apiData?.name || ""}
+            value={CFData?.name || ""}
             onChange={(e) => handleChange(e, "name")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
@@ -141,7 +141,7 @@ const CFDetails = ({
           <TextField
             size="small"
             placeholder="Enter Client ID"
-            value={apiData?.clientId || ""}
+            value={CFData?.clientId || ""}
             onChange={(e) => handleChange(e, "clientId")}
             variant="outlined"
             sx={{
@@ -155,7 +155,7 @@ const CFDetails = ({
             id="outlined-adornment-password"
             type={showPassword ? "text" : "password"}
             placeholder="Enter Client secret"
-            value={apiData?.clientSecret || ""}
+            value={CFData?.clientSecret || ""}
             onChange={(e) => handleChange(e, "clientSecret")}
             size="small"
             sx={{
@@ -181,7 +181,7 @@ const CFDetails = ({
             size="small"
             placeholder="Token URL"
             variant="outlined"
-            value={apiData?.tokenUrl || ""}
+            value={CFData?.tokenUrl || ""}
             onChange={(e) => handleChange(e, "tokenUrl")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
@@ -194,7 +194,7 @@ const CFDetails = ({
             size="small"
             placeholder="URL"
             variant="outlined"
-            value={apiData?.url || ""}
+            value={CFData?.url || ""}
             onChange={(e) => handleChange(e, "url")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
