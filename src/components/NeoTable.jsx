@@ -3,7 +3,7 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import TenantModal from "./MigrationProcess/TenantModal";
 import { useState } from "react";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
   return (
@@ -42,7 +42,6 @@ const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
     </>
   );
 };
-
 
 const Table = ({
   openModal,
@@ -86,10 +85,10 @@ const Table = ({
               <tr>
                 <th scope="col" className="px-5 py-2 border-gray-200 "></th>
                 <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
-                  PO Tenant
+                  Neo Tenant
                 </th>
                 <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
-                  PO Environment
+                  Neo Environment
                 </th>
                 <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
                   IS Tenant
@@ -105,32 +104,32 @@ const Table = ({
             <tbody className="bg-white divide-y divide-gray-200">
               {tenants &&
                 tenants.length > 0 &&
-                tenants.map((agent, index) => (
+                tenants.map((tenant, index) => (
                   <tr key={index} className="hover:bg-gray-100">
                     <td className="whitespace-nowrap  border-gray-200 text-center">
                       <input
                         type="radio"
-                        name="agent"
+                        name="tenant"
                         onChange={() => {
                           localStorage?.setItem(
                             "currNeoAgent",
-                            JSON?.stringify(agent)
+                            JSON?.stringify(tenant)
                           );
                           setAgentSelected(true);
                         }}
                       />
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap  text-[#32363A]  border-gray-200">
-                      {agent?.poData?.name}
+                      {tenant?.NeoData?.formData?.name}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                      {agent?.poData?.environment}
+                      {tenant?.NeoData?.formData?.environment}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                      {agent?.cpiData?.name}
+                      {tenant?.CFdata?.name}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                      {agent?.cpiData?.environment}
+                      {tenant?.CFdata?.environment}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
                       <button
@@ -162,17 +161,17 @@ const Table = ({
             >
               Add System
             </button>
-            <Link to ="/Migrate">
-            <button
-              className={`bg-[#0A6ED1] border border-[#0A6ED1] rounded-sm px-6 py-1  transition duration-200 text-sm ${
-                !agentSelected
-                  ? " bg-[#0A6ED1] opacity-50 text-white cursor-not-allowed"
-                  : "bg-[#0A6ED1] text-white"
-              } mr-3`}
-              disabled={!agentSelected}
-            >
-              Next
-            </button>
+            <Link to="/Migrate">
+              <button
+                className={`bg-[#0A6ED1] border border-[#0A6ED1] rounded-sm px-6 py-1  transition duration-200 text-sm ${
+                  !agentSelected
+                    ? " bg-[#0A6ED1] opacity-50 text-white cursor-not-allowed"
+                    : "bg-[#0A6ED1] text-white"
+                } mr-3`}
+                disabled={!agentSelected}
+              >
+                Next
+              </button>
             </Link>
             {/* <br /> */}
           </footer>
@@ -190,7 +189,7 @@ const Table = ({
       )}
       {deleteModal.open && (
         <DeleteModal
-        handleDeleteAgent={handleDeleteAgent}
+          handleDeleteAgent={handleDeleteAgent}
           setDeleteModal={(open) => setDeleteModal({ ...deleteModal, open })}
           index={deleteModal.index}
         />
