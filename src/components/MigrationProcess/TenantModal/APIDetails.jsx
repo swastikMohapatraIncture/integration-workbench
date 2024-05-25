@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   TextField,
@@ -37,24 +37,58 @@ const APIDetails = ({
   setShowPassword,
   setDisableNext,
   testingConn,
-  // fileName,
-  // setFileName,
   setTestingConn,
-  // connectionMessage,
-  // setConnectionMessage,
-  // connectionStatus,
-  // setConnectionStatus,
 }) => {
-  const [apiData, setApiData] = useState({});
+  const [apiData, setApiData] = useState({
+    name: "",
+    clientId: "",
+    clientSecret: "",
+    tokenUrl: "",
+    url: "",
+    environment: "",
+  });
   const [fileName, setFileName] = useState(null);
-  // const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
- 
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const requiredFields = [
+    "name",
+    "clientId",
+    "clientSecret",
+    "tokenUrl",
+    "url",
+    "environment",
+  ];
+
+  const validateFields = () => {
+    const allFieldsFilled = requiredFields.every((field) => apiData[field]);
+    setDisableNext(!allFieldsFilled);
+    return allFieldsFilled;
+  };
+
+  useEffect(() => {
+    validateFields();
+  }, [apiData]);
+
+  // Fetch name and environment from localStorage on mount
+  useEffect(() => {
+    const currAgent = localStorage.getItem("currAgent");
+    if (currAgent) {
+      const parsedAgent = JSON.parse(currAgent);
+      const { name, environment } = parsedAgent.cpiData || {};
+      setApiData((prevState) => ({
+        ...prevState,
+        name: name || "",
+        environment: environment || "",
+      }));
+    }
+  }, []);
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
       setFileName(file.name);
-      handleFileUpload(file); // Ensure file upload is handled here
+      handleFileUpload(file);
     }
   };
 
@@ -74,26 +108,20 @@ const APIDetails = ({
 
   const handleAPITest = (event) => {
     event.preventDefault();
-    setTestingConn(true);
-    postAPIData(
-      // { dataType: "cpiData", formData: cpiData },
-      apiData,
-      setDisableNext,
-      setTestingConn,
-      setConnectionMessage
-    );
+    if (validateFields()) {
+      setTestingConn(true);
+      setErrorMessage("");
+      postAPIData(apiData, setDisableNext, setTestingConn, setConnectionMessage);
+    } else {
+      setErrorMessage("Please fill in all required fields.");
+    }
   };
-
-  // const handleAPITest = () => {
-  //   console.log(apiData);
-  // };
 
   const handleFileUpload = (file) => {
     const fileReader = new FileReader();
     fileReader.onload = (e) => {
       try {
         const jsonData = JSON.parse(e.target.result);
-        // console.log("Parsed JSON data:", jsonData); // Debugging statement
         fillFormFields(jsonData);
       } catch (error) {
         console.error("Error parsing JSON file:", error);
@@ -114,9 +142,8 @@ const APIDetails = ({
         url: url,
         tokenUrl: tokenurl,
       }));
-      // console.log("Updated apiData:", { clientid, clientsecret, url, tokenurl }); // Debugging statement
     } else {
-      console.error("Invalid JSON structure:", data); // Debugging statement
+      console.error("Invalid JSON structure:", data);
     }
   };
 
@@ -211,6 +238,9 @@ const APIDetails = ({
               handleChangeInput(value?.label, "environment")
             }
             options={system}
+            value={system.find(
+              (option) => option.label === apiData?.environment
+            ) || null} // Ensure the value is correctly matched
             getOptionLabel={(option) => option?.label || ""}
             getOptionValue={(option) => option?.label || ""}
             sx={{
@@ -227,7 +257,7 @@ const APIDetails = ({
             placeholder="No File chosen"
             variant="outlined"
             fullWidth
-            value={fileName}
+            value={fileName || ""}
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
             }}
@@ -266,17 +296,18 @@ const APIDetails = ({
         >
           {testingConn ? "Testing..." : "Test Connection"}
         </button>
+        {errorMessage && <span className="text-red-500">{errorMessage}</span>}
         {connectionMessage.text && (
           <div className="flex items-center">
             {connectionMessage.type === "success" ? (
-              <FaRegCheckCircle style={{ color: 'green' }} />
+              <FaRegCheckCircle style={{ color: "green" }} />
             ) : (
-              <ImCross style={{ color: 'red' }} />
+              <ImCross style={{ color: "red" }} />
             )}
             <span
               className="ml-2"
               style={{
-                color: connectionMessage.type === "success" ? 'green' : 'red',
+                color: connectionMessage.type === "success" ? "green" : "red",
               }}
             >
               {connectionMessage.text}

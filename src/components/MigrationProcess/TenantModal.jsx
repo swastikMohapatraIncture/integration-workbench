@@ -54,9 +54,6 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
   };
   
 
-
-
-
   const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
       top: 10,
@@ -79,6 +76,12 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
       borderLeftWidth: 2,
     },
   }));
+
+  useEffect(() => {
+    if (activeStep === 0) {
+      setDisableNext(false);
+    }
+  }, [activeStep]);
 
   return (
     <>
@@ -161,7 +164,7 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
                 <button
                   className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
                   onClick={handleNext}
-                  // disabled={disableNext}
+                  disabled={disableNext}
                 >
                   Next
                 </button>
@@ -169,7 +172,7 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
                 <button
                   className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
                   onClick={handleSubmitAgent}
-                  // disabled={disableNext}
+                  disabled={disableNext}
                 >
                   Submit
                 </button>
