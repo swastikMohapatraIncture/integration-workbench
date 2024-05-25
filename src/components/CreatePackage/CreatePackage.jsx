@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { handleCreatePackage } from "../../apis/apiService";
 
-const CreatePackage = ({ isOpen, onClose, setIsLoading, onPackageCreated}) => {
+const CreatePackage = ({ isOpen, onClose, setIsLoading, onPackageCreated }) => {
   const [packageDetails, setPackageDetails] = useState({
     name: "",
     description: "",
@@ -16,9 +17,20 @@ const CreatePackage = ({ isOpen, onClose, setIsLoading, onPackageCreated}) => {
   };
 
   const handleSubmit = async () => {
+    const { name, description } = packageDetails;
+
+    // Validate form fields
+    if (!name.trim() || !description.trim()) {
+      toast.error("Please fill out both the name and description.");
+      return;
+    }
+
     try {
       setIsLoading(true);
       const localData = localStorage.getItem("currAgent");
+      if (!localData) {
+        throw new Error("No agent data found.");
+      }
       const data = JSON.parse(localData);
       const apiData = data.apiData;
 
@@ -29,19 +41,23 @@ const CreatePackage = ({ isOpen, onClose, setIsLoading, onPackageCreated}) => {
         };
         const response = await handleCreatePackage(payload);
         if (response.status === "Success") {
+          toast.success("Package added, select from the list.");
           setPackageDetails({
             name: "",
             description: "",
           });
           onPackageCreated();
+        } else {
+          throw new Error("Failed to create package.");
         }
+      } else {
+        throw new Error("Invalid agent data.");
       }
     } catch (error) {
-      console.log("Error Creating package.", error);
+      toast.error(error.message);
     } finally {
-        
-        setIsLoading(false);
-        onClose();
+      setIsLoading(false);
+      onClose();
     }
   };
 

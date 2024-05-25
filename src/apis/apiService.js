@@ -167,9 +167,7 @@ export const postCPIData = async (
       if (data && data.status === "Success") {
         const prevData = JSON.parse(localStorage.getItem("currAgent")) || {};
         const newData = { ...(prevData ? prevData : null), cpiData: formData };
-        // const newData = { ...(prevData ? prevData : null), formData };
         localStorage.setItem("currAgent", JSON.stringify(newData));
-        // setConnectionStatus(true);
         setConnectionMessage({
           text: "Connection successful",
           type: "success",
@@ -177,19 +175,16 @@ export const postCPIData = async (
         setDisableNext(false);
       } else {
         setDisableNext(true);
-        // setConnectionStatus(false);
         setConnectionMessage({
           text: data?.message || "Connection unsuccessful",
           type: "error",
         });
       }
     } catch (error) {
-      console.error("API call failed:", error);
-      // setConnectionStatus(false);
       setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
       setDisableNext(true);
     } finally {
-      setTestingConn(false); // Ensure this is called regardless of success or failure
+      setTestingConn(false); 
     }
   });
 };
@@ -211,18 +206,14 @@ export const postAPIData = async (
         const newData = {
           ...(prevData ? prevData : null),
           apiData: formData,
-          // adapter: [],
         };
-        // const newData = { ...(prevData ? prevData : null), formData, adapter: [] };
         localStorage.setItem("currAgent", JSON.stringify(newData));
-        // setConnectionStatus(true);
         setConnectionMessage({
           text: "Connection successful",
           type: "success",
         });
         setDisableNext(false);
       } else {
-        // setConnectionStatus(false);
         setConnectionMessage({
           text: data?.message || "Connection unsuccessful",
           type: "error",
@@ -231,11 +222,10 @@ export const postAPIData = async (
       }
     } catch (error) {
       console.error("API call failed:", error);
-      // setConnectionStatus(false);
       setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
       setDisableNext(true);
     } finally {
-      setTestingConn(false); // Ensure this is called regardless of success or failure
+      setTestingConn(false);
     }
   });
 };

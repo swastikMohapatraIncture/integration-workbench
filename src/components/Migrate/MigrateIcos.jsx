@@ -9,6 +9,8 @@ import { ImCancelCircle } from "react-icons/im";
 import Loader from "../Loader";
 import CreatePackage from "../CreatePackage/CreatePackage";
 import CreateNotificationService from "../NotificationService/CreateNotificationService";
+import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Table = ({ icoDetails, setIcoDetails }) => {
   const [editIndex, setEditIndex] = useState(null);
@@ -53,7 +55,7 @@ const Table = ({ icoDetails, setIcoDetails }) => {
           </tr>
         </thead>
         <tbody className="max-h-40 overflow-y-auto">
-          {icoDetails.map((detail, index) => (
+          {icoDetails?.map((detail, index) => (
             <tr key={index}>
               <td className="border border-gray-200 px-2 text-center">
                 {index + 1}
@@ -148,21 +150,20 @@ const MigrateIcos = () => {
   const [servicesModal, setServicesModal] = useState(false);
   const [refresh, setRefresh] = useState(false);
 
-  const handleDropDownChange = (value) => setSelectedValue(value.id);
+  const handleDropDownChange = (value) => setSelectedValue(value?.id);
   const handleIcoDetailsReceived = (details) => setIcoDetails(details);
   const handleOpenModal = () => setPackageModal(true);
   const handleCloseModal = () => setPackageModal(false);
   const handleServicesModalOpen = () => setServicesModal(true);
   const handleServicesModalClose = () => setServicesModal(false);
-  const handlePackageCreation = () => setRefresh(prevState => !prevState);
-
+  const handlePackageCreation = () => setRefresh((prevState) => !prevState);
 
   const handleMigrate = async () => {
     const storedCurrAgent = localStorage.getItem("currAgent");
     const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
 
     if (!currAgent) {
-      console.log("Tenant Data missing, kindly login and try again");
+      toast.error("Tenant Data missing.");
       return;
     }
 
@@ -176,6 +177,7 @@ const MigrateIcos = () => {
     };
 
     if (icoDetails.length === 0 || selectedValue === undefined) {
+      toast.error("ICO or Package cannot be empty.");
       return;
     }
 
@@ -183,12 +185,16 @@ const MigrateIcos = () => {
 
     try {
       const response = await handleMigration(data, "icos");
-      console.log(response);
       setResponseData(response.icoDetailsList);
       setReportBase64(response.reportBase64);
       setIsModalOpen(true);
+      toast.success("Migration Complete");
+
+      // Reset state variables after successful migration
+      setIcoDetails([]);
+      setSelectedValue(undefined);
     } catch (error) {
-      console.error("Error during migration:", error);
+      toast.error("Error during migration");
     } finally {
       setIsLoading(false);
     }
@@ -201,13 +207,14 @@ const MigrateIcos = () => {
           onIcoDetailsReceived={handleIcoDetailsReceived}
           setLoading={setIsLoading}
         />
-        <Package onSelect={handleDropDownChange} setLoading={setIsLoading} refreshList={refresh}/>
+        <Package
+          onSelect={handleDropDownChange}
+          setLoading={setIsLoading}
+          refreshList={refresh}
+        />
       </div>
       <div className="px-3 text-[#0A6ED1] flex justify-end text-sm">
-        <button
-          className="pr-2" 
-          onClick={handleServicesModalOpen}
-        >
+        <button className="pr-2" onClick={handleServicesModalOpen}>
           Add Alert Notification
         </button>
         <button
@@ -234,9 +241,11 @@ const MigrateIcos = () => {
         className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px] bg-white"
         style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
       >
-        <button className="border border-[#0A6ED1] text-[#0A6ED1] rounded-sm px-3 py-1 text-sm hover:text-white hover:bg-[#0A6ED1] transition duration-200 ">
-          Back
-        </button>
+        <Link to="/migrationProcess">
+          <button className="border border-[#0A6ED1] text-[#0A6ED1] rounded-sm px-3 py-1 text-sm hover:text-white hover:bg-[#0A6ED1] transition duration-200 ">
+            Back
+          </button>
+        </Link>
 
         <button
           className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
@@ -253,19 +262,18 @@ const MigrateIcos = () => {
         reportBase64={reportBase64}
       />
 
-      <CreatePackage 
-        isOpen={packageModal} 
-        onClose={handleCloseModal} 
+      <CreatePackage
+        isOpen={packageModal}
+        onClose={handleCloseModal}
         setIsLoading={setIsLoading}
         onPackageCreated={handlePackageCreation}
       />
 
-      <CreateNotificationService 
+      <CreateNotificationService
         isOpen={servicesModal}
         setLoading={setIsLoading}
         onClose={handleServicesModalClose}
       />
-
     </>
   );
 };

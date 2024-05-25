@@ -11,22 +11,28 @@ const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
       <div className="fixed inset-0 z-[1000] bg-black opacity-50"></div>
       <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 outline-none focus:outline-none z-[1000]">
         <div className="relative my-6 mx-auto max-w-3xl">
-          <div className="border-0 rounded shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
-            <div className="relative p-8 flex-auto">
-              <p className="text-blueGray-500 text-bold text-xl">
-                Are you sure you want to delete?
+          <div className="border-0 rounded-sm shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+            <div className="border-b border-gray-300 p-3">
+              <h3 className="text-lg font-bold text-[#32363A]">
+                Delete Tenants ?
+              </h3>
+            </div>
+            <div className="relativ p-6 flex-auto">
+              <p className="text-gray-700 text-center text-sm">
+                This will delete the tenants immediately.<br></br>You can not
+                undo this action.
               </p>
             </div>
-            <div className="flex items-center gap-2 justify-center p-1 border-solid border-blueGray-200 ">
+            <div className="flex items-center gap-2 justify-end p-3 border-t border-gray-300">
               <button
-                className="text-white bg-gray-600 rounded hover:bg-[#0A6ED1] hover:text-white transition duration-150 px-4 py-1 outline-none focus:outline-none mr-1 mb-1 ease-linear"
+                className="text-white text-sm rounded-sm hover:text-white bg-[#0A6ED1] transition duration-150 px-4 py-1 outline-none focus:outline-none"
                 type="button"
                 onClick={() => setDeleteModal(false)}
               >
-                Close
+                Cancel
               </button>
               <button
-                className="bg-red-600 text-white hover:bg-gray-300 hover:text-black transition duration-150 px-4 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear"
+                className="hover:bg-red-600 rounded-sm text-white bg-gray-300 hover:text-white transition duration-150 text-sm px-4 py-1 outline-none focus:outline-none"
                 type="button"
                 onClick={() => {
                   handleDeleteAgent(index);
@@ -157,6 +163,7 @@ const Table = ({
               className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px]"
               style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
             >
+<<<<<<< Updated upstream
               <button
                 className="bg-[#0A6ED1] text-white rounded-sm px-3 py-1 hover:bg-gray-100 hover:text-black transition duration-200 "
                 onClick={handleAddAgent}
@@ -177,6 +184,24 @@ const Table = ({
               </Link>
             </footer>
           )}
+=======
+              Add System
+            </button>
+            <Link to="/Migrate">
+              <button
+                className={`bg-[#0A6ED1] border border-[#0A6ED1] rounded-sm px-6 py-1  transition duration-200 text-sm ${
+                  !agentSelected
+                    ? " bg-[#0A6ED1] opacity-50 text-white cursor-not-allowed"
+                    : "bg-[#0A6ED1] text-white"
+                } mr-3`}
+                disabled={!agentSelected}
+              >
+                Next
+              </button>
+            </Link>
+            {/* <br /> */}
+          </footer>
+>>>>>>> Stashed changes
         </div>
       )}
       {openModal && (

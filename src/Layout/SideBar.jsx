@@ -79,9 +79,30 @@ const SideBar = () => {
               className="flex flex-row justify-between items-center gap-4"
             >
               <GoHome size={20} />
+<<<<<<< Updated upstream
               <span className="gap-4">Home</span>
+=======
+              <span className=" gap-4 ">Home</span>
             </ListItemButton>
           </ListItem>
+          {/* <ListItem
+            disablePadding
+            onClick={() => {navigate("/monitoring");
+            setOpenSubmenu(false);}}
+          >
+            <ListItemButton
+              sx={
+                isActiveRoute("/monitoring")
+                  ? styles.selectedItem
+                  : styles.listItem
+              }
+              className="flex flex-row justify-between items-center gap-4"
+            >
+              <MdMonitor size={20} className=" " />
+              <span className=" gap-4 ">Monitoring </span>
+>>>>>>> Stashed changes
+            </ListItemButton>
+          </ListItem> */}
           <ListItem
             disablePadding
             onClick={() => {
@@ -157,6 +178,7 @@ const SideBar = () => {
               <span className="gap-4">Accelerator</span>
             </ListItemButton>
           </ListItem>
+<<<<<<< Updated upstream
           <ListItem
             disablePadding
             onClick={() => {
@@ -164,6 +186,10 @@ const SideBar = () => {
               setOpenSubmenu(false);
             }}
           >
+=======
+          {/* <ListItem disablePadding onClick={() => {navigate("/about");
+              setOpenSubmenu(false);}}>
+>>>>>>> Stashed changes
             <ListItemButton
               sx={isActiveRoute(["/about"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
@@ -171,6 +197,7 @@ const SideBar = () => {
               <GoInfo size={20} />
               <span className="gap-4">About</span>
             </ListItemButton>
+<<<<<<< Updated upstream
           </ListItem>
           <ListItem
             disablePadding
@@ -179,6 +206,11 @@ const SideBar = () => {
               setOpenSubmenu(false);
             }}
           >
+=======
+          </ListItem> */}
+          {/* <ListItem disablePadding onClick={() => {navigate("/contacts");
+              setOpenSubmenu(false);}}>
+>>>>>>> Stashed changes
             <ListItemButton
               sx={isActiveRoute(["/contacts"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
@@ -186,6 +218,7 @@ const SideBar = () => {
               <BsTelephone size={20} />
               <span className="gap-4">Contacts</span>
             </ListItemButton>
+<<<<<<< Updated upstream
           </ListItem>
           <ListItem
             disablePadding
@@ -194,6 +227,11 @@ const SideBar = () => {
               setOpenSubmenu(false);
             }}
           >
+=======
+          </ListItem> */}
+          {/* <ListItem disablePadding onClick={() => {navigate("/faqs");
+              setOpenSubmenu(false);}}>
+>>>>>>> Stashed changes
             <ListItemButton
               sx={isActiveRoute(["/faqs"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
@@ -201,7 +239,11 @@ const SideBar = () => {
               <TbMessage2Question size={20} />
               <span className="gap-4">FAQs</span>
             </ListItemButton>
+<<<<<<< Updated upstream
           </ListItem>
+=======
+          </ListItem> */}
+>>>>>>> Stashed changes
         </List>
       </Drawer>
     </>

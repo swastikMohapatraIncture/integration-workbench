@@ -1,13 +1,14 @@
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import Incture from '../assets/logos/InctureLogo.svg'
-
+import { AppBar, Toolbar, Typography } from "@mui/material";
+import Incture from "../assets/logos/InctureLogo.svg";
+import InctureLogo from "../assets/InctureLogo.png";
+import { BsTelephone } from "react-icons/bs";
+import { GoInfo } from "react-icons/go";
+import { CgProfile } from "react-icons/cg";
+import { Link } from "react-router-dom";
+import { TbMessage2Question } from "react-icons/tb";
 
 // eslint-disable-next-line react/prop-types
-const Header = ( ) => {
+const Header = () => {
   return (
     <>
       <AppBar
@@ -16,6 +17,7 @@ const Header = ( ) => {
         sx={{
           zIndex: 1000,
           backgroundColor: "#2A4862",
+          borderBottom: "2px solid #F1F1F1",
           color: "white",
           minHeight: "50px",
           maxHeight: "50px",
@@ -47,17 +49,32 @@ const Header = ( ) => {
           </Typography> */}
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <div className="flex items-center gap-16">
-              <img
-                src={Incture}
-                className="mt-1 "
-                alt="Incture logo"
-              />
-              {/* <h1>Incture</h1> */}
-              <h1 className="text-xl ml-3 font-normal tracking-wider">Integration Workbench</h1>
+            <div className="flex justify-between items-center">
+              <div className="flex items-center gap-2 ">
+                <img src={Incture} className="w-28" alt="Incture logo" />
+                {/* <h1>Incture</h1> */}
+                <h1 className="text-xl font-normal tracking-wider text-white mt-1">
+                  Integration Workbench
+                </h1>
+              </div>
+              <div className="flex flex-row gap-6">
+                <Link to="/about">
+                  <GoInfo size={20} className="cursor-pointer text-white" />
+                </Link>
+                <Link to="/contacts">
+                  <BsTelephone
+                    size={18}
+                    className="cursor-pointer text-white"
+                  />
+                </Link>
+                <Link to="/faqs">
+                  <TbMessage2Question size={20} className="text-white cursor-pointer" />
+                </Link>
+
+                <CgProfile size={20} className="ml-8 cursor-not-allowed" />
+              </div>
             </div>
           </Typography>
-          
         </Toolbar>
       </AppBar>
     </>
