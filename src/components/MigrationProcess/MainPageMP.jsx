@@ -19,7 +19,7 @@ const MainPageMP = ({removeFooter,agentSelected,setAgentSelected}) => {
 
   return (
     <>
-      {(!agents || agents.length <= 0) ? (
+      {!agents || agents.length <= 0 ? (
         <Introduction
           openModal={openModal}
           setOpenModal={setOpenModal}

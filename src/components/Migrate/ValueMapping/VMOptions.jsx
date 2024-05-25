@@ -45,8 +45,13 @@ const VMOptions = () => {
           <TextField {...params} placeholder="Add Options" />
         )}
         sx={{
-            "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
-          }}
+          "& .MuiInputBase-input": {
+            height: "1.8em",
+            padding: "6px 12px",
+            fontSize: 14,
+            maxWidth: "calc(100% - 40px)",
+          },
+        }}
       />
     </div>
   );

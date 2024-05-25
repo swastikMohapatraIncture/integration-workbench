@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { postESRConnection } from "../../../apis/apiService";
+import { postNEOConnection } from "../../../apis/apiService";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
@@ -28,7 +28,7 @@ const top100Films = [
 
 const system = [{ label: "DEV" }, { label: "QA" }, { label: "PROD" }];
 
-const PODetails = ({
+const NeoDetails = ({
   showPassword,
   setShowPassword,
   setDisableNext,
@@ -39,7 +39,7 @@ const PODetails = ({
   // connectionStatus,
   // setConnectionStatus,
 }) => {
-  const [poDetails, setPoDetails] = useState({});
+  const [Neodetails, setNeodetails] = useState({});
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
 
@@ -50,27 +50,27 @@ const PODetails = ({
   };
 
   const handleChangeInput = (value, name) => {
-    setPoDetails((prevState) => ({ ...prevState, [name]: value }));
+    setNeodetails((prevState) => ({ ...prevState, [name]: value }));
   };
 
   const handleChange = (e, name) => {
-    setPoDetails((prevState) => ({ ...prevState, [name]: e.target.value }));
+    setNeodetails((prevState) => ({ ...prevState, [name]: e.target.value }));
+    console.log(Neodetails);
   };
 
-  const handlePODetails = (event) => {
+  const handleNeodetails = (event) => {
     event.preventDefault();
     setTestingConn(true);
-    // const formData = poDetails
-    postESRConnection(
-      { dataType: "poData", formData: poDetails },
+    // const formData = Neodetails
+    postNEOConnection(
+      { dataType: "NeoData", formData: Neodetails },
       setDisableNext,
-      setTestingConn
+      setTestingConn,
+      setConnectionMessage
     );
+    setTestingConn(false);
+    
   };
-
-  // const handlePODetails = () => {
-  //   console.log(poDetails);
-  // };
 
   return (
     <div>
@@ -101,7 +101,7 @@ const PODetails = ({
             fullWidth
             size="small"
             placeholder="Enter name"
-            value={poDetails?.name || ""}
+            value={Neodetails?.name || ""}
             onChange={(e) => handleChange(e, "name")}
             variant="outlined"
             sx={{
@@ -110,68 +110,68 @@ const PODetails = ({
           />
         </div>
         <div className="flex flex-col">
-          <span className="mb-2">Username</span>
+          <span className="mb-2">Integration Host</span>
           <TextField
             fullWidth
             size="small"
-            placeholder="Enter User name"
+            placeholder="Enter Host Name"
             variant="outlined"
-            value={poDetails?.username || ""}
-            onChange={(e) => handleChange(e, "username")}
+            value={Neodetails?.Integration_Host || ""}
+            onChange={(e) => handleChange(e, "Integration_Host")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
           />
         </div>
         <div className="flex flex-col">
-          <span className="mb-2">Password</span>
+          <span className="mb-2">Oauth Host</span>
           <OutlinedInput
             id="outlined-adornment-password"
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter password"
+            type="text"
+            placeholder="Enter Oauth Host"
             fullWidth
             size="small"
-            value={poDetails?.password || ""}
-            onChange={(e) => handleChange(e, "password")}
+            value={Neodetails?.Oauth_Host || ""}
+            onChange={(e) => handleChange(e, "Oauth_Host")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
+            // endAdornment={
+            //   <InputAdornment position="end">
+            //     <IconButton
+            //       aria-label="toggle password visibility"
+            //       onClick={handleClickShowPassword}
+            //       onMouseDown={handleMouseDownPassword}
+            //       edge="end"
+            //     >
+            //       {showPassword ? <VisibilityOff /> : <Visibility />}
+            //     </IconButton>
+            //   </InputAdornment>
+            // }
           />
         </div>
         <div className="flex flex-col">
-          <span className="mb-2">Host</span>
+          <span className="mb-2">Oauth Client Id</span>
           <TextField
             fullWidth
             size="small"
-            placeholder="ex.SAP_Server"
+            placeholder="Oauth Client Id"
             variant="outlined"
-            value={poDetails?.host || ""}
-            onChange={(e) => handleChange(e, "host")}
+            value={Neodetails?.Oauth_Clientid || ""}
+            onChange={(e) => handleChange(e, "Oauth_Clientid")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
           />
         </div>
         <div className="flex flex-col">
-          <span className="mb-2">Port</span>
+          <span className="mb-2">Oauth Secret</span>
           <TextField
             size="small"
-            placeholder="ex.5050"
+            placeholder="Oauth Secret"
             variant="outlined"
-            value={poDetails?.port || ""}
-            onChange={(e) => handleChange(e, "port")}
+            value={Neodetails?.Oauth_Secret || ""}
+            onChange={(e) => handleChange(e, "Oauth_Secret")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -203,7 +203,7 @@ const PODetails = ({
       <div className="mb-2 mt-4 flex flex-row gap-4 items-center">
         <button
           className="py-1 px-3 hover:bg-modalColor hover:text-white transition duration-2s rounded-md border border-modalColor text-modalColor"
-          onClick={handlePODetails}
+          onClick={handleNeodetails}
           disabled={testingConn}
         >
           {testingConn ? "Testing..." : "Test Connection"}
@@ -230,4 +230,4 @@ const PODetails = ({
   );
 };
 
-export default PODetails;
+export default NeoDetails;

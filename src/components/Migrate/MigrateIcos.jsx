@@ -1,19 +1,19 @@
-import Package from "./Package"
-import Ico from './Ico'
-import { useState } from "react"
+import Package from "./Package";
+import Ico from "./Ico";
+import { useState } from "react";
 import { handleMigration } from "../../apis/apiService";
 import MigrationReport from "./MigrationReport";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { FaRegCircleCheck } from "react-icons/fa6";
 import { ImCancelCircle } from "react-icons/im";
-
-
-import Loader from '../Loader';
+import Loader from "../Loader";
+import CreatePackage from "../CreatePackage/CreatePackage";
+import CreateNotificationService from "../NotificationService/CreateNotificationService";
 
 const Table = ({ icoDetails, setIcoDetails }) => {
   const [editIndex, setEditIndex] = useState(null);
-  const [editName, setEditName] = useState('');
-  const [editDescription, setEditDescription] = useState('');
+  const [editName, setEditName] = useState("");
+  const [editDescription, setEditDescription] = useState("");
 
   const handleEdit = (index, detail) => {
     setEditIndex(index);
@@ -38,16 +38,26 @@ const Table = ({ icoDetails, setIcoDetails }) => {
       <table className="table-auto w-full text-[#32363A]">
         <thead className="bg-gray-50">
           <tr>
-            <th className="border border-gray-200 px-2 py-2 text-center w-[5%]">No.</th>
-            <th className="border border-gray-200 px-2 py-2 w-[20%] text-left">Iflow Name</th>
-            <th className="border border-gray-200 px-2 py-2 w-[20%] text-left">Description</th>
-            <th className="border border-gray-200 px-2 py-2 text-left w-[5%]">Actions</th>
+            <th className="border border-gray-200 px-2 py-2 text-center w-[5%]">
+              No.
+            </th>
+            <th className="border border-gray-200 px-2 py-2 w-[20%] text-left">
+              Iflow Name
+            </th>
+            <th className="border border-gray-200 px-2 py-2 w-[20%] text-left">
+              Description
+            </th>
+            <th className="border border-gray-200 px-2 py-2 text-left w-[5%]">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody className="max-h-40 overflow-y-auto">
           {icoDetails.map((detail, index) => (
             <tr key={index}>
-              <td className="border border-gray-200 px-2 text-center">{index + 1}</td>
+              <td className="border border-gray-200 px-2 text-center">
+                {index + 1}
+              </td>
               <td className="border border-gray-200 overflow-hidden px-2">
                 {editIndex === index ? (
                   <input
@@ -109,16 +119,17 @@ const splitName = (name) => {
   const maxCharactersPerLine = 45;
 
   if (!name) {
-    // Return an empty string or a placeholder if name is undefined or null
-    return '';
+    return "";
   }
 
   if (name.length > maxCharactersPerLine) {
     return (
       <>
-        {name.match(new RegExp(`.{1,${maxCharactersPerLine}}`, 'g')).map((line, index) => (
-          <div key={index}>{line}</div>
-        ))}
+        {name
+          .match(new RegExp(`.{1,${maxCharactersPerLine}}`, "g"))
+          .map((line, index) => (
+            <div key={index}>{line}</div>
+          ))}
       </>
     );
   } else {
@@ -132,25 +143,27 @@ const MigrateIcos = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [responseData, setResponseData] = useState([]);
-  const [reportBase64, setReportBase64] = useState('');
+  const [reportBase64, setReportBase64] = useState("");
+  const [packageModal, setPackageModal] = useState(false);
+  const [servicesModal, setServicesModal] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
-  const handleDropDownChange = (value) => {
-    setSelectedValue(value.id)
-    console.log("MI", selectedValue);
-  }
+  const handleDropDownChange = (value) => setSelectedValue(value.id);
+  const handleIcoDetailsReceived = (details) => setIcoDetails(details);
+  const handleOpenModal = () => setPackageModal(true);
+  const handleCloseModal = () => setPackageModal(false);
+  const handleServicesModalOpen = () => setServicesModal(true);
+  const handleServicesModalClose = () => setServicesModal(false);
+  const handlePackageCreation = () => setRefresh(prevState => !prevState);
 
-  const handleIcoDetailsReceived = (details) => {
-    setIcoDetails(details)
-    console.log(icoDetails);
-  }
 
   const handleMigrate = async () => {
     const storedCurrAgent = localStorage.getItem("currAgent");
-    const currAgent = storedCurrAgent  ? JSON.parse(storedCurrAgent) : null;
+    const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
 
-    if(!currAgent) {
+    if (!currAgent) {
       console.log("Tenant Data missing, kindly login and try again");
-      return ;
+      return;
     }
 
     const data = {
@@ -158,14 +171,12 @@ const MigrateIcos = () => {
       apiAgent: currAgent.apiData,
       migrationDetails: {
         artifactList: icoDetails,
-        packageId: selectedValue
-      }
-    }
+        packageId: selectedValue,
+      },
+    };
 
-    console.log(data);
-
-    if(icoDetails.length === 0 || selectedValue === undefined) {
-      return ;
+    if (icoDetails.length === 0 || selectedValue === undefined) {
+      return;
     }
 
     setIsLoading(true);
@@ -181,44 +192,52 @@ const MigrateIcos = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   return (
     <>
       <div className="flex justify-between gap-5 p-3">
-        <Ico onIcoDetailsReceived={handleIcoDetailsReceived} setLoading={setIsLoading}/>
-        <Package onSelect={handleDropDownChange} setLoading={setIsLoading}/>
+        <Ico
+          onIcoDetailsReceived={handleIcoDetailsReceived}
+          setLoading={setIsLoading}
+        />
+        <Package onSelect={handleDropDownChange} setLoading={setIsLoading} refreshList={refresh}/>
       </div>
       <div className="px-3 text-[#0A6ED1] flex justify-end text-sm">
-        <button className="pr-2">
+        <button
+          className="pr-2" 
+          onClick={handleServicesModalOpen}
+        >
           Add Alert Notification
         </button>
-        <button className="border-l border-[#0A6ED1] pl-2">
+        <button
+          className="border-l border-[#0A6ED1] pl-2"
+          onClick={handleOpenModal}
+        >
           Create New Package
         </button>
       </div>
-      {icoDetails.length > 0 && (
-        <div className="mt-5">
-          <Table icoDetails={icoDetails} setIcoDetails={setIcoDetails}/>
-        </div>
-      )}
 
       {isLoading && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[999]">
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
           <Loader />
         </div>
       )}
-      
+
+      {icoDetails.length > 0 && (
+        <div className="mt-5">
+          <Table icoDetails={icoDetails} setIcoDetails={setIcoDetails} />
+        </div>
+      )}
+
       <footer
         className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px] bg-white"
         style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
       >
-        <button
-          className="border border-[#0A6ED1] text-[#0A6ED1] rounded-sm px-3 py-1 text-sm hover:text-white hover:bg-[#0A6ED1] transition duration-200 "
-        >
+        <button className="border border-[#0A6ED1] text-[#0A6ED1] rounded-sm px-3 py-1 text-sm hover:text-white hover:bg-[#0A6ED1] transition duration-200 ">
           Back
         </button>
-        
+
         <button
           className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
           onClick={handleMigrate}
@@ -226,15 +245,29 @@ const MigrateIcos = () => {
           Migrate
         </button>
       </footer>
-      
-      <MigrationReport 
+
+      <MigrationReport
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         responseData={responseData}
         reportBase64={reportBase64}
       />
+
+      <CreatePackage 
+        isOpen={packageModal} 
+        onClose={handleCloseModal} 
+        setIsLoading={setIsLoading}
+        onPackageCreated={handlePackageCreation}
+      />
+
+      <CreateNotificationService 
+        isOpen={servicesModal}
+        setLoading={setIsLoading}
+        onClose={handleServicesModalClose}
+      />
+
     </>
-  )
-}
+  );
+};
 
 export default MigrateIcos;
