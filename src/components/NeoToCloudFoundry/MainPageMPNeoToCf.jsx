@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from "react";
 import Introduction from "./Introduction";
 import NeoTable from "../NeoTable";
 
@@ -17,22 +17,27 @@ const MainPageMPNeoToCf = () => {
 
   return (
     <>
-       {(!tenants || tenants.length <= 0 )?(
-          <Introduction 
-          tenants={tenants}
-          setTenants={setTenants}
-          editingAgentIdx={editingAgentIdx}
-          setEditingAgentIdx={setEditingAgentIdx}/>
-        ) : (<NeoTable 
+      {!tenants || tenants.length <= 0 ? (
+        <Introduction
           openModal={openModal}
           setOpenModal={setOpenModal}
           tenants={tenants}
           setTenants={setTenants}
           editingAgentIdx={editingAgentIdx}
-          setEditingAgentIdx={setEditingAgentIdx}/>)
-       }
+          setEditingAgentIdx={setEditingAgentIdx}
+        />
+      ) : (
+        <NeoTable
+          openModal={openModal}
+          setOpenModal={setOpenModal}
+          tenants={tenants}
+          setTenants={setTenants}
+          editingAgentIdx={editingAgentIdx}
+          setEditingAgentIdx={setEditingAgentIdx}
+        />
+      )}
     </>
-  )
-}
+  );
+};
 
-export default MainPageMPNeoToCf
+export default MainPageMPNeoToCf;

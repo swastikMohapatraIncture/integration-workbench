@@ -16,10 +16,9 @@ const MainPageMP = () => {
     localStorage?.removeItem("currAgent");
   }, []);
 
-
   return (
     <>
-      {(!agents || agents.length <= 0) ? (
+      {!agents || agents.length <= 0 ? (
         <Introduction
           openModal={openModal}
           setOpenModal={setOpenModal}
