@@ -17,42 +17,52 @@ export const postESRConnection = async (
   setTestingConn,
   setConnectionMessage
 ) => {
- await postApi(
+  await postApi(
     "http://localhost:8080/api/v1/migration/configuration/connect/esr",
     formData
-  ).then((data)=>{
-    if(data && data.status === "Success"){
-       postApi(
+  ).then((data) => {
+    if (data && data.status === "Success") {
+      postApi(
         "http://localhost:8080/api/v1/migration/configuration/connect/id",
         formData
-      ).then((data2)=>{
-        if(data2 && data2.status==="Success"){
-          const prevData = JSON.parse(localStorage.getItem("currAgent")) || {};
-          const newData = { ...(prevData ? prevData : null), poData: formData };
-          localStorage.setItem("currAgent", JSON.stringify(newData));
+      )
+        .then((data2) => {
+          if (data2 && data2.status === "Success") {
+            const prevData =
+              JSON.parse(localStorage.getItem("currAgent")) || {};
+            const newData = {
+              ...(prevData ? prevData : null),
+              poData: formData,
+            };
+            localStorage.setItem("currAgent", JSON.stringify(newData));
+            setConnectionMessage({
+              text: "Connection successful",
+              type: "success",
+            });
+            setDisableNext(false);
+          } else {
+            setConnectionMessage({
+              text: data?.message || "Connection unsuccessful",
+              type: "error",
+            });
+            setDisableNext(true);
+          }
+          // notification(data.status);
+        })
+        .catch((error) => {
+          console.error("API call failed:", error);
+          // setConnectionStatus(false);
           setConnectionMessage({
-            text: "Connection successful",
-            type: "success",
-          });
-          setDisableNext(false);
-        } else {
-          setConnectionMessage({
-            text: data?.message || "Connection unsuccessful",
+            text: "Connection unsuccessful",
             type: "error",
           });
           setDisableNext(true);
-        }
-        // notification(data.status);
-      }).catch((error)=>{
-        console.error("API call failed:", error);
-      // setConnectionStatus(false);
-      setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
-      setDisableNext(true);
-      }).finally(()=>{
-        setTestingConn(false);
-      })
+        })
+        .finally(() => {
+          setTestingConn(false);
+        });
     }
-  })
+  });
 };
 
 export const postCPIData = async (
@@ -165,19 +175,23 @@ export const handleIcoList = async (poData) => {
 // Function to fetch the List of Packages
 export const handlePackageList = (cpiData) => {
   const toPostData = cpiData;
-   return axios.post("http://localhost:8080/api/v1/migration/designtime/get/package/list", toPostData)
-    .then(response => {
+  return axios
+    .post(
+      "http://localhost:8080/api/v1/migration/designtime/get/package/list",
+      toPostData
+    )
+    .then((response) => {
       if (response?.data?.status === "Success") {
         return response?.data?.payload?.list;
       } else {
         throw new Error("Failed to Fetch Packages");
       }
     })
-    .catch(error => {
+    .catch((error) => {
       console.log("Error getting packages", error);
       throw error;
     });
-}
+};
 
 // Function to create Package
 export const handleCreatePackage = async (data) => {
@@ -200,11 +214,13 @@ export const handleCreatePackage = async (data) => {
 
 export const handleIcoDetails = (data) => {
   const toPostData = data;
-  return postApi("http://localhost:8080/api/v1/migration/designtime/get/iflow/details", toPostData)
-    .then(response => {
-      const {iflowName, description} = response.payload;
-      return {iflowName, description}
-    })
+  return postApi(
+    "http://localhost:8080/api/v1/migration/designtime/get/iflow/details",
+    toPostData
+  ).then((response) => {
+    const { iflowName, description } = response.payload;
+    return { iflowName, description };
+  });
 };
 
 // Function to create Exception Service
@@ -247,4 +263,83 @@ export const handleMigration = async (data, type) => {
   } catch (error) {
     console.error("Error during migration:", error);
   }
+};
+
+// export const compareFiles = async (data) => {
+//   await postApi("http://localhost:8081/api/v1/comparison/files", data).then(
+//     (data) => {
+//       if (data?.status == "Success") {
+//         return data?.message;
+//       } else {
+//         data?.message;
+//       }
+//     }
+//   );
+// };
+
+export const postFileCompareApi = async (files) => {
+  // Check if xmlFile1 and xmlFile2 properties exist and are arrays
+  if (!files || !Array.isArray(files?.xmlFile1) || !Array.isArray(files?.xmlFile2)) {
+    console.error('Invalid files object:', files);
+    return null;
+  }
+
+  const formData = new FormData();
+  
+  // Append files from xmlFile1
+  files.xmlFile1.forEach((file) => {
+    formData.append('xmlFile1', file);
+  });
+
+  // Append files from xmlFile2
+  files.xmlFile2.forEach((file) => {
+    formData.append('xmlFile2', file);
+  });
+
+  try {
+    const response = await axios.post("http://localhost:8081/api/v1/comparison/files", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response?.data;
+  } catch (error) {
+    console.error('Error uploading files:', error);
+    return null;
+  }
+};
+
+
+
+export const getIFlows = async (poData) => {
+  try {
+    const toPostData = poData;
+    const response = await axios.post(
+      "http://localhost:8081/api/v1/comparison/get/artifacts/Id",
+      toPostData
+    );
+    // console.log(response);
+    if (response.data.status === "Success") {
+      return response?.data?.payload;
+    } else {
+      throw new Error("Failed to fetch ICO list");
+    }
+  } catch (error) {
+    console.error("Error fetching ICO list:", error);
+    throw error; // Re-throw the error to propagate it
+  }
+};
+
+export const generateReport = async (data) => {
+  const toPostData = data;
+  await postApi(
+    "http://localhost:8081/api/v1/comparison/generate/report",
+    toPostData
+  ).then((response) => {
+    //  if(data?.status=="Success"){
+    return response?.data;
+    //  }else{
+    //    data?.message
+    //  }
+  });
 };

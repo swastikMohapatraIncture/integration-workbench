@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import MainPageMP from "../MigrationProcess/MainPageMP";
 
 const TablePage = ({ agentSelected, setAgentSelected }) => {

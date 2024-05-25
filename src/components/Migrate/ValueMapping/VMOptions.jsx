@@ -33,7 +33,7 @@ const top100Films = [
 const VMOptions = () => {
   return (
     <div className="">
-      <span className="block mb-3">Select value mapping</span>
+      <span className="block mb-3 text-sm">Select value mapping</span>
       <Autocomplete
         multiple
         limitTags={2}

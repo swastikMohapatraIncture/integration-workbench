@@ -75,7 +75,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/home"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/home"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <GoHome size={20} />
@@ -90,7 +90,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/monitoring"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/monitoring"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <MdMonitor size={20} />
@@ -105,7 +105,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/migrationAssessment"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/migrationAssessment"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <RiFileCloudLine size={20} />
@@ -120,7 +120,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/migrationProcess", "/migrate"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/migrationProcess", "/migrate"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <AiOutlineCloudUpload size={20} />
@@ -135,7 +135,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/automatedTesting"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/automatedTesting"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <TbSettingsSearch size={20} />
@@ -150,7 +150,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/accelerator"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/accelerator"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <GiSpeedometer size={20} />
@@ -165,7 +165,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/about"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/about"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <GoInfo size={20} />
@@ -180,7 +180,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/contacts"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/contacts"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <BsTelephone size={20} />
@@ -195,7 +195,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/faqs"]) ? styles.selectedItem : styles.listItem}
+              sx={isActiveRoute(["/faqs"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <TbMessage2Question size={20} />
