@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
-import TenantModal from "./MigrationProcess/TenantModal";
+import TenantModal from "./NeoToCloudFoundry/TenantModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
