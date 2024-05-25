@@ -41,7 +41,7 @@ const AutomatedForm = ({
   reportGenerate,
   setReportGenerate,
   sections,
-  setSections
+  setSections,
 }) => {
   // const [sections, setSections] = useState([
   //   {
@@ -49,6 +49,7 @@ const AutomatedForm = ({
   //     fileRows: [{ request: null, response: null }],
   //   },
   // ]);
+  
 
   const addNewSection = () => {
     setSections((prevSections) => [
@@ -68,8 +69,12 @@ const AutomatedForm = ({
 
     try {
       const response = await postFileCompareApi({
-        xmlFile1: updatedSections[sectionIndex]?.fileRows?.map((row) => row?.request),
-        xmlFile2: updatedSections[sectionIndex]?.fileRows?.map((row) => row?.response),
+        xmlFile1: updatedSections[sectionIndex]?.fileRows?.map(
+          (row) => row?.request
+        ),
+        xmlFile2: updatedSections[sectionIndex]?.fileRows?.map(
+          (row) => row?.response
+        ),
       });
       console.log("Upload response:", response);
     } catch (error) {
@@ -96,7 +101,13 @@ const AutomatedForm = ({
     setSections((prevSections) =>
       prevSections.map((section, index) =>
         index === sectionIndex
-          ? { ...section, fileRows: [...section.fileRows, { request: null, response: null }] }
+          ? {
+              ...section,
+              fileRows: [
+                ...section.fileRows,
+                { request: null, response: null },
+              ],
+            }
           : section
       )
     );
@@ -153,7 +164,7 @@ const AutomatedForm = ({
   }, []);
 
   const handleChangeInput = (value, name, field, sectionIndex) => {
-    const fieldValue = field === 'icoKey' ? value?.label : value?.name || "";
+    const fieldValue = field === "icoKey" ? value?.label : value?.name || "";
     setReportGenerate((prevState) => ({
       ...prevState,
       [sectionIndex]: {
@@ -163,15 +174,15 @@ const AutomatedForm = ({
     }));
   };
 
-  const handleChange = (e, name, sectionIndex) => {
-    setReportGenerate((prevState) => ({
-      ...prevState,
-      [sectionIndex]: {
-        ...prevState[sectionIndex],
-        [name]: e.target.value,
-      },
-    }));
-  };
+  // const handleChange = (e, name, sectionIndex) => {
+  //   setReportGenerate((prevState) => ({
+  //     ...prevState,
+  //     [sectionIndex]: {
+  //       ...prevState[sectionIndex],
+  //       [name]: e.target.value,
+  //     },
+  //   }));
+  // };
 
   return (
     <div>
@@ -182,11 +193,13 @@ const AutomatedForm = ({
               <span className="mb-2">Select ICO</span>
               <Autocomplete
                 disablePortal
-                freeSolo
+                // freeSolo
                 size="small"
                 id={`combo-box-ico-${sectionIndex}`}
                 options={getICOS}
-                onChange={(e, value) => handleChangeInput(value, "icoKey", "icoKey", sectionIndex)}
+                onChange={(e, value) =>
+                  handleChangeInput(value, "icoKey", "icoKey", sectionIndex)
+                }
                 sx={{
                   "& .MuiInputBase-input": {
                     height: "1.2em",
@@ -202,11 +215,13 @@ const AutomatedForm = ({
               <span className="mb-2">Select iFlow</span>
               <Autocomplete
                 disablePortal
-                freeSolo
+                // freeSolo
                 size="small"
                 id={`combo-box-iflow-${sectionIndex}`}
                 options={getIFlow}
-                onChange={(e, value) => handleChangeInput(value, "iflowId", "iflowId", sectionIndex)}
+                onChange={(e, value) =>
+                  handleChangeInput(value, "iflowId", "iflowId", sectionIndex)
+                }
                 getOptionLabel={(option) => option?.name || ""}
                 sx={{
                   "& .MuiInputBase-input": {
@@ -226,13 +241,16 @@ const AutomatedForm = ({
                 className="text-[#0064D9]"
                 onClick={() => {
                   const updatedSections = [...sections];
-                  updatedSections[sectionIndex].showMore = !updatedSections[sectionIndex].showMore;
+                  updatedSections[sectionIndex].showMore =
+                    !updatedSections[sectionIndex]?.showMore;
                   setSections(updatedSections);
                 }}
               >
                 {section.showMore ? "Show less" : "Show More "}
               </button>
-              <button className="text-red-700" onClick={deleteSection}><RiDeleteBin6Line size={20}/></button>
+              <button className="text-red-700" onClick={deleteSection}>
+                <RiDeleteBin6Line size={20} />
+              </button>
             </div>
             <Collapse in={section.showMore}>
               {section.fileRows.map((row, fileIndex) => (
@@ -241,7 +259,19 @@ const AutomatedForm = ({
                   className="flex flex-row justify-start gap-8 items-center mt-2"
                 >
                   <div>
-                    <Box sx={sharedStyles}>test case {fileIndex + 1}</Box>
+                    <TextField
+                      variant="outlined"
+                      size="small"
+                      value={row.testCaseName}
+                      onChange={(e) => {
+                        const updatedSections = [...sections];
+                        updatedSections[sectionIndex].fileRows[
+                          fileIndex
+                        ].testCaseName = e.target.value;
+                        setSections(updatedSections);
+                      }}
+                      placeholder={`Text Case ${fileIndex + 1}`}
+                    />
                   </div>
                   <div>
                     <Box>
@@ -256,7 +286,12 @@ const AutomatedForm = ({
                           <VisuallyHiddenInput
                             type="file"
                             onChange={(e) =>
-                              handleFileChange(e, "request", sectionIndex, fileIndex)
+                              handleFileChange(
+                                e,
+                                "request",
+                                sectionIndex,
+                                fileIndex
+                              )
                             }
                           />
                         </Button>
@@ -267,7 +302,11 @@ const AutomatedForm = ({
                           </Typography>
                           <IconButton
                             onClick={() =>
-                              handleFileRemove("request", sectionIndex, fileIndex)
+                              handleFileRemove(
+                                "request",
+                                sectionIndex,
+                                fileIndex
+                              )
                             }
                             size="small"
                           >
@@ -290,7 +329,12 @@ const AutomatedForm = ({
                           <VisuallyHiddenInput
                             type="file"
                             onChange={(e) =>
-                              handleFileChange(e, "response", sectionIndex, fileIndex)
+                              handleFileChange(
+                                e,
+                                "response",
+                                sectionIndex,
+                                fileIndex
+                              )
                             }
                           />
                         </Button>
@@ -301,7 +345,11 @@ const AutomatedForm = ({
                           </Typography>
                           <IconButton
                             onClick={() =>
-                              handleFileRemove("response", sectionIndex, fileIndex)
+                              handleFileRemove(
+                                "response",
+                                sectionIndex,
+                                fileIndex
+                              )
                             }
                             size="small"
                           >
@@ -317,14 +365,18 @@ const AutomatedForm = ({
                 <button
                   className={`text-sm text-[#0064D9] ${
                     section.fileRows.length > 0 &&
-                    !section.fileRows.every((row) => row?.request && row?.response)
+                    !section.fileRows.every(
+                      (row) => row?.request && row?.response
+                    )
                       ? "cursor-not-allowed text-[#76a9e4]"
                       : "cursor-pointer"
                   }`}
                   onClick={() => addNewRow(sectionIndex)}
                   disabled={
                     section.fileRows.length > 0 &&
-                    !section.fileRows.every((row) => row.request && row.response)
+                    !section.fileRows.every(
+                      (row) => row.request && row.response
+                    )
                   }
                 >
                   &#43; Add more files
@@ -335,9 +387,8 @@ const AutomatedForm = ({
         </div>
       ))}
       <div className="flex justify-center mt-4 border-dashed border-2 border-[#0A6ED1] p-4 ]">
-        
         <Button variant="outlined" color="primary" onClick={addNewSection}>
-        <FaPlus />
+          <FaPlus />
         </Button>
       </div>
     </div>

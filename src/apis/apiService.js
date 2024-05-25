@@ -418,14 +418,22 @@ export const getIFlows = async (poData) => {
 
 export const generateReport = async (data) => {
   const toPostData = data;
-  await postApi(
-    "http://localhost:8081/api/v1/comparison/generate/report",
-    toPostData
-  ).then((response) => {
-    //  if(data?.status=="Success"){
-    return response?.data;
-    //  }else{
-    //    data?.message
-    //  }
-  });
+  try {
+    const response = await axios.post(
+      "http://localhost:8081/api/v1/comparison/generate/report",
+      toPostData
+    );
+    
+    // Check if the status code is in the range of 200-299 (success)
+    if (response.status >= 200 && response.status < 300) {
+      return response?.data;
+    } else {
+      // Handle the case where the status code indicates an error
+      throw new Error(`Request failed with status code ${response.status}`);
+    }
+  } catch (error) {
+    // Handle any other errors (network issues, etc.)
+    console.error('Error generating report:', error);
+    throw error;
+  }
 };

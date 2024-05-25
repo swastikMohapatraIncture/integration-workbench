@@ -9,8 +9,67 @@ import TablePage from "../components/AutomatedTesting/TablePage";
 import AutomatedForm from "../components/AutomatedTesting/AutomatedForm";
 import { Divider } from "@mui/material";
 import { generateReport } from "../apis/apiService";
+import Loader from "../components/Loader";
 
-const ReportModal = ({ setReportModal }) => {
+// Component to render the report modal
+const ReportModal = ({ setReportModal, reportPayload, resetForm }) => {
+  const b64toBlob = (b64Data, contentType = "", sliceSize = 512) => {
+    try {
+      const byteCharacters = atob(b64Data);
+      const byteArrays = [];
+
+      for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+        const slice = byteCharacters.slice(offset, offset + sliceSize);
+        const byteNumbers = new Array(slice.length);
+
+        for (let i = 0; i < slice.length; i++) {
+          byteNumbers[i] = slice.charCodeAt(i);
+        }
+
+        const byteArray = new Uint8Array(byteNumbers);
+        byteArrays.push(byteArray);
+      }
+
+      const blob = new Blob(byteArrays, { type: contentType });
+      return blob;
+    } catch (error) {
+      console.error("Failed to convert Base64 to Blob:", error);
+      return null;
+    }
+  };
+
+  const handleDownload = () => {
+    try {
+      if (!reportPayload?.excelBase64) {
+        throw new Error("No data available for download.");
+      }
+
+      const base64Regex = /^[A-Za-z0-9+/]+[=]{0,2}$/;
+      const isValidBase64 = base64Regex.test(reportPayload.excelBase64);
+
+      if (!isValidBase64) {
+        throw new Error("The Base64 string is not correctly encoded.");
+      }
+
+      const blob = b64toBlob(reportPayload.excelBase64, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+      if (!blob) {
+        throw new Error("Failed to create Blob from Base64 string.");
+      }
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "migration_report.xlsx";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading the file:", error.message);
+      alert(`Error downloading the file: ${error.message}`);
+    }
+  };
+
   return (
     <>
       <div className="opacity-25 fixed inset-0 z-[1000] bg-black"></div>
@@ -20,105 +79,55 @@ const ReportModal = ({ setReportModal }) => {
           <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white h-[550px]">
             {/*header*/}
             <div className="flex items-start justify-between p-3 border-b border-solid border-blueGray-200 rounded-t">
-              <h3 className="text-2xl font-semibold">Comparision Status</h3>
+              <h3 className="text-2xl font-semibold">Comparison Status</h3>
             </div>
             {/*body*/}
             <div className="relative p-6 flex-auto">
-              <p className="my-4 text-blueGray-500 text-lg leading-relaxed">
-                <table className="min-w-full divide-y  divide-gray-200 border border-gray-300 text-sm">
-                  <thead className="bg-[#F2F2F2]">
+              <table className="min-w-full divide-y divide-gray-200 border border-gray-300 text-sm">
+                <thead className="bg-[#F2F2F2]">
+                  <tr>
+                    <th scope="col" className="px-5 py-2 border-gray-200">Sl No</th>
+                    <th className="px-6 py-2 text-left font-bold text-[#32363A] tracking-wider border-gray-200">ICO</th>
+                    <th className="px-6 py-2 text-left font-bold text-[#32363A] tracking-wider border-gray-200">IFlow</th>
+                    <th className="px-6 py-2 text-left font-bold text-[#32363A] tracking-wider border-gray-200">No. of Test cases ran</th>
+                    <th className="px-6 py-2 text-left font-bold text-[#32363A] tracking-wider border-gray-200">Overall Status</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {reportPayload.comparisonPayload.length > 0 ? (
+                    reportPayload.comparisonPayload.map((item, index) => (
+                      <tr key={index} className="hover:bg-gray-100">
+                        <td className="px-6 py-3 whitespace-nowrap text-[#32363A] border-gray-200">{index + 1}</td>
+                        <td className="px-6 py-3 whitespace-nowrap text-[#32363A] border-gray-200">{item?.icoName}</td>
+                        <td className="px-6 py-3 whitespace-nowrap text-[#32363A] border-gray-200">{item?.iflowName}</td>
+                        <td className="px-6 py-3 whitespace-nowrap text-[#32363A] border-gray-200">{item?.comparedPayload}</td>
+                        <td className="px-6 py-3 whitespace-nowrap text-[#32363A] border-gray-200">{item?.successfulCompared}</td>
+                      </tr>
+                    ))
+                  ) : (
                     <tr>
-                      <th scope="col" className="px-5 py-2 border-gray-200 ">
-                        Sl No
-                      </th>
-                      <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
-                        ICO
-                      </th>
-                      <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
-                        IFlow
-                      </th>
-                      <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
-                        No. of Test cases ran
-                      </th>
-                      <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
-                        Overall Status
-                      </th>
-                      {/* <th className="px-6 py-2 text-left  font-bold text-[#32363A] tracking-wider border-gray-200">
-                        Actions
-                      </th> */}
+                      <td colSpan="5" className="px-6 py-3 text-center text-[#32363A] border-gray-200">No data available</td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {/* {agents &&
-                agents.length > 0 &&
-                agents.map((agent, index) => ( */}
-                    <tr className="hover:bg-gray-100">
-                      {/* <td className="whitespace-nowrap  border-gray-200 text-center">
-                      <input
-                        type="radio"
-                        name="agent"
-                        onChange={() => {
-                          localStorage?.setItem(
-                            "currAgent",
-                            JSON?.stringify(agent)
-                          );
-                          setAgentSelected(true);
-                        }}
-                      />
-                    </td> */}
-                      <td className="px-6 py-3 whitespace-nowrap  text-[#32363A]  border-gray-200">
-                        {/* {agent?.poData?.name} */}1
-                      </td>
-                      <td className="px-6 py-3 whitespace-nowrap  text-[#32363A]  border-gray-200">
-                        {/* {agent?.poData?.name} */}
-                        test
-                      </td>
-                      <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                        {/* {agent?.poData?.environment} */}
-                        test
-                      </td>
-                      <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                        {/* {agent?.cpiData?.name} */}
-                        test
-                      </td>
-                      <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                        {/* {agent?.cpiData?.environment} */}
-                        test
-                      </td>
-                      {/* <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                      <button
-                        className="text-blue-600 hover:text-blue-900 mr-2"
-                        onClick={() => handleEditAgent(index)}
-                      >
-                        <MdOutlineModeEdit className="text-blue-600 text-xl" />
-                      </button>
-                      <button
-                        className="text-red-600 hover:text-red-900"
-                        // onClick={() => handleDeleteAgent(index)}
-                        onClick={() => setDeleteModal({ open: true, index })}
-                      >
-                        <RiDeleteBin6Line className="text-red-600 text-xl" />
-                      </button> */}
-                      {/* </td> */}
-                    </tr>
-                    {/* ))} */}
-                  </tbody>
-                </table>
-              </p>
+                  )}
+                </tbody>
+              </table>
             </div>
             {/*footer*/}
             <div className="flex items-center justify-end p-2 border-t border-solid border-blueGray-200 rounded-b">
               <button
-                className="border border-[#0A6ED1] text-[#0A6ED1]   text-sm px-4 py-3 rounded hover:bg-[#0A6ED1] hover:text-white mr-1 mb-1 ease-linear transition-all duration-150"
+                className="border border-[#0A6ED1] text-[#0A6ED1] text-sm px-4 py-3 rounded hover:bg-[#0A6ED1] hover:text-white mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
-                onClick={() => setReportModal(false)}
+                onClick={handleDownload}
               >
                 Download
               </button>
               <button
-                className="text-#0A6ED1 px-4 py-3 text-sm  mr-1 mb-1 ease-linear transition-all duration-150"
+                className="text-#0A6ED1 px-4 py-3 text-sm mr-1 mb-1 ease-linear transition-all duration-150"
                 type="button"
-                onClick={() => setReportModal(false)}
+                onClick={() => {
+                  setReportModal(false);
+                  resetForm();
+                }}
               >
                 Close
               </button>
@@ -133,36 +142,29 @@ const ReportModal = ({ setReportModal }) => {
 const steps = ["Select Tenant", "Select ICO"];
 
 const AutomatedTesting = () => {
+  const [loading, setLoading] = useState(false);
   const [agentSelected, setAgentSelected] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState({});
-  const [reportGenerate, setReportGenerate] = useState([]);
+  const [reportGenerate, setReportGenerate] = useState({});
   const [getICOS, setGetICOS] = useState([]);
   const [getIFlow, setGetIflow] = useState([]);
-  // const [fileRows, setFileRows] = useState([{ request: null, response: null }]);
   const [sections, setSections] = useState([
     {
       showMore: false,
-      fileRows: [{ request: null, response: null }],
+      fileRows: [{ request: null, response: null, testCaseName: "" }],
     },
   ]);
   const [reportModal, setReportModal] = useState(false);
+  const [reportPayload, setReportPayload] = useState({ comparisonPayload: [], excelBase64: "" });
 
-  const totalSteps = () => {
-    return steps?.length;
-  };
+  const totalSteps = () => steps.length;
 
-  const completedSteps = () => {
-    return Object?.keys(completed)?.length;
-  };
+  const completedSteps = () => Object.keys(completed).length;
 
-  const isLastStep = () => {
-    return activeStep === totalSteps() - 1;
-  };
+  const isLastStep = () => activeStep === totalSteps() - 1;
 
-  const allStepsCompleted = () => {
-    return completedSteps() === totalSteps();
-  };
+  const allStepsCompleted = () => completedSteps() === totalSteps();
 
   const handleNext = () => {
     const newActiveStep =
@@ -172,39 +174,57 @@ const AutomatedTesting = () => {
     setActiveStep(newActiveStep);
   };
 
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  const handleBack = () => setActiveStep((prevActiveStep) => prevActiveStep - 1);
+
+  const handleStep = (step) => () => setActiveStep(step);
+
+  const handleCompare = async () => {
+    setLoading(true);
+    try {
+      const agentStorage = localStorage?.getItem("currAgent");
+      const parsedAgentStorage = agentStorage ? JSON.parse(agentStorage) : {};
+      const poDetails = parsedAgentStorage?.poData || {};
+      const cpiDetails = parsedAgentStorage?.cpiData || {};
+      const apiDetails = parsedAgentStorage?.apiData || {};
+
+      const fileComparePayload = sections?.map((section, sectionIndex) => ({
+        ...reportGenerate[sectionIndex],
+        payload: section?.fileRows?.map((row, rowIndex) => ({
+          requestFilename: row?.request?.name || "",
+          responseFilename: row?.response?.name || "",
+          testCaseName: row?.testCaseName || `Test Case ${rowIndex + 1}`,
+        })),
+      }));
+
+      const payload = {
+        poAgentDTO: poDetails,
+        apiAgent: cpiDetails,
+        cpiAgent: apiDetails,
+        fileComparePayload,
+      };
+
+      const report = await generateReport(payload);
+      if (report?.comparisonPayload) {
+        setReportPayload({
+          comparisonPayload: report.comparisonPayload,
+          excelBase64: report.excelBase64,
+        });
+      }
+      setLoading(false);
+      setReportModal(true);
+    } catch (error) {
+      setLoading(false);
+      console.error("Error in handleCompare:", error);
+      // Handle the error as needed, e.g., show a notification or set an error state
+    }
   };
 
-  const handleStep = (step) => () => {
-    setActiveStep(step);
-  };
-
-  const handleCompare = () => {
-    const agentStorage = localStorage?.getItem("currAgent");
-    const poDetails = agentStorage ? JSON.parse(agentStorage)?.poData : {};
-    const cpiDetails = agentStorage ? JSON.parse(agentStorage)?.cpiData : {};
-    const apiDetails = agentStorage ? JSON.parse(agentStorage)?.apiData : {};
-    const fileComparePayload = sections?.map((section, sectionIndex) => ({
-      ...reportGenerate[sectionIndex],
-      payload: section?.fileRows?.map((row, rowIndex) => ({
-        requestFilename: row?.request?.name || "",
-        responseFilename: row?.response?.name || "",
-        testCaseName: `Test Case 01`,
-      })),
-    }));
-
-    const payload = {
-      poAgentDTO: poDetails,
-      apiAgent: cpiDetails,
-      cpiAgent: apiDetails,
-      fileComparePayload,
-    };
-
-    console.log("fileTest:", payload);
-    const report = generateReport(payload);
-    console.log(report);
-    setReportModal(true);
+  const resetForm = () => {
+    setReportGenerate({});
+    setGetICOS([]);
+    setGetIflow([]);
+    setSections([{ showMore: false, fileRows: [{ request: null, response: null, testCaseName: "" }] }]);
+    setReportPayload({ comparisonPayload: [], excelBase64: "" });
   };
 
   const renderStepContent = (step) => {
@@ -223,8 +243,6 @@ const AutomatedTesting = () => {
             setGetICOS={setGetICOS}
             getIFlow={getIFlow}
             setGetIflow={setGetIflow}
-            // fileRows={fileRows}
-            // setFileRows={setFileRows}
             reportGenerate={reportGenerate}
             setReportGenerate={setReportGenerate}
             sections={sections}
@@ -257,6 +275,11 @@ const AutomatedTesting = () => {
       </Stepper>
       <Divider sx={{ marginTop: "6px" }} />
       <div>
+        {loading && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
+            <Loader />
+          </div>
+        )}
         <Typography sx={{ mt: 2, mb: 1, py: 1, height: "100%" }}>
           {renderStepContent(activeStep)}
         </Typography>
@@ -276,17 +299,10 @@ const AutomatedTesting = () => {
             right: 0,
           }}
         >
-          {/* <button
-            className="bg-[#0A6ED1] text-white rounded-sm px-4 py-1 hover:bg-gray-100 hover:text-black transition duration-200"
-            onClick={handleBack}
-            disabled={activeStep === 0}
-          >
-            Back
-          </button> */}
           <Box sx={{ flex: "1 1 auto" }} />
           {activeStep === 0 && (
             <button
-              className={`bg-[#0A6ED1]  rounded-sm px-4 py-1  transition duration-200 ${
+              className={`bg-[#0A6ED1] rounded-sm px-4 py-1 transition duration-200 ${
                 !agentSelected
                   ? "bg-gray-300 text-black cursor-not-allowed"
                   : "bg-[#0A6ED1] text-white hover:bg-gray-100 hover:text-black transition duration-500"
@@ -300,7 +316,6 @@ const AutomatedTesting = () => {
           {activeStep === 1 && (
             <button
               className="bg-[#0A6ED1] text-white rounded-sm px-4 py-1 hover:bg-gray-100 hover:text-black transition duration-200 mr-3"
-              // onClick={handleNext}
               onClick={handleCompare}
             >
               Compare
@@ -308,7 +323,14 @@ const AutomatedTesting = () => {
           )}
         </Box>
       </div>
-      {reportModal && <ReportModal setReportModal={setReportModal} />}
+
+      {reportModal && (
+        <ReportModal
+          setReportModal={setReportModal}
+          reportPayload={reportPayload}
+          resetForm={resetForm}
+        />
+      )}
     </Box>
   );
 };
