@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import { handlePackageList } from "../../apis/apiService";
@@ -7,7 +7,6 @@ const Package = ({ onSelect, setLoading, refreshList }) => {
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [packageList, setPackageList] = useState([]);
   const [error, setError] = useState(null);
-  const cachedPackageList = useRef(null);
 
   useEffect(() => {
     console.log(refreshList);
@@ -46,7 +45,7 @@ const Package = ({ onSelect, setLoading, refreshList }) => {
 
   return (
     <div className="w-full">
-      <label className="block mb-1 text-sm">Select Package</label>
+      <label className="block mb-1 text-sm">Select Package<span className="text-red-600">*</span></label>
       <Autocomplete
         fullWidth
         value={selectedPackage}

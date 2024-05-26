@@ -3,6 +3,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Package from "../Migrate/Package";
 import { toast } from "react-toastify";
+import "../../App.css";
 import { handleExceptionServices } from "../../apis/apiService";
 
 const CreateNotificationService = ({ setLoading, isOpen, onClose }) => {
@@ -15,10 +16,8 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose }) => {
   const handleDropDownChange = (value) => setSelectedValue(value?.id);
 
   const handleServiceChange = (event, value) => {
-    // Create a copy of the current integration names
     const currentIntegrationNames = [...integrationNames];
 
-    // Resize the array to match the new selected services length
     const newIntegrationNames = value.map(
       (service, index) => currentIntegrationNames[index] || ""
     );
@@ -44,7 +43,7 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose }) => {
         !integrationNames.every((name) => name.trim())
       ) {
         throw new Error(
-          "Please select a package, at least one service, and provide integration names."
+          "Please select a package, at least one service and provide integration names."
         );
       }
 
@@ -106,7 +105,7 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose }) => {
 
         <div className="flex mb-4 px-4">
           <div className="w-1/2 pr-2">
-            <label className="text-sm">Select Services</label>
+            <label className="text-sm">Select Services<span className="text-red-600">*</span></label>
             <Autocomplete
               fullWidth
               multiple
@@ -144,7 +143,7 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose }) => {
             {selectedServices.map((service, index) => (
               <div key={index} className="mb-4 px-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Integration Name for {service}
+                  Integration Name for {service}<span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -153,7 +152,7 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose }) => {
                     handleIntegrationNameChange(event, index)
                   }
                   placeholder={`Integration Name for ${service}`}
-                  className="w-full px-3 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 italic text-sm"
+                  className="w-full px-3 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
               </div>
             ))}

@@ -1,6 +1,6 @@
 import { AppBar, Toolbar, Typography } from "@mui/material";
 import Incture from "../assets/logos/InctureLogo.svg";
-import InctureLogo from "../assets/InctureLogo.png";
+// import InctureLogo from "../assets/InctureLogo.png";
 import { BsTelephone } from "react-icons/bs";
 import { GoInfo } from "react-icons/go";
 import { CgProfile } from "react-icons/cg";
@@ -17,7 +17,7 @@ const Header = () => {
         sx={{
           zIndex: 1000,
           backgroundColor: "#2A4862",
-          borderBottom: "2px solid #F1F1F1",
+          // borderBottom: "2px solid #F1F1F1",
           color: "white",
           minHeight: "50px",
           maxHeight: "50px",
@@ -51,7 +51,9 @@ const Header = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2 ">
-                <img src={Incture} className="w-28" alt="Incture logo" />
+                <Link to="/">
+                  <img src={Incture} className="w-28" alt="Incture logo" />
+                </Link>
                 {/* <h1>Incture</h1> */}
                 <h1 className="text-xl font-normal tracking-wider text-white mt-1">
                   Integration Workbench
@@ -59,16 +61,25 @@ const Header = () => {
               </div>
               <div className="flex flex-row gap-6">
                 <Link to="/about">
-                  <GoInfo size={20} className="cursor-pointer text-white" />
+                  <span title="About Us">
+                    <GoInfo size={20} className="cursor-pointer text-white" />
+                  </span>
                 </Link>
                 <Link to="/contacts">
-                  <BsTelephone
-                    size={18}
-                    className="cursor-pointer text-white"
-                  />
+                  <span title="Contact Us">
+                    <BsTelephone
+                      size={18}
+                      className="cursor-pointer text-white"
+                    />
+                  </span>
                 </Link>
                 <Link to="/faqs">
-                  <TbMessage2Question size={20} className="text-white cursor-pointer" />
+                  <span title="Ask Us">
+                    <TbMessage2Question
+                      size={20}
+                      className="text-white cursor-pointer"
+                    />
+                  </span>
                 </Link>
 
                 <CgProfile size={20} className="ml-8 cursor-not-allowed" />

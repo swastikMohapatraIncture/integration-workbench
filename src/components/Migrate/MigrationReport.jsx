@@ -5,6 +5,7 @@ const MigrationReport = ({ isOpen, onClose, responseData, reportBase64 }) => {
   
   const [search, setSearch] = useState('');
   // console.log("response data", responseData)
+  console.log("report",responseData);
   const filteredData = responseData?.filter(response  => {
     return response?.message?.toLowerCase()?.includes(search?.toLowerCase()) || response?.payload?.toLowerCase()?.includes(search?.toLowerCase()) ||
     response?.status?.toLowerCase()?.includes(search?.toLowerCase());

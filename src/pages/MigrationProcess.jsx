@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import MainPageMP from '../components/MigrationProcess/MainPageMP';
 import MainPageMPNeoToCf from '../components/NeoToCloudFoundry/MainPageMPNeoToCf';
 import Introduction from '../components/NeoToCloudFoundry/Introduction';
+import { ToastContainer } from 'react-toastify';
 
 
 function CustomTabPanel(props) {
@@ -52,7 +53,7 @@ const MigrationProcess = () => {
 
   return (
     <Box sx={{ width: "100%" }}>
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider"  }}>
         <Tabs
           value={value}
           onChange={handleChange}

@@ -92,8 +92,6 @@ function App() {
             </Layout>
           }
         />
-        {/* <Route path="migrationtable" element={<Layout ><Table /></Layout>} /> */}
-        {/* <Route path="migrationtable2" element={<Layout ></Layout>} /> */}
         <Route
           path="migrate"
           element={

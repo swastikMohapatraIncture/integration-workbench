@@ -20,7 +20,7 @@ const SideBar = () => {
   const styles = {
     listItem: {
       margin: "6px",
-      borderRadius: "4px",
+      borderRadius: "2px",
       backgroundColor: "#F2F2F2",
       "&:hover": {
         backgroundColor: "#0A6ED1",
@@ -31,7 +31,7 @@ const SideBar = () => {
       backgroundColor: "#0A6ED1",
       color: "white",
       margin: "6px",
-      borderRadius: "4px",
+      borderRadius: "2px",
       "&:hover": {
         backgroundColor: "#0A6ED1",
         color: "white",
@@ -137,7 +137,7 @@ const SideBar = () => {
             }}
           >
             <ListItemButton
-              sx={isActiveRoute(["/migrationProcess", "/migrate"]) ? styles?.selectedItem : styles?.listItem}
+              sx={isActiveRoute(["/migrationProcess", "/Migrate"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
             >
               <AiOutlineCloudUpload size={20} />
@@ -183,7 +183,6 @@ const SideBar = () => {
               <GoInfo size={20} />
               <span className="gap-4">About</span>
             </ListItemButton>
-<<<<<<< Updated upstream
           </ListItem>
           <ListItem
             disablePadding
@@ -192,11 +191,9 @@ const SideBar = () => {
               setOpenSubmenu(false);
             }}
           >
-=======
           </ListItem> */}
           {/* <ListItem disablePadding onClick={() => {navigate("/contacts");
               setOpenSubmenu(false);}}>
->>>>>>> Stashed changes
             <ListItemButton
               sx={isActiveRoute(["/contacts"]) ? styles?.selectedItem : styles?.listItem}
               className="flex flex-row justify-between items-center gap-4"
@@ -215,6 +212,7 @@ const SideBar = () => {
               <span className="gap-4">FAQs</span>
             </ListItemButton>
           </ListItem> */}
+
         </List>
       </Drawer>
     </>

@@ -427,3 +427,33 @@ export const generateReport = async (data) => {
     throw error;
   }
 };
+
+export const valueMappingList = async (data) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:8080/api/v1/metadata/get/vm/list",
+      data
+    );
+
+    if (response.data.status === "Success") {
+      return response.data.payload;
+    } else {
+      throw new Error(response.data.message || "Failed to fetch data");
+    }
+  } catch (error) {
+    return error.message;
+  }
+};
+
+export const migrateValueMapping = async(data) => {
+  try{
+    const response = await axios.post(
+      "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm", data
+    )
+
+    // if(response.data.status === "Success")
+      console.log(response);
+  } catch(error) {
+    return error.message;
+  }
+}

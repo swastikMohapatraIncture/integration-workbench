@@ -3,144 +3,16 @@ import Ico from "./Ico";
 import { useState } from "react";
 import { handleMigration } from "../../apis/apiService";
 import MigrationReport from "./MigrationReport";
-import { MdOutlineModeEdit } from "react-icons/md";
-import { FaRegCircleCheck } from "react-icons/fa6";
-import { ImCancelCircle } from "react-icons/im";
 import Loader from "../Loader";
 import CreatePackage from "../CreatePackage/CreatePackage";
 import CreateNotificationService from "../NotificationService/CreateNotificationService";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-
-const Table = ({ icoDetails, setIcoDetails }) => {
-  const [editIndex, setEditIndex] = useState(null);
-  const [editName, setEditName] = useState("");
-  const [editDescription, setEditDescription] = useState("");
-
-  const handleEdit = (index, detail) => {
-    setEditIndex(index);
-    setEditName(detail.artifactName);
-    setEditDescription(detail.description);
-  };
-
-  const handleSave = (index) => {
-    const updatedDetails = [...icoDetails];
-    updatedDetails[index].artifactName = editName;
-    updatedDetails[index].description = editDescription;
-    setIcoDetails(updatedDetails);
-    setEditIndex(null);
-  };
-
-  const handleCancel = () => {
-    setEditIndex(null);
-  };
-
-  return (
-    <div className="overflow-x-auto p-3 text-sm">
-      <table className="table-auto w-full text-[#32363A]">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="border border-gray-200 px-2 py-2 text-center w-[5%]">
-              No.
-            </th>
-            <th className="border border-gray-200 px-2 py-2 w-[20%] text-left">
-              Iflow Name
-            </th>
-            <th className="border border-gray-200 px-2 py-2 w-[20%] text-left">
-              Description
-            </th>
-            <th className="border border-gray-200 px-2 py-2 text-left w-[5%]">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="max-h-40 overflow-y-auto">
-          {icoDetails?.map((detail, index) => (
-            <tr key={index}>
-              <td className="border border-gray-200 px-2 text-center">
-                {index + 1}
-              </td>
-              <td className="border border-gray-200 overflow-hidden px-2">
-                {editIndex === index ? (
-                  <input
-                    type="text"
-                    value={editName}
-                    onChange={(e) => setEditName(e.target.value)}
-                    className="w-full px-2 py-1 border border-gray-300"
-                  />
-                ) : (
-                  splitName(detail.artifactName)
-                )}
-              </td>
-              <td className="border border-gray-200 overflow-hidden px-2 h-20">
-                {editIndex === index ? (
-                  <input
-                    type="text"
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    className="w-full px-2 py-1 border border-gray-300"
-                  />
-                ) : (
-                  detail.description
-                )}
-              </td>
-              <td className="border border-gray-200 overflow-hidden px-2">
-                {editIndex === index ? (
-                  <>
-                    <button
-                      className="text-green-500 mx-6 text-2xl"
-                      onClick={() => handleSave(index)}
-                    >
-                      <FaRegCircleCheck />
-                    </button>
-                    <button
-                      className="text-red-600 text-2xl"
-                      onClick={handleCancel}
-                    >
-                      <ImCancelCircle />
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    className=" text-white px-2 py-1 ml-6"
-                    onClick={() => handleEdit(index, detail)}
-                  >
-                    <MdOutlineModeEdit className="text-blue-600 text-xl" />
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
-
-const splitName = (name) => {
-  const maxCharactersPerLine = 45;
-
-  if (!name) {
-    return "";
-  }
-
-  if (name.length > maxCharactersPerLine) {
-    return (
-      <>
-        {name
-          .match(new RegExp(`.{1,${maxCharactersPerLine}}`, "g"))
-          .map((line, index) => (
-            <div key={index}>{line}</div>
-          ))}
-      </>
-    );
-  } else {
-    return name;
-  }
-};
+import DetailsTable from "./DetailsTable";
+import { ToastContainer, Zoom } from "react-toastify";
 
 const MigrateIcos = () => {
-  const [selectedValue, setSelectedValue] = useState();
+  const [selectedValue, setSelectedValue] = useState(undefined);
   const [icoDetails, setIcoDetails] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -159,42 +31,37 @@ const MigrateIcos = () => {
   const handlePackageCreation = () => setRefresh((prevState) => !prevState);
 
   const handleMigrate = async () => {
-    const storedCurrAgent = localStorage.getItem("currAgent");
-    const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
-
-    if (!currAgent) {
-      toast.error("Tenant Data missing.");
-      return;
-    }
-
-    const data = {
-      poAgent: currAgent.poData,
-      apiAgent: currAgent.apiData,
-      migrationDetails: {
-        artifactList: icoDetails,
-        packageId: selectedValue,
-      },
-    };
-
-    if (icoDetails.length === 0 || selectedValue === undefined) {
-      toast.error("ICO or Package cannot be empty.");
-      return;
-    }
-
-    setIsLoading(true);
-
     try {
+      if (icoDetails?.length === 0 || selectedValue === undefined) {
+        // toast.error("test")
+        throw new Error("ICO or Package cannot be empty.");
+      }
+
+      const storedCurrAgent = localStorage.getItem("currAgent");
+      const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
+
+      if (!currAgent) {
+        throw new Error("Tenant data missing.");
+      }
+
+      const data = {
+        poAgent: currAgent.poData,
+        apiAgent: currAgent.apiData,
+        migrationDetails: {
+          artifactList: icoDetails,
+          packageId: selectedValue,
+        },
+      };
+
+      setIsLoading(true);
+
       const response = await handleMigration(data, "icos");
       setResponseData(response.icoDetailsList);
       setReportBase64(response.reportBase64);
       setIsModalOpen(true);
       toast.success("Migration Complete");
-
-      // Reset state variables after successful migration
-      setIcoDetails([]);
-      setSelectedValue(undefined);
     } catch (error) {
-      toast.error("Error during migration");
+      toast.error(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -214,15 +81,19 @@ const MigrateIcos = () => {
         />
       </div>
       <div className="px-3 text-[#0A6ED1] flex justify-end text-sm">
-        <button className="pr-2" onClick={handleServicesModalOpen}>
-          Add Alert Notification
-        </button>
-        <button
-          className="border-l border-[#0A6ED1] pl-2"
-          onClick={handleOpenModal}
-        >
-          Create New Package
-        </button>
+        <span title="Click to add notification services">
+          <button className="pr-2" onClick={handleServicesModalOpen}>
+            Add Alert Notification
+          </button>
+        </span>
+        <span title="Click to create a new package">
+          <button
+            className="border-l border-[#0A6ED1] pl-2"
+            onClick={handleOpenModal}
+          >
+            Create New Package
+          </button>
+        </span>
       </div>
 
       {isLoading && (
@@ -233,7 +104,7 @@ const MigrateIcos = () => {
 
       {icoDetails.length > 0 && (
         <div className="mt-5">
-          <Table icoDetails={icoDetails} setIcoDetails={setIcoDetails} />
+          <DetailsTable icoDetails={icoDetails} setIcoDetails={setIcoDetails} />
         </div>
       )}
 
@@ -247,12 +118,14 @@ const MigrateIcos = () => {
           </button>
         </Link>
 
-        <button
-          className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
-          onClick={handleMigrate}
-        >
-          Migrate
-        </button>
+        <span title="Migrate ICOs to IS">
+          <button
+            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
+            onClick={handleMigrate}
+          >
+            Migrate
+          </button>
+        </span>
       </footer>
 
       <MigrationReport
@@ -273,6 +146,19 @@ const MigrateIcos = () => {
         isOpen={servicesModal}
         setLoading={setIsLoading}
         onClose={handleServicesModalClose}
+      />
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1500}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Zoom}
       />
     </>
   );
