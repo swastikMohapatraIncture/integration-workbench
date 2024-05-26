@@ -25,8 +25,9 @@ const PODetails = ({
   setDisableNext,
   testingConn,
   setTestingConn,
+  currAgent
 }) => {
-  const [poDetails, setPoDetails] = useState({});
+  const [poDetails, setPoDetails] = useState(currAgent?.poData || {});
   const [connectionMessage, setConnectionMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -41,7 +42,7 @@ const PODetails = ({
 
   const validateFields = () => {
     const allFieldsFilled = requiredFields.every((field) => poDetails[field]);
-    setDisableNext(!allFieldsFilled);
+    // setDisableNext(!allFieldsFilled);
     return allFieldsFilled;
   };
 

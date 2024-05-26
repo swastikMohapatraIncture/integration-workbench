@@ -38,6 +38,7 @@ const APIDetails = ({
   setDisableNext,
   testingConn,
   setTestingConn,
+  currAgent,
 }) => {
   const [apiData, setApiData] = useState({
     name: "",
@@ -62,7 +63,7 @@ const APIDetails = ({
 
   const validateFields = () => {
     const allFieldsFilled = requiredFields.every((field) => apiData[field]);
-    setDisableNext(!allFieldsFilled);
+    // setDisableNext(!allFieldsFilled);
     return allFieldsFilled;
   };
 
@@ -70,19 +71,26 @@ const APIDetails = ({
     validateFields();
   }, [apiData]);
 
-  // Fetch name and environment from localStorage on mount
   useEffect(() => {
-    const currAgent = localStorage.getItem("currAgent");
-    if (currAgent) {
-      const parsedAgent = JSON.parse(currAgent);
-      const { name, environment } = parsedAgent.cpiData || {};
-      setApiData((prevState) => ({
-        ...prevState,
-        name: name || "",
-        environment: environment || "",
-      }));
-    }
-  }, []);
+    const fetchAgentData = () => {
+      if (currAgent && currAgent.apiData) {
+        setApiData(currAgent.apiData);
+      } else {
+        const storedAgent = localStorage.getItem("currAgent");
+        if (storedAgent) {
+          const parsedAgent = JSON.parse(storedAgent);
+          const { name, environment } = parsedAgent.cpiData || {};
+          setApiData((prevState) => ({
+            ...prevState,
+            name: name || "",
+            environment: environment || "",
+          }));
+        }
+      }
+    };
+
+    fetchAgentData();
+  }, [currAgent]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];

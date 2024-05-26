@@ -55,12 +55,13 @@ const CPIDetails = ({
   // fileName,
   // setFileName,
   setTestingConn,
+  currAgent
   // connectionMessage,
   // setConnectionMessage,
   // connectionStatus,
   // setConnectionStatus,
 }) => {
-  const [cpiData, setCpiData] = useState({});
+  const [cpiData, setCpiData] = useState(currAgent?.cpiData || {});
   const [fileName, setFileName] = useState(null);
   // const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
@@ -76,7 +77,7 @@ const CPIDetails = ({
 
   const validateFields = () => {
     const allFieldsFilled = requiredFields.every((field) => cpiData[field]);
-    setDisableNext(!allFieldsFilled);
+    // setDisableNext(!allFieldsFilled);
     return allFieldsFilled;
   };
 
