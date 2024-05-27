@@ -1,0 +1,28 @@
+{
+  "welcomeFile": "/index.html",
+  "authenticationMethod": "route",
+  "logout": {
+    "logoutEndpoint": "/do/logout",
+    "logoutPage": "/login"  },
+  "routes": [
+    {
+      "source": "^/java_services/",
+      "target": "/",
+      "destination": "IIW_Dest",
+      "authenticationType": "xsuaa",
+      "csrfProtection": false
+    },
+    {
+      "source": "^/user(.*)$",
+      "target": "/user/",
+      "destination": "WorkBench_UserNode_api",
+      "authenticationType": "xsuaa"
+    },
+    {
+      "source": "^(.*)",
+      "target": "WorkBenchApplication/$1",
+      "service": "html5-apps-repo-rt",
+      "authenticationType": "xsuaa"
+    }
+  ]
+}
