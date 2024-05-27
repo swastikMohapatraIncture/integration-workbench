@@ -11,6 +11,9 @@ export const postApi = async (apiURL, toPostData) => {
   }
 };
 
+const apiUrl ="https://integration-workbench.cfapps.eu10-004.hana.ondemand.com"
+// const apiUrl = "/java_services";
+
 export const postESRConnection = async (
   formData,
   setDisableNext,
@@ -18,14 +21,11 @@ export const postESRConnection = async (
   setConnectionMessage
 ) => {
   await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/esr",
+    `${apiUrl}/api/v1/migration/configuration/connect/esr`,
     formData
   ).then((data) => {
     if (data && data.status === "Success") {
-      postApi(
-        "http://localhost:8080/api/v1/migration/configuration/connect/id",
-        formData
-      )
+      postApi("${apiUrl}/api/v1/migration/configuration/connect/id", formData)
         .then((data2) => {
           if (data2 && data2.status === "Success") {
             const prevData =
@@ -65,7 +65,6 @@ export const postESRConnection = async (
   });
 };
 
-
 //NEO to  CF functions
 
 export const postNEOConnection = async (
@@ -74,36 +73,38 @@ export const postNEOConnection = async (
   setTestingConn,
   setConnectionMessage
 ) => {
- await postApi(
+  await postApi(
     "https://webhook.site/3d69f502-16c9-4316-bc63-e0caa1e6fd61",
-   
+
     formData
-  ).then((data)=>{
-    if(true){
-      const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
-      const newData = { ...(prevData ? prevData : null), NeoData: formData };
-      localStorage.setItem("currNeoAgent", JSON.stringify(newData));
-      setConnectionMessage({
-        text: "Connection successful",
-        type: "success",
-      });
-      setDisableNext(false);
-    } else {
-      setConnectionMessage({
-        text: data?.message || "Connection unsuccessful",
-        type: "error",
-      });
+  )
+    .then((data) => {
+      if (true) {
+        const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
+        const newData = { ...(prevData ? prevData : null), NeoData: formData };
+        localStorage.setItem("currNeoAgent", JSON.stringify(newData));
+        setConnectionMessage({
+          text: "Connection successful",
+          type: "success",
+        });
+        setDisableNext(false);
+      } else {
+        setConnectionMessage({
+          text: data?.message || "Connection unsuccessful",
+          type: "error",
+        });
+        setDisableNext(true);
+      }
+    })
+    .catch((error) => {
+      console.error("API call failed:", error);
+      // setConnectionStatus(false);
+      setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
       setDisableNext(true);
-    }
-  })
-  .catch((error)=>{
-    console.error("API call failed:", error);
-  // setConnectionStatus(false);
-  setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
-  setDisableNext(true);
-  }).finally(()=>{
-    setTestingConn(false);
-  })
+    })
+    .finally(() => {
+      setTestingConn(false);
+    });
 };
 
 export const postCFData = async (
@@ -114,7 +115,7 @@ export const postCFData = async (
   setConnectionMessage
 ) => {
   await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/is/api",
+    "${apiUrl}/api/v1/migration/configuration/connect/is/api",
     formData
   ).then((data) => {
     try {
@@ -160,7 +161,7 @@ export const postCPIData = async (
   setConnectionMessage
 ) => {
   await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/is/cpi",
+    `${apiUrl}/api/v1/migration/configuration/connect/is/cpi`,
     formData
   ).then((data) => {
     try {
@@ -184,7 +185,7 @@ export const postCPIData = async (
       setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
       setDisableNext(true);
     } finally {
-      setTestingConn(false); 
+      setTestingConn(false);
     }
   });
 };
@@ -197,7 +198,7 @@ export const postAPIData = async (
   setConnectionMessage
 ) => {
   await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/is/api",
+    `${apiUrl}/api/v1/migration/configuration/connect/is/api`,
     formData
   ).then((data) => {
     try {
@@ -235,7 +236,7 @@ export const handleIcoList = async (poData) => {
   try {
     const toPostData = poData;
     const response = await axios.post(
-      "http://localhost:8080/api/v1/metadata/get/ico/list",
+      `${apiUrl}/api/v1/metadata/get/ico/list`,
       toPostData
     );
     // console.log(response);
@@ -254,10 +255,7 @@ export const handleIcoList = async (poData) => {
 export const handlePackageList = (cpiData) => {
   const toPostData = cpiData;
   return axios
-    .post(
-      "http://localhost:8080/api/v1/migration/designtime/get/package/list",
-      toPostData
-    )
+    .post(`${apiUrl}/api/v1/migration/designtime/get/package/list`, toPostData)
     .then((response) => {
       if (response?.data?.status === "Success") {
         return response?.data?.payload?.list;
@@ -276,7 +274,7 @@ export const handleCreatePackage = async (data) => {
   try {
     const toPostData = data;
     const response = await axios.post(
-      "http://localhost:8080/api/v1/migration/designtime/create/package",
+      `${apiUrl}/api/v1/migration/designtime/create/package`,
       toPostData
     );
     if (response?.data?.status === "Success") {
@@ -293,7 +291,7 @@ export const handleCreatePackage = async (data) => {
 export const handleIcoDetails = (data) => {
   const toPostData = data;
   return postApi(
-    "http://localhost:8080/api/v1/migration/designtime/get/iflow/details",
+    `${apiUrl}/api/v1/migration/designtime/get/iflow/details`,
     toPostData
   ).then((response) => {
     const { iflowName, description } = response.payload;
@@ -306,7 +304,7 @@ export const handleExceptionServices = async (data) => {
   try {
     const toPostData = data;
     const response = await postApi(
-      "http://localhost:8080/api/v1/migration/designtime/create/exception/service",
+      `${apiUrl}/api/v1/migration/designtime/create/exception/service`,
       toPostData
     );
     if (response) {
@@ -327,11 +325,9 @@ export const handleMigration = async (data, type) => {
     let apiUrl;
 
     if (type === "icos") {
-      apiUrl =
-        "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/iflow";
+      apiUrl = `${apiUrl}/api/v1/migration/designtime/migrate/ico/to/iflow`;
     } else {
-      apiUrl =
-        "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm";
+      apiUrl = `${apiUrl}/api/v1/migration/designtime/migrate/ico/to/vm`;
     }
 
     const response = await postApi(apiUrl, toPostData);
@@ -342,7 +338,7 @@ export const handleMigration = async (data, type) => {
 };
 
 // export const compareFiles = async (data) => {
-//   await postApi("http://localhost:8081/api/v1/comparison/files", data).then(
+//   await postApi("${apiUrl}/api/v1/comparison/files", data).then(
 //     (data) => {
 //       if (data?.status == "Success") {
 //         return data?.message;
@@ -355,43 +351,49 @@ export const handleMigration = async (data, type) => {
 
 export const postFileCompareApi = async (files) => {
   // Check if xmlFile1 and xmlFile2 properties exist and are arrays
-  if (!files || !Array.isArray(files?.xmlFile1) || !Array.isArray(files?.xmlFile2)) {
-    console.error('Invalid files object:', files);
+  if (
+    !files ||
+    !Array.isArray(files?.xmlFile1) ||
+    !Array.isArray(files?.xmlFile2)
+  ) {
+    console.error("Invalid files object:", files);
     return null;
   }
 
   const formData = new FormData();
-  
+
   // Append files from xmlFile1
   files.xmlFile1.forEach((file) => {
-    formData.append('xmlFile1', file);
+    formData.append("xmlFile1", file);
   });
 
   // Append files from xmlFile2
   files.xmlFile2.forEach((file) => {
-    formData.append('xmlFile2', file);
+    formData.append("xmlFile2", file);
   });
 
   try {
-    const response = await axios.post("http://localhost:8081/api/v1/comparison/files", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axios.post(
+      "${apiUrl}/api/v1/comparison/files",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response?.data;
   } catch (error) {
-    console.error('Error uploading files:', error);
+    console.error("Error uploading files:", error);
     return null;
   }
 };
-
-
 
 export const getIFlows = async (poData) => {
   try {
     const toPostData = poData;
     const response = await axios.post(
-      "http://localhost:8081/api/v1/comparison/get/artifacts/Id",
+      `${apiUrl}/api/v1/comparison/get/artifacts/Id`,
       toPostData
     );
     // console.log(response);
@@ -410,10 +412,10 @@ export const generateReport = async (data) => {
   const toPostData = data;
   try {
     const response = await axios.post(
-      "http://localhost:8081/api/v1/comparison/generate/report",
+      `${apiUrl}/api/v1/comparison/generate/report`,
       toPostData
     );
-    
+
     // Check if the status code is in the range of 200-299 (success)
     if (response.status >= 200 && response.status < 300) {
       return response?.data;
@@ -423,7 +425,7 @@ export const generateReport = async (data) => {
     }
   } catch (error) {
     // Handle any other errors (network issues, etc.)
-    console.error('Error generating report:', error);
+    console.error("Error generating report:", error);
     throw error;
   }
 };
@@ -431,7 +433,7 @@ export const generateReport = async (data) => {
 export const valueMappingList = async (data) => {
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/v1/metadata/get/vm/list",
+      `${apiUrl}/api/v1/metadata/get/vm/list`,
       data
     );
 
@@ -445,15 +447,16 @@ export const valueMappingList = async (data) => {
   }
 };
 
-export const migrateValueMapping = async(data) => {
-  try{
+export const migrateValueMapping = async (data) => {
+  try {
     const response = await axios.post(
-      "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm", data
-    )
+      `${apiUrl}/api/v1/migration/designtime/migrate/ico/to/vm`,
+      data
+    );
 
     // if(response.data.status === "Success")
-      console.log(response);
-  } catch(error) {
+    console.log(response);
+  } catch (error) {
     return error.message;
   }
-}
+};

@@ -99,7 +99,7 @@ const SideBar = () => {
               <span className=" gap-4 ">Monitoring </span>
             </ListItemButton>
           </ListItem> */}
-          <ListItem
+          {/* <ListItem
             disablePadding
             onClick={() => {
               navigate("/monitoring");
@@ -113,7 +113,7 @@ const SideBar = () => {
               <MdMonitor size={20} />
               <span className="gap-4">Monitoring</span>
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
           <ListItem
             disablePadding
             onClick={() => {
