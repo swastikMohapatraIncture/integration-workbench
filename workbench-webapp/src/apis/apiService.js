@@ -11,8 +11,23 @@ export const postApi = async (apiURL, toPostData) => {
   }
 };
 
-const apiUrl ="https://integration-workbench.cfapps.eu10-004.hana.ondemand.com"
-// const apiUrl = "/java_services";
+const myHeaders = new Headers();
+myHeaders.append("Authorization", "Basic c2ItbmEtYmJiNGZmZGUtNWRlYi00ZmJjLTgzZDktZTcyNWIwZGY3NjhhIXQzNzk1ODA6elNSWlIzVG1OVE85SjhuMmNVY0ZFbWVJampjPQ==");
+myHeaders.append("Cookie", "__VCAP_ID__=39b099b4-f39d-4e60-5a99-0e46; JSESSIONID=EF6737ECDC9B8430354CE498583A2778; __VCAP_ID__=2d27c4d9-1cb0-4f2a-68d6-56e6");
+
+// const requestOptions = {
+//   method: "GET",
+//   headers: myHeaders,
+//   redirect: "follow"
+// };
+
+// fetch("https://inc-cust-poc.authentication.eu10.hana.ondemand.com/oauth/token?grant_type=client_credentials", requestOptions)
+//   .then((response) => response.text())
+//   .then((result) => console.log(result))
+//   .catch((error) => console.error(error));
+
+// const apiUrl ="https://integration-workbench.cfapps.eu10-004.hana.ondemand.com"
+const apiUrl = "/java_services";
 
 export const postESRConnection = async (
   formData,
@@ -40,6 +55,7 @@ export const postESRConnection = async (
               type: "success",
             });
             setDisableNext(false);
+            
           } else {
             setConnectionMessage({
               text: data?.message || "Connection unsuccessful",

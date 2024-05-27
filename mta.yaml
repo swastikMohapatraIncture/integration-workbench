@@ -42,7 +42,7 @@ modules:
         - npm install -f
         - npm run build
       supported-platforms: []
-      build-result: build
+      build-result: dist
   - name: UI_UserNode_WorkBenchApplication
     type: nodejs
     path: UserNode
@@ -57,7 +57,7 @@ modules:
      UAA_SERVICE_NAME: WorkBenchApplication_Xsua
     requires:
       - name: WorkBenchApplication_Xsua
-resources:I am in
+resources:
   - name: WorkBenchApplication_html5_repo_runtime
     parameters:
       service-plan: app-runtime
