@@ -66,21 +66,23 @@ const AutomatedForm = ({
     const updatedSections = [...sections];
     updatedSections[sectionIndex].fileRows[fileIndex][type] = file;
     setSections(updatedSections);
-
-    try {
-      const response = await postFileCompareApi({
-        xmlFile1: updatedSections[sectionIndex]?.fileRows?.map(
-          (row) => row?.request
-        ),
-        xmlFile2: updatedSections[sectionIndex]?.fileRows?.map(
-          (row) => row?.response
-        ),
-      });
-      console.log("Upload response:", response);
-    } catch (error) {
-      console.error("Error uploading files:", error);
+  
+    const xmlFile1 = updatedSections[sectionIndex]?.fileRows?.map((row) => row?.request);
+    const xmlFile2 = updatedSections[sectionIndex]?.fileRows?.map((row) => row?.response);
+  
+    // Check if both xmlFile1 and xmlFile2 contain at least one file each
+    const hasFilesInBothArrays = xmlFile1.some(file => file) && xmlFile2.some(file => file);
+  
+    if (hasFilesInBothArrays) {
+      try {
+        const response = await postFileCompareApi({ xmlFile1, xmlFile2 });
+        console.log("Upload response:", response);
+      } catch (error) {
+        console.error("Error uploading files:", error);
+      }
     }
   };
+  
 
   const handleFileRemove = (type, sectionIndex, fileIndex) => {
     setSections((prevSections) =>

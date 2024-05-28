@@ -364,12 +364,12 @@ export const postFileCompareApi = async (files) => {
   
   // Append files from xmlFile1
   files.xmlFile1.forEach((file) => {
-    formData.append('xmlFile1', file);
+    formData.append('requestFiles', file);
   });
 
   // Append files from xmlFile2
   files.xmlFile2.forEach((file) => {
-    formData.append('xmlFile2', file);
+    formData.append('responseFiles', file);
   });
 
   try {
