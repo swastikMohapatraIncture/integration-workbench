@@ -504,9 +504,10 @@ export const migrateValueMapping = async(data) => {
     const response = await axios.post(
       "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm", data
     )
-
-    // if(response.data.status === "Success")
-      console.log(response);
+    console.log("status:", response.data.status);
+    if(response?.data?.status === "Success")  return response?.data;
+     
+      // console.log(response);
   } catch(error) {
     return error.message;
   }

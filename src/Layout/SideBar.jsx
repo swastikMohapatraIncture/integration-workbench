@@ -102,21 +102,6 @@ const SideBar = () => {
           <ListItem
             disablePadding
             onClick={() => {
-              navigate("/monitoring");
-              setOpenSubmenu(false);
-            }}
-          >
-            <ListItemButton
-              sx={isActiveRoute(["/monitoring"]) ? styles?.selectedItem : styles?.listItem}
-              className="flex flex-row justify-between items-center gap-4"
-            >
-              <MdMonitor size={20} />
-              <span className="gap-4">Monitoring</span>
-            </ListItemButton>
-          </ListItem>
-          <ListItem
-            disablePadding
-            onClick={() => {
               navigate("/migrationAssessment");
               setOpenSubmenu(false);
             }}

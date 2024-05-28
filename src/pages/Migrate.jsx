@@ -4,8 +4,8 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import MigrateIcos from "../components/Migrate/MigrateIcos";
-import MigrateVm from "../components/Migrate/MigrateVm";
+import MigrateIcos from "../components/Migrate/IcoToIflow/MigrateIcos";
+import MigrateVm from "../components/Migrate/ValueMapping/MigrateVm";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
