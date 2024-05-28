@@ -17,7 +17,7 @@ const ReadinessCheck = () => {
           the possibility of human error in the process.
         </p>
         <div className="flex justify-end mt-4">
-          <Link to="/ReadinessCheckMainPage">
+          <Link to="/readinesscheck">
           <button
             className="bg-[#0A6ED1] text-white rounded p-2 px-6 hover:bg-gray-300 hover:text-black transition duration-200"
           >

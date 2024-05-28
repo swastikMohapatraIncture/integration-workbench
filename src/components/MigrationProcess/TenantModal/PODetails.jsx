@@ -15,7 +15,7 @@ import { ImCross } from "react-icons/im";
 // Assuming you have already stored this data in localStorage
 const agents = JSON.parse(localStorage.getItem("agents") || "[]");
 
-const poDataNames = agents.map((agent) => ({ label: agent.poData.name }));
+const poDataNames = agents?.map((agent) => ({ label: agent?.poData?.name }));
 
 const system = [{ label: "DEV" }, { label: "QA" }, { label: "PROD" }];
 
