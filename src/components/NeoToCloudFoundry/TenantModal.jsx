@@ -4,7 +4,7 @@ import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepLabel from "@mui/material/StepLabel";
 import { StepConnector, stepConnectorClasses, styled } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import IntroContent from "./TenantModal/IntroContent";
 import NeoDetails from "./TenantModal/NeoDetails";
 import CFDetails from "./TenantModal/CFDetails";
@@ -12,20 +12,28 @@ import { ToastContainer } from "react-toastify";
 
 const steps = ["Introduction", "NEO details", "CF details"];
 
-const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditingAgentIdx,agentSelected,setAgentSelected }) => {
+const TenantModal = ({
+  tenants,
+  setTenants,
+  setOpenModal,
+  editingAgentIdx,
+  setEditingAgentIdx,
+  agentSelected,
+  setAgentSelected,
+}) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
-
   const [showPassword, setShowPassword] = useState(false);
-  
   const [disableNext, setDisableNext] = useState(true);
   const [testingConn, setTestingConn] = useState(false);
+  const [currAgent, setCurrAgent] = useState(null);
   // const [connectionStatus, setConnectionStatus] = useState(false);
   // const [connectionMessage, setConnectionMessage] = useState("");
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setCompletedSteps([...completedSteps, activeStep]);
+    setDisableNext(true);
   };
 
   const handleBack = () => {
@@ -33,24 +41,33 @@ const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditi
     setCompletedSteps(completedSteps.filter((step) => step !== activeStep));
   };
 
+  useEffect(() => {
+    const currAgentLocal = JSON?.parse(localStorage?.getItem("currNeoAgent"));
+    if (currAgentLocal) {
+      setCurrAgent(currAgentLocal);
+    }
+
+    console.log(currAgentLocal);
+  }, [disableNext]);
+
   const handleSubmitAgent = () => {
     const currNeoData = JSON.parse(localStorage?.getItem("currNeoAgent"));
     let allPrevAgents = JSON.parse(localStorage?.getItem("tenants")) || [];
-  
+
     if (editingAgentIdx >= 0) {
       allPrevAgents[editingAgentIdx] = currNeoData;
     } else {
       allPrevAgents?.push(currNeoData);
     }
-  
+
     localStorage.setItem("tenants", JSON.stringify(allPrevAgents));
     localStorage.removeItem("currNeoAgent");
-  
+
     setTenants(allPrevAgents);
     setEditingAgentIdx(-1);
     setOpenModal(false);
   };
-  
+
   // const isStepCompleted = (step) => {
   //   return completedSteps.includes(step);
   // };
@@ -77,6 +94,12 @@ const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditi
       borderLeftWidth: 2,
     },
   }));
+
+  useEffect(() => {
+    if (activeStep === 0) {
+      setDisableNext(false);
+    }
+  }, [activeStep]);
 
   return (
     <>
@@ -131,6 +154,7 @@ const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditi
                       setDisableNext={setDisableNext}
                       testingConn={testingConn}
                       setTestingConn={setTestingConn}
+                      currAgent={currAgent}
                       // connectionMessage={connectionMessage}
                       // setConnectionMessage={setConnectionMessage}
                       // connectionStatus={connectionStatus}
@@ -138,23 +162,6 @@ const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditi
                     />
                   </div>
                 )}
-                {/* {activeStep === 2 && (
-                  <div>
-                    <CPIDetails
-                      showPassword={showPassword}
-                      setShowPassword={setShowPassword}
-                      setDisableNext={setDisableNext}
-                      // fileName={fileName}
-                      // setFileName={setFileName}
-                      testingConn={testingConn}
-                      setTestingConn={setTestingConn}
-                      // connectionMessage={connectionMessage}
-                      // setConnectionMessage={setConnectionMessage}
-                      // connectionStatus={connectionStatus}
-                      // setConnectionStatus={setConnectionStatus}
-                    />
-                  </div>
-                )} */}
                 {activeStep === 2 && (
                   <div>
                     <CFDetails
@@ -165,6 +172,7 @@ const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditi
                       // setFileName={setFileName}
                       testingConn={testingConn}
                       setTestingConn={setTestingConn}
+                      currAgent={currAgent}
                       // connectionMessage={connectionMessage}
                       // setConnectionMessage={setConnectionMessage}
                       // connectionStatus={connectionStatus}
@@ -175,40 +183,44 @@ const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditi
               </div>
             </div>
             {/*footer*/}
+
             <div className="flex items-center gap-3 justify-end px-4 py-3 border-t border-solid border-blueGray-200 rounded-b">
-              <button
-                className={` py-1 px-3 rounded-md border border-modalColor text-modalColor ${
-                  activeStep === 0 ? "bg-gray-300  cursor-not-allowed" : " "
-                }`}
-                onClick={handleBack}
-                disabled={activeStep === 0}
-              >
-                Back
-              </button>
-              {activeStep < steps.length - 1 ? (
+              {activeStep > 0 && (
                 <button
                   className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  onClick={handleBack}
+                >
+                  Back
+                </button>
+              )}
+              {activeStep < steps.length - 1 ? (
+                <button
+                  className={`py-1 px-3 rounded-md border ${
+                    disableNext
+                      ? "text-modalColor border-modalColor cursor-not-allowed"
+                      : " text-modalColor border-modalColor"
+                  }`}
                   onClick={handleNext}
-                  // disabled={disableNext}
+                  disabled={disableNext}
                 >
                   Next
                 </button>
               ) : (
                 <button
-                  className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  className={`py-1 px-3 rounded-md border ${
+                    disableNext
+                      ? "text-modalColor border-modalColor cursor-not-allowed"
+                      : " text-modalColor border-modalColor"
+                  }`}
                   onClick={handleSubmitAgent}
-                  // disabled={disableNext}
+                  disabled={disableNext}
                 >
                   Submit
                 </button>
               )}
               <button
-                className=" py-1 px-3 rounded-md border border-modalColor text-modalColor"
-                onClick={() => {setOpenModal(false);
-                  console.log(agentSelected);
-                  setAgentSelected(true);
-                }
-                }
+                className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                onClick={() => setOpenModal(false)}
               >
                 Cancel
               </button>

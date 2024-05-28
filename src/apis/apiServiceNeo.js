@@ -11,7 +11,7 @@ export const postApi = async (apiURL, toPostData) => {
 };
 
 export const postNEOConnection = async (
-  formData,
+  Neodetails,
   setDisableNext,
   setTestingConn,
   setConnectionMessage
@@ -23,7 +23,7 @@ export const postNEOConnection = async (
       "http://localhost:8081/api/v1/migration/get/access/token",
       {
         method: "POST",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(Neodetails),
       }
     );
 
@@ -33,8 +33,11 @@ export const postNEOConnection = async (
       const accessToken = tokenData.access_token;
 
       console.log("Access Token:", accessToken);
-      console.log(formData);
+      console.log(Neodetails);
 
+      const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
+      const newData = { ...(prevData ? prevData : null), NeoData: Neodetails };
+      localStorage.setItem("currNeoAgent", JSON.stringify(newData));
       setConnectionMessage({
         text: "Connection successful",
         type: "success",
@@ -56,8 +59,6 @@ export const postNEOConnection = async (
     setTestingConn(false);
   }
 };
-
-//--------------------------------------------------------------------------------------
 
 export const postCFData = async (
   formData,

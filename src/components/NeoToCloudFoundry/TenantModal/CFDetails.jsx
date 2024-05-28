@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -40,6 +40,7 @@ const CFDetails = ({
   // fileName,
   // setFileName,
   setTestingConn,
+  currAgent,
   // connectionMessage,
   // setConnectionMessage,
   // connectionStatus,
@@ -49,6 +50,48 @@ const CFDetails = ({
   const [fileName, setFileName] = useState(null);
   // const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const requiredFields = [
+    "name",
+    "clientId",
+    "clientSecret",
+    "tokenUrl",
+    "url",
+    "environment",
+  ];
+
+  const validateFields = () => {
+    const allFieldsFilled = requiredFields.every((field) => CFData[field]);
+    // setDisableNext(!allFieldsFilled);
+    return allFieldsFilled;
+  };
+
+  useEffect(() => {
+    validateFields();
+  }, [CFData]);
+
+  useEffect(() => {
+    const fetchAgentData = () => {
+      if (currAgent && currAgent.CFData) {
+        setCFData(currAgent.CFData);
+      } else {
+        const storedAgent = localStorage.getItem("currNeoAgent");
+        if (storedAgent) {
+          const parsedAgent = JSON.parse(storedAgent);
+          const { name, environment } = parsedAgent.NeoData || {};
+          setCFData((prevState) => ({
+            ...prevState,
+            name: name || "",
+            environment: environment || "",
+          }));
+        }
+      }
+    };
+
+    fetchAgentData();
+  }, [currAgent]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -74,14 +117,13 @@ const CFDetails = ({
 
   const handleAPITest = (event) => {
     event.preventDefault();
-    // setTestingConn(true);
-    postCFData(
-      // { dataType: "cpiData", formData: cpiData },
-      CFData,
-      setDisableNext,
-      setTestingConn,
-      setConnectionMessage
-    );
+    if (validateFields()) {
+      setTestingConn(true);
+      setErrorMessage("");
+      postCFData(CFData, setDisableNext, setTestingConn, setConnectionMessage);
+    } else {
+      setErrorMessage("Please fill in all required fields.");
+    }
   };
 
   // const handleAPITest = () => {
@@ -266,6 +308,8 @@ const CFDetails = ({
         >
           {testingConn ? "Testing..." : "Test Connection"}
         </button>
+
+        {errorMessage && <span className="text-red-500">{errorMessage}</span>}
         {connectionMessage.text && (
           <div className="flex items-center">
             {connectionMessage.type === "success" ? (

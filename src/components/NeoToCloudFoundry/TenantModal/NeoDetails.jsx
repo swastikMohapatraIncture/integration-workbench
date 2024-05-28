@@ -7,7 +7,7 @@ import {
   OutlinedInput,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { postNEOConnection } from "../../../apis/apiServiceNeo";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
@@ -34,14 +34,35 @@ const NeoDetails = ({
   setDisableNext,
   testingConn,
   setTestingConn,
+  currAgent,
   // connectionMessage,
   // setConnectionMessage,
   // connectionStatus,
   // setConnectionStatus,
 }) => {
-  const [Neodetails, setNeodetails] = useState({});
+  const [Neodetails, setNeodetails] = useState(currAgent?.NeoData || {});
   const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const requiredFields = [
+    "name",
+    "Integration_Host",
+    "Oauth_Host",
+    "Oauth_Clientid",
+    "Oauth_Secret",
+    "environment",
+  ];
+
+  const validateFields = () => {
+    const allFieldsFilled = requiredFields.every((field) => Neodetails[field]);
+    // setDisableNext(!allFieldsFilled);
+    return allFieldsFilled;
+  };
+
+  useEffect(() => {
+    validateFields();
+  }, [Neodetails]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -60,15 +81,18 @@ const NeoDetails = ({
 
   const handleNeodetails = (event) => {
     event.preventDefault();
-    setTestingConn(true);
-    // const formData = Neodetails
-    postNEOConnection(
-      { dataType: "NeoData", formData: Neodetails },
-      setDisableNext,
-      setTestingConn,
-      setConnectionMessage
-    );
-    setTestingConn(false);
+    if (validateFields()) {
+      setTestingConn(true);
+      setErrorMessage("");
+      postNEOConnection(
+        Neodetails,
+        setDisableNext,
+        setTestingConn,
+        setConnectionMessage
+      );
+    } else {
+      setErrorMessage("Please fill in all required fields.");
+    }
   };
 
   return (
@@ -135,18 +159,18 @@ const NeoDetails = ({
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
-            // endAdornment={
-            //   <InputAdornment position="end">
-            //     <IconButton
-            //       aria-label="toggle password visibility"
-            //       onClick={handleClickShowPassword}
-            //       onMouseDown={handleMouseDownPassword}
-            //       edge="end"
-            //     >
-            //       {showPassword ? <VisibilityOff /> : <Visibility />}
-            //     </IconButton>
-            //   </InputAdornment>
-            // }
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
           />
         </div>
         <div className="flex flex-col">
@@ -207,6 +231,8 @@ const NeoDetails = ({
         >
           {testingConn ? "Testing..." : "Test Connection"}
         </button>
+
+        {errorMessage && <span className="text-red-500">{errorMessage}</span>}
         {connectionMessage.text && (
           <div className="flex items-center">
             {connectionMessage.type === "success" ? (

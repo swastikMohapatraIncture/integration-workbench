@@ -40,8 +40,8 @@ function a11yProps(index) {
   };
 }
 
-const MigrationAssessment = () => {
-  const [value, setValue] = useState(0);
+const MigrationAssessment = ({ renderTab }) => {
+  const [value, setValue] = useState(renderTab || 0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -68,6 +68,7 @@ const MigrationAssessment = () => {
           {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
         </Tabs>
       </Box>
+
       <CustomTabPanel
         sx={{
           "& .MuiTypography-root": {

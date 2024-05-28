@@ -55,6 +55,14 @@ function App() {
           }
         />
         <Route
+          path="migrationAssessment/neo"
+          element={
+            <Layout>
+              <MigrationAssessment renderTab={1} />
+            </Layout>
+          }
+        />
+        <Route
           path="automatedTesting"
           element={
             <Layout>
@@ -102,11 +110,11 @@ function App() {
             </Layout>
           }
         ></Route>
-         <Route
+        <Route
           path="/readinesscheck"
           element={
             <Layout>
-              <ReadinessCheckMainPage/>
+              <ReadinessCheckMainPage />
             </Layout>
           }
         ></Route>

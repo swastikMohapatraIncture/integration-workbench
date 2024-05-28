@@ -46,6 +46,8 @@ const TenantModal = ({
     if (currAgentLocal) {
       setCurrAgent(currAgentLocal);
     }
+
+    console.log(currAgentLocal);
   }, [disableNext]);
 
   const handleSubmitAgent = () => {
