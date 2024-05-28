@@ -8,7 +8,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { postNEOConnection } from "../../../apis/apiService";
+import { postNEOConnection } from "../../../apis/apiServiceNeo";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
@@ -69,7 +69,6 @@ const NeoDetails = ({
       setConnectionMessage
     );
     setTestingConn(false);
-    
   };
 
   return (
@@ -211,14 +210,14 @@ const NeoDetails = ({
         {connectionMessage.text && (
           <div className="flex items-center">
             {connectionMessage.type === "success" ? (
-              <FaRegCheckCircle style={{ color: 'green' }} />
+              <FaRegCheckCircle style={{ color: "green" }} />
             ) : (
-              <ImCross style={{ color: 'red' }} />
+              <ImCross style={{ color: "red" }} />
             )}
             <span
               className="ml-2"
               style={{
-                color: connectionMessage.type === "success" ? 'green' : 'red',
+                color: connectionMessage.type === "success" ? "green" : "red",
               }}
             >
               {connectionMessage.text}

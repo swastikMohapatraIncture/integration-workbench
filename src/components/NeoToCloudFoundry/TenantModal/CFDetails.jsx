@@ -14,7 +14,7 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
-import { postCFData } from "../../../apis/apiService";
+import { postCFData } from "../../../apis/apiServiceNeo";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
@@ -49,7 +49,7 @@ const CFDetails = ({
   const [fileName, setFileName] = useState(null);
   // const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
- 
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -269,14 +269,14 @@ const CFDetails = ({
         {connectionMessage.text && (
           <div className="flex items-center">
             {connectionMessage.type === "success" ? (
-              <FaRegCheckCircle style={{ color: 'green' }} />
+              <FaRegCheckCircle style={{ color: "green" }} />
             ) : (
-              <ImCross style={{ color: 'red' }} />
+              <ImCross style={{ color: "red" }} />
             )}
             <span
               className="ml-2"
               style={{
-                color: connectionMessage.type === "success" ? 'green' : 'red',
+                color: connectionMessage.type === "success" ? "green" : "red",
               }}
             >
               {connectionMessage.text}

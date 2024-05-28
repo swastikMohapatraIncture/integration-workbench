@@ -65,148 +65,6 @@ export const postESRConnection = async (
   });
 };
 
-
-//NEO to  CF functions
-
-export const postNEOConnection = async (
-  formData,
-  setDisableNext,
-  setTestingConn,
-  setConnectionMessage
-) => {
-
-const clientId = '2b1655dd-c605-3987-9237-4ebcdd73b002';
-const clientSecret = 'NEO_CPI@Incture2024';
-const tokenEndpoint = 'https://oauthasservices-ijv8j6wewk.ae1.hana.ondemand.com/oauth2/api/v1/token';
-const cpiHostUrl = 'https://p550010-tmn.hci.ae1.hana.ondemand.com/itspaces';
-
-const sourceTokenHost = 'oauthasservices-ijv8j6wewk.ae1.hana.ondemand.com';
-const sourceHost = 'p550010-tmn.hci.ae1.hana.ondemand.com';
-
-//  await postApi(
-//     "https://webhook.site/3d69f502-16c9-4316-bc63-e0caa1e6fd61",
-   
-//     formData
-//   ).then((data)=>{
-//     if(true){
-//       const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
-//       const newData = { ...(prevData ? prevData : null), NeoData: formData };
-//       localStorage.setItem("currNeoAgent", JSON.stringify(newData));
-//       setConnectionMessage({
-//         text: "Connection successful",
-//         type: "success",
-//       });
-//       setDisableNext(false);
-//     } else {
-//       setConnectionMessage({
-//         text: data?.message || "Connection unsuccessful",
-//         type: "error",
-//       });
-//       setDisableNext(true);
-//     }
-//   })
-//   .catch((error)=>{
-//     console.error("API call failed:", error);
-//   // setConnectionStatus(false);
-//   setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
-//   setDisableNext(true);
-//   }).finally(()=>{
-//     setTestingConn(false);
-//   })
-try {
-  // Step 1: Get Access Token
- 
-  const tokenResponse = await fetch(`https://${sourceTokenHost}/oauth2/api/v1/token?grant_type=client_credentials`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': 'Basic ' + btoa(`${clientId}:${clientSecret}`),
-    },
-  });
-  
-  if (!tokenResponse.ok) {
-    throw new Error('Failed to fetch access token');
-  }
-  
-  const tokenData = await tokenResponse.json();
-  const accessToken = tokenData.access_token;
-  
-  console.log('Access Token:', accessToken);
-
-  // Step 2: Check Connectivity
-  const connectivityResponse = await fetch(`https://${sourceHost}/api/v1/`, {
-    method: 'GET',
-    headers: {
-      'Authorization': `Bearer ${accessToken}`,
-    },
-  });
-  
-  if (!connectivityResponse.ok) {
-    throw new Error('Failed to check connectivity');
-  }
-  
-  const connectivityData = await connectivityResponse.json();
-  console.log('Connectivity Data:', connectivityData);
-  
-} catch (error) {
-  console.error('Error:', error);
-}
-
-};
-
-
-
-
-
-
-//--------------------------------------------------------------------------------------
-
-export const postCFData = async (
-  formData,
-  setDisableNext,
-  setTestingConn,
-  // setConnectionStatus,
-  setConnectionMessage
-) => {
-  await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/is/api",
-    formData
-  ).then((data) => {
-    try {
-      if (data && data.status === "Success") {
-        const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
-        const newData = {
-          ...(prevData ? prevData : null),
-          CFdata: formData,
-          // adapter: [],
-        };
-        // const newData = { ...(prevData ? prevData : null), formData, adapter: [] };
-        localStorage.setItem("currNeoAgent", JSON.stringify(newData));
-        // setConnectionStatus(true);
-        setConnectionMessage({
-          text: "Connection successful",
-          type: "success",
-        });
-        setDisableNext(false);
-      } else {
-        // setConnectionStatus(false);
-        setConnectionMessage({
-          text: data?.message || "Connection unsuccessful",
-          type: "error",
-        });
-        setDisableNext(true);
-      }
-    } catch (error) {
-      console.error("API call failed:", error);
-      // setConnectionStatus(false);
-      setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
-      setDisableNext(true);
-    } finally {
-      setTestingConn(false); // Ensure this is called regardless of success or failure
-    }
-  });
-};
-//--------------------------------------------------------------------------------------------------
 export const postCPIData = async (
   formData,
   setDisableNext,
@@ -238,7 +96,7 @@ export const postCPIData = async (
       setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
       setDisableNext(true);
     } finally {
-      setTestingConn(false); 
+      setTestingConn(false);
     }
   });
 };
@@ -409,37 +267,43 @@ export const handleMigration = async (data, type) => {
 
 export const postFileCompareApi = async (files) => {
   // Check if xmlFile1 and xmlFile2 properties exist and are arrays
-  if (!files || !Array.isArray(files?.xmlFile1) || !Array.isArray(files?.xmlFile2)) {
-    console.error('Invalid files object:', files);
+  if (
+    !files ||
+    !Array.isArray(files?.xmlFile1) ||
+    !Array.isArray(files?.xmlFile2)
+  ) {
+    console.error("Invalid files object:", files);
     return null;
   }
 
   const formData = new FormData();
-  
+
   // Append files from xmlFile1
   files.xmlFile1.forEach((file) => {
-    formData.append('xmlFile1', file);
+    formData.append("xmlFile1", file);
   });
 
   // Append files from xmlFile2
   files.xmlFile2.forEach((file) => {
-    formData.append('xmlFile2', file);
+    formData.append("xmlFile2", file);
   });
 
   try {
-    const response = await axios.post("http://localhost:8081/api/v1/comparison/files", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    const response = await axios.post(
+      "http://localhost:8081/api/v1/comparison/files",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response?.data;
   } catch (error) {
-    console.error('Error uploading files:', error);
+    console.error("Error uploading files:", error);
     return null;
   }
 };
-
-
 
 export const getIFlows = async (poData) => {
   try {
@@ -467,7 +331,7 @@ export const generateReport = async (data) => {
       "http://localhost:8081/api/v1/comparison/generate/report",
       toPostData
     );
-    
+
     // Check if the status code is in the range of 200-299 (success)
     if (response.status >= 200 && response.status < 300) {
       return response?.data;
@@ -477,7 +341,7 @@ export const generateReport = async (data) => {
     }
   } catch (error) {
     // Handle any other errors (network issues, etc.)
-    console.error('Error generating report:', error);
+    console.error("Error generating report:", error);
     throw error;
   }
 };
@@ -499,16 +363,17 @@ export const valueMappingList = async (data) => {
   }
 };
 
-export const migrateValueMapping = async(data) => {
-  try{
+export const migrateValueMapping = async (data) => {
+  try {
     const response = await axios.post(
-      "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm", data
-    )
+      "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm",
+      data
+    );
     console.log("status:", response.data.status);
-    if(response?.data?.status === "Success")  return response?.data;
-     
-      // console.log(response);
-  } catch(error) {
+    if (response?.data?.status === "Success") return response?.data;
+
+    // console.log(response);
+  } catch (error) {
     return error.message;
   }
-}
+};
