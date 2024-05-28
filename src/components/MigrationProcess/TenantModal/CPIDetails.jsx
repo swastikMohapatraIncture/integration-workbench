@@ -9,25 +9,29 @@ import {
   TextField,
   styled,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { postCPIData } from "../../../apis/apiService";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
-const top100Films = [
-  { label: "The Shawshank Redemption", year: 1994 },
-  { label: "The Godfather", year: 1972 },
-  { label: "The Godfather: Part II", year: 1974 },
-  { label: "The Dark Knight", year: 2008 },
-  { label: "12 Angry Men", year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: "Pulp Fiction", year: 1994 },
-  {
-    label: "The Lord of the Rings: The Return of the King",
-    year: 2003,
-  },
-];
+// const top100Films = [
+//   { label: "The Shawshank Redemption", year: 1994 },
+//   { label: "The Godfather", year: 1972 },
+//   { label: "The Godfather: Part II", year: 1974 },
+//   { label: "The Dark Knight", year: 2008 },
+//   { label: "12 Angry Men", year: 1957 },
+//   { label: "Schindler's List", year: 1993 },
+//   { label: "Pulp Fiction", year: 1994 },
+//   {
+//     label: "The Lord of the Rings: The Return of the King",
+//     year: 2003,
+//   },
+// ];
+
+const agents = JSON.parse(localStorage.getItem("agents") || "[]");
+
+const cpiDataNames = agents.map((agent) => ({ label: agent?.cpiData?.name }));
 
 const system = [{ label: "DEV" }, { label: "QA" }, { label: "PROD" }];
 
@@ -51,15 +55,42 @@ const CPIDetails = ({
   // fileName,
   // setFileName,
   setTestingConn,
+  currAgent
   // connectionMessage,
   // setConnectionMessage,
   // connectionStatus,
   // setConnectionStatus,
 }) => {
-  const [cpiData, setCpiData] = useState({});
+  const [cpiData, setCpiData] = useState(currAgent?.cpiData || {});
   const [fileName, setFileName] = useState(null);
   // const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const requiredFields = [
+    "name",
+    "clientId",
+    "clientSecret",
+    "tokenUrl",
+    "url",
+    "environment",
+  ];
+
+  const validateFields = () => {
+    const allFieldsFilled = requiredFields.every((field) => cpiData[field]);
+    // setDisableNext(!allFieldsFilled);
+    return allFieldsFilled;
+  };
+
+  useEffect(() => {
+    validateFields();
+  }, [cpiData]);
+
+  const handleExistingChange = (e, value) => {
+    const selectedAgent = agents.find((agent) => agent.cpiData.name === value?.label);
+    if (selectedAgent) {
+      setCpiData(selectedAgent.cpiData);
+    }
+  };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -113,14 +144,19 @@ const CPIDetails = ({
 
   const handleCPITest = (event) => {
     event.preventDefault();
-    setTestingConn(true);
-    postCPIData(
-      // { dataType: "cpiData", formData: cpiData },
-      cpiData,
-      setDisableNext,
-      setTestingConn,
-      setConnectionMessage
-    );
+    // setTestingConn(true);
+    if (validateFields()) {
+      setTestingConn(true);
+      setErrorMessage("");
+      postCPIData(
+        cpiData,
+        setDisableNext,
+        setTestingConn,
+        setConnectionMessage
+      );
+    } else {
+      setErrorMessage("Please fill in all required fields.");
+    }
   };
 
   return (
@@ -132,8 +168,8 @@ const CPIDetails = ({
             disablePortal
             size="small"
             id="combo-box-demo"
-            onChange={(e, value) => handleChangeInput(value?.label, "xyz")}
-            options={top100Films}
+            onChange={handleExistingChange}
+            options={cpiDataNames}
             getOptionLabel={(option) => option?.label || ""}
             getOptionValue={(option) => option?.label || ""}
             sx={{
@@ -231,6 +267,7 @@ const CPIDetails = ({
             onChange={(e, value) =>
               handleChangeInput(value?.label, "environment")
             }
+            value={system.find((option) => option.label === cpiData?.environment) || null}
             options={system}
             getOptionLabel={(option) => option?.label || ""}
             getOptionValue={(option) => option?.label || ""}
@@ -294,6 +331,7 @@ const CPIDetails = ({
         >
           {testingConn ? "Testing..." : "Test Connection"}
         </button>
+        {errorMessage && <span className="text-red-500">{errorMessage}</span>}
         {connectionMessage.text && (
           <div className="flex items-center">
             {connectionMessage.type === "success" ? (

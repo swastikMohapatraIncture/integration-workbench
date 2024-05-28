@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import MainPageMP from '../components/MigrationProcess/MainPageMP';
 import MainPageMPNeoToCf from '../components/NeoToCloudFoundry/MainPageMPNeoToCf';
 import Introduction from '../components/NeoToCloudFoundry/Introduction';
+import { ToastContainer } from 'react-toastify';
 
 
 function CustomTabPanel(props) {
@@ -38,28 +39,44 @@ CustomTabPanel.propTypes = {
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
 const MigrationProcess = () => {
   const [value, setValue] = useState(0);
+  const [agentSelected, setAgentSelected] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab sx={{textTransform:"capitalize"}} label="PO to Integration Suite" {...a11yProps(0)} />
-          <Tab sx={{textTransform:"capitalize"}} label="NEO to Cloud Foundry" {...a11yProps(1)} />
+    <Box sx={{ width: "100%" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider"  }}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label="basic tabs example"
+        >
+          <Tab
+            sx={{ textTransform: "capitalize" }}
+            label="PO to Integration Suite"
+            {...a11yProps(0)}
+          />
+          <Tab
+            sx={{ textTransform: "capitalize" }}
+            label="NEO to Cloud Foundry"
+            {...a11yProps(1)}
+          />
           {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <MainPageMP/>
+        <MainPageMP
+          agentSelected={agentSelected}
+          setAgentSelected={setAgentSelected}
+        />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <MainPageMPNeoToCf/>
@@ -69,6 +86,6 @@ const MigrationProcess = () => {
       </CustomTabPanel> */}
     </Box>
   );
-}
+};
 
-export default MigrationProcess
+export default MigrationProcess;

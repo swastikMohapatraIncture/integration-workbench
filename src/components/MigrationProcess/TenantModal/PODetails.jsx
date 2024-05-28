@@ -7,24 +7,15 @@ import {
   OutlinedInput,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { postESRConnection } from "../../../apis/apiService";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
-const top100Films = [
-  { label: "The Shawshank Redemption", year: 1994 },
-  { label: "The Godfather", year: 1972 },
-  { label: "The Godfather: Part II", year: 1974 },
-  { label: "The Dark Knight", year: 2008 },
-  { label: "12 Angry Men", year: 1957 },
-  { label: "Schindler's List", year: 1993 },
-  { label: "Pulp Fiction", year: 1994 },
-  {
-    label: "The Lord of the Rings: The Return of the King",
-    year: 2003,
-  },
-];
+// Assuming you have already stored this data in localStorage
+const agents = JSON.parse(localStorage.getItem("agents") || "[]");
+
+const poDataNames = agents.map((agent) => ({ label: agent.poData.name }));
 
 const system = [{ label: "DEV" }, { label: "QA" }, { label: "PROD" }];
 
@@ -34,9 +25,30 @@ const PODetails = ({
   setDisableNext,
   testingConn,
   setTestingConn,
+  currAgent
 }) => {
-  const [poDetails, setPoDetails] = useState({});
+  const [poDetails, setPoDetails] = useState(currAgent?.poData || {});
   const [connectionMessage, setConnectionMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const requiredFields = [
+    "name",
+    "username",
+    "password",
+    "host",
+    "port",
+    "environment",
+  ];
+
+  const validateFields = () => {
+    const allFieldsFilled = requiredFields.every((field) => poDetails[field]);
+    // setDisableNext(!allFieldsFilled);
+    return allFieldsFilled;
+  };
+
+  useEffect(() => {
+    validateFields();
+  }, [poDetails]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -52,15 +64,27 @@ const PODetails = ({
     setPoDetails((prevState) => ({ ...prevState, [name]: e.target.value }));
   };
 
+  const handleExistingChange = (e, value) => {
+    const selectedAgent = agents.find((agent) => agent.poData.name === value?.label);
+    if (selectedAgent) {
+      setPoDetails(selectedAgent.poData);
+    }
+  };
+
   const handlePODetails = (event) => {
     event.preventDefault();
-    setTestingConn(true);
-    postESRConnection(
-      poDetails,
-      setDisableNext,
-      setTestingConn,
-      setConnectionMessage
-    );
+    if (validateFields()) {
+      setTestingConn(true);
+      setErrorMessage("");
+      postESRConnection(
+        poDetails,
+        setDisableNext,
+        setTestingConn,
+        setConnectionMessage
+      );
+    } else {
+      setErrorMessage("Please fill in all required fields.");
+    }
   };
 
   return (
@@ -72,15 +96,13 @@ const PODetails = ({
             disablePortal
             size="small"
             id="combo-box-demo"
-            options={top100Films}
-            onChange={(e, value) => handleChangeInput(value?.label, "existing")}
-            getOptionLabel={(option) => option?.label || ""}
-            getOptionValue={(option) => option?.label || ""}
+            options={poDataNames}
+            onChange={handleExistingChange}
+            getOptionLabel={(option) => option.label}
             fullWidth
             sx={{
               "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
             }}
-            // sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField {...params} placeholder="Select a name" />
             )}
@@ -175,16 +197,14 @@ const PODetails = ({
             size="small"
             id="combo-box-demo"
             fullWidth
-            onChange={(e, value) =>
-              handleChangeInput(value?.label, "environment")
-            }
+            value={system.find((option) => option.label === poDetails?.environment) || null}
+            onChange={(e, value) => handleChangeInput(value?.label, "environment")}
             options={system}
             getOptionLabel={(option) => option?.label || ""}
             getOptionValue={(option) => option?.label || ""}
             sx={{
               "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
             }}
-            // sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField {...params} placeholder="Select" />
             )}
@@ -199,17 +219,18 @@ const PODetails = ({
         >
           {testingConn ? "Testing..." : "Test Connection"}
         </button>
+        {errorMessage && <span className="text-red-500">{errorMessage}</span>}
         {connectionMessage.text && (
           <div className="flex items-center">
             {connectionMessage.type === "success" ? (
-              <FaRegCheckCircle style={{ color: 'green' }} />
+              <FaRegCheckCircle style={{ color: "green" }} />
             ) : (
-              <ImCross style={{ color: 'red' }} />
+              <ImCross style={{ color: "red" }} />
             )}
             <span
               className="ml-2"
               style={{
-                color: connectionMessage.type === "success" ? 'green' : 'red',
+                color: connectionMessage.type === "success" ? "green" : "red",
               }}
             >
               {connectionMessage.text}

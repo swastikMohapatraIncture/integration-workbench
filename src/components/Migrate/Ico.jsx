@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import PropTypes from 'prop-types'
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
@@ -10,19 +11,18 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
   const [selectedIcos, setSelectedIcos] = useState([]);
   const [icoDetails, setIcoDetails] = useState([]);
 
-  const poData = {
-    name: "IncturePO1",
-    username: "INC02525",
-    password: "Integration@#1",
-    host: "sapserver",
-    port: "50000",
-    environment: "DEV",
-  };
-
   useEffect(() => {
     const fetchIcoList = async () => {
       setLoading(true);
       try {
+        const currAgentString = localStorage.getItem("currAgent"); // Retrieve currAgent from local storage
+        if (!currAgentString) {
+          throw new Error("No currAgent found in local storage");
+        }
+
+        const currAgent = JSON.parse(currAgentString); // Parse the JSON string into an object
+        const poData = currAgent.poData; // Extract poData from currAgent
+
         const data = await handleIcoList(poData);
         setIcoList(data);
         setLoading(false);
@@ -42,6 +42,10 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
     setSelectedIcos(value);
 
     if (newSelectedIcos.length > 0) {
+      const currAgentString = localStorage.getItem("currAgent");
+      const currAgent = JSON.parse(currAgentString);
+      const poData = currAgent.poData;
+
       const newDetails = await Promise.all(
         newSelectedIcos.map(async (selectedIco) => {
           const postData = {
@@ -90,22 +94,11 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
     );
   };
 
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 2;
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
-
-  if (error) return <p>Error loading ICO list: {error.message}</p>;
-
   return (
     <div className="w-full">
-      <label className="block mb-1 text-sm">Select ICOs</label>
+      <label className="block mb-1 text-sm">
+        Select ICOs<span className="text-red-600">*</span>
+      </label>
       <Autocomplete
         fullWidth
         multiple
@@ -119,7 +112,7 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
         renderInput={(params) => (
           <TextField
             {...params}
-            placeholder="Select ICOs"
+            placeholder={selectedIcos.length === 0 ? "Select ICOs" : ""}
             InputProps={{
               ...params.InputProps,
               style: {
@@ -141,6 +134,11 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
       />
     </div>
   );
+};
+
+Ico.propTypes = {
+  onIcoDetailsReceived: PropTypes.func.isRequired,
+  setLoading: PropTypes.func.isRequired,
 };
 
 export default Ico;

@@ -2,20 +2,28 @@ import { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Package from "../Migrate/Package";
+import { toast } from "react-toastify";
+import "../../App.css";
 import { handleExceptionServices } from "../../apis/apiService";
 
-const CreateNotificationService = ({ setLoading, isOpen, onClose}) => {
+const CreateNotificationService = ({ setLoading, isOpen, onClose }) => {
   const [selectedValue, setSelectedValue] = useState(null);
   const [selectedServices, setSelectedServices] = useState([]);
   const [integrationNames, setIntegrationNames] = useState([]);
-  const [showInputs, setShowInputs] = useState(false); // State to control the visibility of input boxes
+  const [showInputs, setShowInputs] = useState(false);
   const services = ["Mail", "Slack", "ServiceNow", "Teams"];
 
   const handleDropDownChange = (value) => setSelectedValue(value?.id);
 
   const handleServiceChange = (event, value) => {
+    const currentIntegrationNames = [...integrationNames];
+
+    const newIntegrationNames = value.map(
+      (service, index) => currentIntegrationNames[index] || ""
+    );
+
     setSelectedServices(value);
-    setIntegrationNames(Array(value.length).fill(""));
+    setIntegrationNames(newIntegrationNames);
     setShowInputs(value.length > 0);
   };
 
@@ -27,28 +35,36 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose}) => {
 
   const handleSubmit = async () => {
     setLoading(true);
-  
+
     try {
-      if (!selectedValue || selectedServices.length === 0 || !integrationNames.every(name => name.trim())) {
-        throw new Error("Please select a package, at least one service, and provide integration names.");
+      if (
+        !selectedValue ||
+        selectedServices.length === 0 ||
+        !integrationNames.every((name) => name.trim())
+      ) {
+        throw new Error(
+          "Please select a package, at least one service and provide integration names."
+        );
       }
-  
+
       const localData = localStorage.getItem("currAgent");
       if (!localData) {
         throw new Error("No agent data found.");
       }
-  
+
       const data = JSON.parse(localData);
       const apiData = data.apiData;
       if (!apiData) {
         throw new Error("Invalid agent data.");
       }
-  
-      const integrationNamesArray = integrationNames.map(name => name.trim());
+
+      const integrationNamesArray = integrationNames.map((name) => name.trim());
       if (integrationNamesArray.length !== selectedServices.length) {
-        throw new Error("Please provide integration names for all selected services.");
+        throw new Error(
+          "Please provide integration names for all selected services."
+        );
       }
-  
+
       const payload = {
         apiAgent: apiData,
         errorHandlingService: selectedServices.map((service, index) => ({
@@ -58,34 +74,27 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose}) => {
         })),
         packageId: selectedValue,
       };
-  
-    //   console.log(payload);
-  
+
       const response = await handleExceptionServices(payload);
 
-      console.log("inside the component",response)
-  
       if (response) {
-        alert("Exception adapter created successfully.");
+        toast.success("Services added successfully.");
+        setShowInputs(false);
         setSelectedValue(null);
         setSelectedServices([]);
         setIntegrationNames([]);
-        setShowInputs(false);
+        onClose();
       } else {
         throw new Error("Failed to create exception adapter.");
       }
     } catch (error) {
-      console.error("Error creating exception adapter:", error);
-      alert("An error occurred while creating the exception adapter.");
+      toast.error(error.message);
     } finally {
       setLoading(false);
-      onClose();
     }
   };
-  
-  
-  
-  if(!isOpen) return null;
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 z-[999]">
@@ -96,7 +105,7 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose}) => {
 
         <div className="flex mb-4 px-4">
           <div className="w-1/2 pr-2">
-            <label className="text-sm">Select Services</label>
+            <label className="text-sm">Select Services<span className="text-red-600">*</span></label>
             <Autocomplete
               fullWidth
               multiple
@@ -131,11 +140,10 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose}) => {
 
         {showInputs && (
           <>
-            {/* Display integration names */}
             {selectedServices.map((service, index) => (
               <div key={index} className="mb-4 px-4">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Integration Name for {service}
+                  Integration Name for {service}<span className="text-red-600">*</span>
                 </label>
                 <input
                   type="text"
@@ -144,7 +152,7 @@ const CreateNotificationService = ({ setLoading, isOpen, onClose}) => {
                     handleIntegrationNameChange(event, index)
                   }
                   placeholder={`Integration Name for ${service}`}
-                  className="w-full px-3 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 italic text-sm"
+                  className="w-full px-3 py-2 border rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                 />
               </div>
             ))}

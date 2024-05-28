@@ -15,13 +15,20 @@ import { ToastContainer, toast } from "react-toastify";
 
 const steps = ["Introduction", "PO details", "IS details", "API details"];
 
-const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditingAgentIdx }) => {
+const TenantModal = ({
+  agents,
+  setAgents,
+  setOpenModal,
+  editingAgentIdx,
+  setEditingAgentIdx,
+}) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
   // const [editingAgentIdx, setEditingAgentIdx] = useState(-1);
   const [showPassword, setShowPassword] = useState(false);
   const [disableNext, setDisableNext] = useState(true);
   const [testingConn, setTestingConn] = useState(false);
+  const [currAgent, setCurrAgent] = useState(null);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -34,28 +41,30 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
     setCompletedSteps(completedSteps.filter((step) => step !== activeStep));
   };
 
+  useEffect(() => {
+    const currAgentLocal = JSON?.parse(localStorage?.getItem("currAgent"));
+    if (currAgentLocal) {
+      setCurrAgent(currAgentLocal);
+    }
+  }, [disableNext]);
 
   const handleSubmitAgent = () => {
     const currAgent = JSON.parse(localStorage?.getItem("currAgent"));
     let allPrevAgents = JSON.parse(localStorage?.getItem("agents")) || [];
-  
+
     if (editingAgentIdx >= 0) {
       allPrevAgents[editingAgentIdx] = currAgent;
     } else {
       allPrevAgents?.push(currAgent);
     }
-  
+
     localStorage.setItem("agents", JSON.stringify(allPrevAgents));
     localStorage.removeItem("currAgent");
-  
+
     setAgents(allPrevAgents);
     setEditingAgentIdx(-1);
     setOpenModal(false);
   };
-  
-
-
-
 
   const QontoConnector = styled(StepConnector)(({ theme }) => ({
     [`&.${stepConnectorClasses.alternativeLabel}`]: {
@@ -79,6 +88,12 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
       borderLeftWidth: 2,
     },
   }));
+
+  useEffect(() => {
+    if (activeStep === 0) {
+      setDisableNext(false);
+    }
+  }, [activeStep]);
 
   return (
     <>
@@ -126,6 +141,7 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
                     setDisableNext={setDisableNext}
                     testingConn={testingConn}
                     setTestingConn={setTestingConn}
+                    currAgent={currAgent}
                   />
                 )}
                 {activeStep === 2 && (
@@ -135,6 +151,7 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
                     setDisableNext={setDisableNext}
                     testingConn={testingConn}
                     setTestingConn={setTestingConn}
+                    currAgent={currAgent}
                   />
                 )}
                 {activeStep === 3 && (
@@ -144,6 +161,7 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
                     setDisableNext={setDisableNext}
                     testingConn={testingConn}
                     setTestingConn={setTestingConn}
+                    currAgent={currAgent}
                   />
                 )}
               </div>
@@ -157,19 +175,27 @@ const TenantModal = ({ agents, setAgents, setOpenModal,editingAgentIdx,setEditin
                   Back
                 </button>
               )}
-             {activeStep < steps.length - 1 ? (
+              {activeStep < steps.length - 1 ? (
                 <button
-                  className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  className={`py-1 px-3 rounded-md border ${
+                    disableNext
+                      ? "text-modalColor border-modalColor cursor-not-allowed"
+                      : " text-modalColor border-modalColor"
+                  }`}
                   onClick={handleNext}
-                  // disabled={disableNext}
+                  disabled={disableNext}
                 >
                   Next
                 </button>
               ) : (
                 <button
-                  className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
+                  className={`py-1 px-3 rounded-md border ${
+                    disableNext
+                      ? "text-modalColor border-modalColor cursor-not-allowed"
+                      : " text-modalColor border-modalColor"
+                  }`}
                   onClick={handleSubmitAgent}
-                  // disabled={disableNext}
+                  disabled={disableNext}
                 >
                   Submit
                 </button>

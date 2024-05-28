@@ -32,8 +32,8 @@ const top100Films = [
 
 const VMOptions = () => {
   return (
-    <div className="w-full">
-      <label className="block mb-1 text-sm">Select Value Mapping</label>
+    <div className="">
+      <span className="block mb-1 text-sm">Select value mapping</span>
       <Autocomplete
         multiple
         limitTags={2}
