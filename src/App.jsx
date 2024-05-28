@@ -11,11 +11,9 @@ import MigrationAssessment from "./pages/MigrationAssessment";
 import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
 import Migrate from "./pages/Migrate";
-import Monitoring from "./pages/Monitroing";
+import ReadinessCheckMainPage from "./components/NeoToCloudFoundry/pages/ReadinessCheckMainPage";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ReadinessCheckMainPage from "./components/NeoToCloudFoundry/pages/ReadinessCheckMainPage";
-
 function App() {
   return (
     <>

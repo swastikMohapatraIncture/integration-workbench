@@ -5,6 +5,7 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import WorkInProg from "../components/WorkInProg/WorkInProg";
+import MigrationAssessmentUrl from "../components/MigrationAssessment/MigrationAssessmentUrl";
 import ReadinessCheck from "../components/NeoToCloudFoundry/components/ReadinessCheck";
 
 function CustomTabPanel(props) {
@@ -77,7 +78,8 @@ const MigrationAssessment = () => {
         value={value}
         index={0}
       >
-        <WorkInProg />
+        {/* <WorkInProg /> */}
+        <MigrationAssessmentUrl />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <ReadinessCheck />

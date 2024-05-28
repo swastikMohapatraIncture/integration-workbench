@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import PropTypes from 'prop-types'
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
@@ -128,7 +128,10 @@ const Ico = ({ onIcoDetailsReceived, setLoading }) => {
             height: "1.8em",
             padding: "6px 12px",
             fontSize: 14,
-            maxWidth: "calc(100% - 40px)", // Adjusting the max width of the input
+            maxWidth: "calc(100% - 40px)", 
+          },
+          "& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+            borderColor: "#1976D2", // Outline color on focus
           },
         }}
       />

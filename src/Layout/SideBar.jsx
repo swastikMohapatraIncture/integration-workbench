@@ -57,7 +57,7 @@ const SideBar = () => {
             width: drawerWidth,
             zIndex: 95,
             boxSizing: "border-box",
-            fontSize: "13px",
+            fontSize: "14px",
             transition: "width 0.3s ease",
             overflow: "hidden",
           },

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { RiSearchLine } from "react-icons/ri";
 import { FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6";
 import {
+  handleCreatePackage,
   migrateValueMapping,
   valueMappingList,
 } from "../../../apis/apiService";
@@ -28,8 +29,12 @@ const TableWithPagination = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [base64Url, setbase64Url] = useState("");
   const [name, setName] = useState("");
+  const [packageModal, setPackageModal] = useState(false);
 
   const handleDropDownChange = (value) => setSelectedValue(value?.id);
+  const handleOpenModal = () => setPackageModal(true);
+  const handleCloseModal = () => setPackageModal(false);
+  const handlePackageCreation = () => setRefresh((prevState) => !prevState);
 
   const handleMigrate = async () => {
     if (
@@ -186,8 +191,8 @@ const TableWithPagination = () => {
         <div className="relative p-3">
           <input
             type="text"
-            placeholder="Search by agency name"
-            className="w-[30%] border-2 border-[#E5E5E5] pl-10 p-2 rounded text-sm focus:outline-[#1976D2]"
+            placeholder="Search agency name"
+            className="w-[30%] border-2 border-[#E5E5E5] pl-10 p-2 rounded text-sm focus:outline-[#1976D2] placeholder:text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -285,7 +290,7 @@ const TableWithPagination = () => {
             <input
               type="text"
               placeholder="E.g- VM_IDOC_Handlers"
-              className="w-full border border-[#A2A2A2] p-2 rounded text-sm mr-2 h-[42px] focus:outline-[#1976D2]"
+              className="w-full border border-[#D1D1D1] p-3 rounded text-sm mr-2 h-[42px] focus:outline-[#1976D2] placeholder:text-sm placeholder:text-[#A2A2A2]"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
             />
@@ -297,7 +302,18 @@ const TableWithPagination = () => {
               refreshList={refresh}
             />
           </div>
-          {/* <button>Create New Package</button> */}
+        </div>
+      )}
+      {anyRowSelected && (
+        <div className="flex justify-end mr-5">
+          <span title="Click to create a new package">
+            <button
+              className="pl-2 text-sm text-[#0A6ED1]"
+              onClick={handleOpenModal}
+            >
+              Create New Package
+            </button>
+          </span>
         </div>
       )}
       <footer
@@ -312,7 +328,7 @@ const TableWithPagination = () => {
 
         <span title="Migrate ICOs to IS">
           <button
-            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
+            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm hover:bg-blue-700"
             onClick={handleMigrate}
           >
             Migrate
@@ -324,6 +340,12 @@ const TableWithPagination = () => {
           <Loader />
         </div>
       )}
+      <CreatePackage
+        isOpen={packageModal}
+        onClose={handleCloseModal}
+        setIsLoading={setIsLoading}
+        onPackageCreated={handlePackageCreation}
+      />
 
       <ToastContainer
         position="bottom-center"
@@ -338,7 +360,6 @@ const TableWithPagination = () => {
         theme="colored"
         transition={Zoom}
       />
-      {console.log(inputValue)}
       <VMReport
         isOpen={isModalOpen}
         inputValue={name}
