@@ -23,6 +23,7 @@ export const postNEOConnection = async (
       "http://localhost:8081/api/v1/migration/get/access/token",
       {
         method: "POST",
+        body: JSON.stringify(formData),
       }
     );
 
