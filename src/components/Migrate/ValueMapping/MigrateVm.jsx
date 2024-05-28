@@ -57,8 +57,8 @@ const TableWithPagination = () => {
       const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
 
       const payload = {
-        poAgent: currAgent.poData,
-        apiAgent: currAgent.apiData,
+        poAgent: currAgent?.poData,
+        apiAgent: currAgent?.apiData,
         migrationDetails: {
           valueMappingObject: tableData
             .filter((row) => row.checked)

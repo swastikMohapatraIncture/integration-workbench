@@ -27,14 +27,14 @@ function App() {
             </Layout>
           }
         />
-        <Route
+        {/* <Route
           path="monitoring"
           element={
             <Layout>
               <Monitoring />
             </Layout>
           }
-        />
+        /> */}
         <Route
           path="migrationProcess"
           element={
