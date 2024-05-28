@@ -1,11 +1,11 @@
 import Package from "./Package";
 import Ico from "./Ico";
 import { useState } from "react";
-import { handleMigration } from "../../apis/apiService";
+import { handleMigration } from "../../../apis/apiService";
 import MigrationReport from "./MigrationReport";
-import Loader from "../Loader";
-import CreatePackage from "../CreatePackage/CreatePackage";
-import CreateNotificationService from "../NotificationService/CreateNotificationService";
+import Loader from "../../Loader";
+import CreatePackage from "../../CreatePackage/CreatePackage";
+import CreateNotificationService from "../../NotificationService/CreateNotificationService";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import DetailsTable from "./DetailsTable";
@@ -33,7 +33,6 @@ const MigrateIcos = () => {
   const handleMigrate = async () => {
     try {
       if (icoDetails?.length === 0 || selectedValue === undefined) {
-        // toast.error("test")
         throw new Error("ICO or Package cannot be empty.");
       }
 
@@ -45,8 +44,8 @@ const MigrateIcos = () => {
       }
 
       const data = {
-        poAgent: currAgent.poData,
-        apiAgent: currAgent.apiData,
+        poAgent: currAgent?.poData,
+        apiAgent: currAgent?.apiData,
         migrationDetails: {
           artifactList: icoDetails,
           packageId: selectedValue,

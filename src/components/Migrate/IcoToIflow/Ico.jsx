@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
-import { handleIcoList, handleIcoDetails } from "../../apis/apiService";
+import { handleIcoList, handleIcoDetails } from "../../../apis/apiService";
 
 const Ico = ({ onIcoDetailsReceived, setLoading }) => {
   const [icoList, setIcoList] = useState([]);

@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { RiSearchLine } from "react-icons/ri";
 import { FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6";
-import { migrateValueMapping, valueMappingList } from "../../apis/apiService"; // Import the function from api.js
-import Package from "./Package";
+import {
+  migrateValueMapping,
+  valueMappingList,
+} from "../../../apis/apiService";
+import Loader from "../../Loader";
+import Package from "../IcoToIflow/Package";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast, Zoom } from "react-toastify";
+import CreatePackage from "../../CreatePackage/CreatePackage";
+import VMReport from "./VMReport";
 
 const PAGE_SIZE = 4;
 const VISIBLE_PAGE_NUMBERS = 3;
@@ -12,48 +19,84 @@ const TableWithPagination = () => {
   const [tableData, setTableData] = useState([]);
   const [selectedValue, setSelectedValue] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const [refresh, setRefresh] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [visiblePages, setVisiblePages] = useState([1, 2, 3]);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [base64Url, setbase64Url] = useState("");
+  const [name, setName] = useState("");
 
   const handleDropDownChange = (value) => setSelectedValue(value?.id);
 
-  const handleMigrate = () => {
-    const storedCurrAgent = localStorage.getItem("currAgent");
-    const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
-
-    const payload = {
-      poAgent: currAgent.poData,
-      apiAgent: currAgent.apiData,
-      migrationDetails: {
-        valueMappingObject: tableData.filter((row) => row.checked).map((row) => ({
-          agency: row.agencyName,
-          name: row.valueMapping,
-          id: row.groupid
-        })),
-        packageId: selectedValue,
-        integrationName: inputValue,
-        description: "fgffff"
-      }
+  const handleMigrate = async () => {
+    if (
+      !inputValue ||
+      !selectedValue ||
+      !tableData.some((row) => row?.checked)
+    ) {
+      setErrors({
+        inputValue: !inputValue,
+        selectedValue: !selectedValue,
+        tableData: !tableData.some((row) => row.checked),
+      });
+      toast.error("Please Enter the required details.");
+      return;
     }
 
-    const response = migrateValueMapping(payload);
-    console.log(response);
+    try {
+      setIsLoading(true);
+      const storedCurrAgent = localStorage.getItem("currAgent");
+      const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
 
-    console.log(payload);
-  }
+      const payload = {
+        poAgent: currAgent.poData,
+        apiAgent: currAgent.apiData,
+        migrationDetails: {
+          valueMappingObject: tableData
+            .filter((row) => row.checked)
+            .map((row) => ({
+              agency: row?.agencyName,
+              name: row?.valueMapping,
+              id: row?.groupid,
+            })),
+          packageId: selectedValue,
+          integrationName: inputValue,
+          description: "This integration flow contains Value Mapping.",
+        },
+      };
+
+      const response = await migrateValueMapping(payload);
+      console.log("Testing response", response);
+      setbase64Url(response?.payload);
+      if (response.status === "Success") {
+        toast.success("Value Mapping migrated successfully");
+        setSelectedValue(undefined);
+        setName(inputValue);
+        setInputValue("");
+        setIsModalOpen(true);
+        setTableData((prevData) =>
+          prevData.map((row) => ({ ...row, checked: false }))
+        );
+        return response;
+      } else {
+        toast.error("Failed to migrate Value Mapping, try again.");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Fetch data from the API when the component mounts
     const fetchData = async () => {
-      // Retrieve currAgent from local storage
+      setIsLoading(true);
       const currAgent = JSON.parse(localStorage.getItem("currAgent"));
       if (currAgent && currAgent.poData) {
         const fetchedData = await valueMappingList(currAgent.poData);
-        // Transform the fetched data into the format required by the table
         const formattedData = fetchedData.map((item) => ({
           groupid: item.groupid,
           agencyName: item.agency,
@@ -62,6 +105,7 @@ const TableWithPagination = () => {
         }));
         setTableData(formattedData);
       }
+      setIsLoading(false);
     };
 
     fetchData();
@@ -94,7 +138,6 @@ const TableWithPagination = () => {
       )
     );
   };
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
     const totalPages = Math.ceil(tableData.length / PAGE_SIZE);
@@ -132,14 +175,14 @@ const TableWithPagination = () => {
 
   const visibleData = tableData
     .filter((row) =>
-      row.agencyName.toLowerCase().includes(searchTerm.toLowerCase())
+      row?.agencyName?.toLowerCase()?.includes(searchTerm?.toLowerCase())
     )
     .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   const anyRowSelected = tableData.some((row) => row.checked);
 
   return (
     <>
-      <div className="border-2 border-[#E5E5E5] m-5 rounded-sm">
+      <div className="border-2 border-[#E5E5E5] m-5 rounded-sm z-[999]">
         <div className="relative p-3">
           <input
             type="text"
@@ -254,6 +297,7 @@ const TableWithPagination = () => {
               refreshList={refresh}
             />
           </div>
+          {/* <button>Create New Package</button> */}
         </div>
       )}
       <footer
@@ -275,6 +319,32 @@ const TableWithPagination = () => {
           </button>
         </span>
       </footer>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
+          <Loader />
+        </div>
+      )}
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1500}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Zoom}
+      />
+      {console.log(inputValue)}
+      <VMReport
+        isOpen={isModalOpen}
+        inputValue={name}
+        base64Url={base64Url}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 };
