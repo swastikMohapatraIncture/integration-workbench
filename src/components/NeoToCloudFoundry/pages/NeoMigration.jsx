@@ -6,7 +6,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import MigrateIP from '../components/MigrateIP';
 import MigrateSA from '../components/MigrateSA';
-import MigrateOA from '../components/MigrateIP copy';
+import MigrateOA from '../components/MigrateOA';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
