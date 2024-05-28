@@ -74,37 +74,92 @@ export const postNEOConnection = async (
   setTestingConn,
   setConnectionMessage
 ) => {
- await postApi(
-    "https://webhook.site/3d69f502-16c9-4316-bc63-e0caa1e6fd61",
+
+const clientId = '2b1655dd-c605-3987-9237-4ebcdd73b002';
+const clientSecret = 'NEO_CPI@Incture2024';
+const tokenEndpoint = 'https://oauthasservices-ijv8j6wewk.ae1.hana.ondemand.com/oauth2/api/v1/token';
+const cpiHostUrl = 'https://p550010-tmn.hci.ae1.hana.ondemand.com/itspaces';
+
+const sourceTokenHost = 'oauthasservices-ijv8j6wewk.ae1.hana.ondemand.com';
+const sourceHost = 'p550010-tmn.hci.ae1.hana.ondemand.com';
+
+//  await postApi(
+//     "https://webhook.site/3d69f502-16c9-4316-bc63-e0caa1e6fd61",
    
-    formData
-  ).then((data)=>{
-    if(true){
-      const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
-      const newData = { ...(prevData ? prevData : null), NeoData: formData };
-      localStorage.setItem("currNeoAgent", JSON.stringify(newData));
-      setConnectionMessage({
-        text: "Connection successful",
-        type: "success",
-      });
-      setDisableNext(false);
-    } else {
-      setConnectionMessage({
-        text: data?.message || "Connection unsuccessful",
-        type: "error",
-      });
-      setDisableNext(true);
-    }
-  })
-  .catch((error)=>{
-    console.error("API call failed:", error);
-  // setConnectionStatus(false);
-  setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
-  setDisableNext(true);
-  }).finally(()=>{
-    setTestingConn(false);
-  })
+//     formData
+//   ).then((data)=>{
+//     if(true){
+//       const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
+//       const newData = { ...(prevData ? prevData : null), NeoData: formData };
+//       localStorage.setItem("currNeoAgent", JSON.stringify(newData));
+//       setConnectionMessage({
+//         text: "Connection successful",
+//         type: "success",
+//       });
+//       setDisableNext(false);
+//     } else {
+//       setConnectionMessage({
+//         text: data?.message || "Connection unsuccessful",
+//         type: "error",
+//       });
+//       setDisableNext(true);
+//     }
+//   })
+//   .catch((error)=>{
+//     console.error("API call failed:", error);
+//   // setConnectionStatus(false);
+//   setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
+//   setDisableNext(true);
+//   }).finally(()=>{
+//     setTestingConn(false);
+//   })
+try {
+  // Step 1: Get Access Token
+ 
+  const tokenResponse = await fetch(`https://${sourceTokenHost}/oauth2/api/v1/token?grant_type=client_credentials`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic ' + btoa(`${clientId}:${clientSecret}`),
+    },
+  });
+  
+  if (!tokenResponse.ok) {
+    throw new Error('Failed to fetch access token');
+  }
+  
+  const tokenData = await tokenResponse.json();
+  const accessToken = tokenData.access_token;
+  
+  console.log('Access Token:', accessToken);
+
+  // Step 2: Check Connectivity
+  const connectivityResponse = await fetch(`https://${sourceHost}/api/v1/`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${accessToken}`,
+    },
+  });
+  
+  if (!connectivityResponse.ok) {
+    throw new Error('Failed to check connectivity');
+  }
+  
+  const connectivityData = await connectivityResponse.json();
+  console.log('Connectivity Data:', connectivityData);
+  
+} catch (error) {
+  console.error('Error:', error);
+}
+
 };
+
+
+
+
+
+
+//--------------------------------------------------------------------------------------
 
 export const postCFData = async (
   formData,
@@ -151,7 +206,6 @@ export const postCFData = async (
     }
   });
 };
-
 //--------------------------------------------------------------------------------------------------
 export const postCPIData = async (
   formData,
