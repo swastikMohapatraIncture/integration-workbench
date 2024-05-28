@@ -15,6 +15,7 @@ import Monitoring from "./pages/Monitroing";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReadinessCheckMainPage from "./components/NeoToCloudFoundry/pages/ReadinessCheckMainPage";
+import NeoMigration from "./components/NeoToCloudFoundry/pages/NeoMigration";
 
 function App() {
   return (
@@ -106,6 +107,14 @@ function App() {
           element={
             <Layout>
               <ReadinessCheckMainPage/>
+            </Layout>
+          }
+        ></Route>
+        <Route
+          path="/neomigration"
+          element={
+            <Layout>
+              <NeoMigration/>
             </Layout>
           }
         ></Route>
