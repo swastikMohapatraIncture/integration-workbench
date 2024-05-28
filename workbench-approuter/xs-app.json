@@ -8,7 +8,7 @@
     {
       "source": "^/java_services/",
       "target": "/",
-      "destination": "IIW_Dest",
+      "destination": "IIW_JAVA_DEST",
       "authenticationType": "xsuaa",
       "csrfProtection": false
     },
