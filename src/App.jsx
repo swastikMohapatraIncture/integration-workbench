@@ -14,6 +14,7 @@ import Migrate from "./pages/Migrate";
 import Monitoring from "./pages/Monitroing";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReadinessCheckMainPage from "./components/NeoToCloudFoundry/pages/ReadinessCheckMainPage";
 
 function App() {
   return (
@@ -97,6 +98,14 @@ function App() {
           element={
             <Layout>
               <Migrate />
+            </Layout>
+          }
+        ></Route>
+         <Route
+          path="/readinesscheck"
+          element={
+            <Layout>
+              <ReadinessCheckMainPage/>
             </Layout>
           }
         ></Route>

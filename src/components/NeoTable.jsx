@@ -155,6 +155,13 @@ const Table = ({
             className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px]"
             style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
           >
+            <Link to="/migrationAssessment">
+            <button
+              className="hover:bg-[#0A6ED1] text-[#0A6ED1] text-sm rounded-sm px-3 py-1 border border-[#0A6ED1] hover:text-white transition duration-200 "
+              onClick={handleAddAgent}
+            > Readiness Check
+            </button>
+            </Link>
             <button
               className="hover:bg-[#0A6ED1] text-[#0A6ED1] text-sm rounded-sm px-3 py-1 border border-[#0A6ED1] hover:text-white transition duration-200 "
               onClick={handleAddAgent}
@@ -185,6 +192,8 @@ const Table = ({
           setOpenModal={setOpenModal}
           editingAgentIdx={editingAgentIdx}
           setEditingAgentIdx={setEditingAgentIdx}
+          agentSelected={agentSelected}
+          setAgentSelected={setAgentSelected}
         />
       )}
       {deleteModal.open && (

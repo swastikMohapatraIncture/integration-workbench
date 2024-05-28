@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
-import { handlePackageList } from "../../apis/apiService";
+import { handlePackageList } from "../../../apis/apiService";
 
 const Package = ({ onSelect, setLoading, refreshList }) => {
   const [selectedPackage, setSelectedPackage] = useState(null);
