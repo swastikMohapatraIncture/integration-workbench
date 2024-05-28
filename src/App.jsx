@@ -13,6 +13,7 @@ import LandingPage from "./pages/LandingPage";
 import Home from "./pages/Home";
 import Migrate from "./pages/Migrate";
 import Monitoring from './pages/Monitroing'
+import ReadinessCheckMainPage from "./components/NeoToCloudFoundry/pages/ReadinessCheckMainPage";
 
 function App() {
   return (
@@ -28,6 +29,8 @@ function App() {
       <Route path="about" element={<Layout ><About/></Layout>} />
       <Route path="contacts" element={<Layout ><Contacts/></Layout>} />
       <Route path="faqs" element={<Layout ><FAQ/></Layout>} />
+      <Route path="ReadinessCheckMainPage" element={<Layout ><ReadinessCheckMainPage/></Layout>} />
+      
       {/* <Route path="migrationtable" element={<Layout ><Table /></Layout>} /> */}
       {/* <Route path="migrationtable2" element={<Layout ></Layout>} /> */}
       <Route path="migrate" element={<Layout><Migrate /></Layout>}></Route>

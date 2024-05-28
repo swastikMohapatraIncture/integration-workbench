@@ -12,7 +12,7 @@ import { ToastContainer } from "react-toastify";
 
 const steps = ["Introduction", "NEO details", "CF details"];
 
-const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditingAgentIdx }) => {
+const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditingAgentIdx,agentSelected,setAgentSelected }) => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState([]);
 
@@ -204,7 +204,11 @@ const TenantModal = ({tenants, setTenants, setOpenModal,editingAgentIdx,setEditi
               )}
               <button
                 className=" py-1 px-3 rounded-md border border-modalColor text-modalColor"
-                onClick={() => setOpenModal(false)}
+                onClick={() => {setOpenModal(false);
+                  console.log(agentSelected);
+                  setAgentSelected(true);
+                }
+                }
               >
                 Cancel
               </button>
