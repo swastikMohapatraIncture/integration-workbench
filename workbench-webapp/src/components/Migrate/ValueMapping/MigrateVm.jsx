@@ -1,9 +1,17 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { RiSearchLine } from "react-icons/ri";
 import { FaCircleChevronLeft, FaCircleChevronRight } from "react-icons/fa6";
-import { migrateValueMapping, valueMappingList } from "../../apis/apiService"; // Import the function from api.js
-import Package from "./Package";
+import {
+  handleCreatePackage,
+  migrateValueMapping,
+  valueMappingList,
+} from "../../../apis/apiService";
+import Loader from "../../Loader";
+import Package from "../IcoToIflow/Package";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast, Zoom } from "react-toastify";
+import CreatePackage from "../../CreatePackage/CreatePackage";
+import VMReport from "./VMReport";
 
 const PAGE_SIZE = 4;
 const VISIBLE_PAGE_NUMBERS = 3;
@@ -12,48 +20,88 @@ const TableWithPagination = () => {
   const [tableData, setTableData] = useState([]);
   const [selectedValue, setSelectedValue] = useState(undefined);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
   const [refresh, setRefresh] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const [visiblePages, setVisiblePages] = useState([1, 2, 3]);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [base64Url, setbase64Url] = useState("");
+  const [name, setName] = useState("");
+  const [packageModal, setPackageModal] = useState(false);
 
   const handleDropDownChange = (value) => setSelectedValue(value?.id);
+  const handleOpenModal = () => setPackageModal(true);
+  const handleCloseModal = () => setPackageModal(false);
+  const handlePackageCreation = () => setRefresh((prevState) => !prevState);
 
-  const handleMigrate = () => {
-    const storedCurrAgent = localStorage.getItem("currAgent");
-    const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
-
-    const payload = {
-      poAgent: currAgent.poData,
-      apiAgent: currAgent.apiData,
-      migrationDetails: {
-        valueMappingObject: tableData.filter((row) => row.checked).map((row) => ({
-          agency: row.agencyName,
-          name: row.valueMapping,
-          id: row.groupid
-        })),
-        packageId: selectedValue,
-        integrationName: inputValue,
-        description: "fgffff"
-      }
+  const handleMigrate = async () => {
+    if (
+      !inputValue ||
+      !selectedValue ||
+      !tableData.some((row) => row?.checked)
+    ) {
+      setErrors({
+        inputValue: !inputValue,
+        selectedValue: !selectedValue,
+        tableData: !tableData.some((row) => row.checked),
+      });
+      toast.error("Please Enter the required details.");
+      return;
     }
 
-    const response = migrateValueMapping(payload);
-    console.log(response);
+    try {
+      setIsLoading(true);
+      const storedCurrAgent = localStorage.getItem("currAgent");
+      const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
 
-    console.log(payload);
-  }
+      const payload = {
+        poAgent: currAgent.poData,
+        apiAgent: currAgent.apiData,
+        migrationDetails: {
+          valueMappingObject: tableData
+            .filter((row) => row.checked)
+            .map((row) => ({
+              agency: row?.agencyName,
+              name: row?.valueMapping,
+              id: row?.groupid,
+            })),
+          packageId: selectedValue,
+          integrationName: inputValue,
+          description: "This integration flow contains Value Mapping.",
+        },
+      };
+
+      const response = await migrateValueMapping(payload);
+      console.log("Testing response", response);
+      setbase64Url(response?.payload);
+      if (response.status === "Success") {
+        toast.success("Value Mapping migrated successfully");
+        setSelectedValue(undefined);
+        setName(inputValue);
+        setInputValue("");
+        setIsModalOpen(true);
+        setTableData((prevData) =>
+          prevData.map((row) => ({ ...row, checked: false }))
+        );
+        return response;
+      } else {
+        toast.error("Failed to migrate Value Mapping, try again.");
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Fetch data from the API when the component mounts
     const fetchData = async () => {
-      // Retrieve currAgent from local storage
+      setIsLoading(true);
       const currAgent = JSON.parse(localStorage.getItem("currAgent"));
       if (currAgent && currAgent.poData) {
         const fetchedData = await valueMappingList(currAgent.poData);
-        // Transform the fetched data into the format required by the table
         const formattedData = fetchedData.map((item) => ({
           groupid: item.groupid,
           agencyName: item.agency,
@@ -62,6 +110,7 @@ const TableWithPagination = () => {
         }));
         setTableData(formattedData);
       }
+      setIsLoading(false);
     };
 
     fetchData();
@@ -94,7 +143,6 @@ const TableWithPagination = () => {
       )
     );
   };
-
   const handlePageChange = (page) => {
     setCurrentPage(page);
     const totalPages = Math.ceil(tableData.length / PAGE_SIZE);
@@ -132,19 +180,19 @@ const TableWithPagination = () => {
 
   const visibleData = tableData
     .filter((row) =>
-      row.agencyName.toLowerCase().includes(searchTerm.toLowerCase())
+      row?.agencyName?.toLowerCase()?.includes(searchTerm?.toLowerCase())
     )
     .slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   const anyRowSelected = tableData.some((row) => row.checked);
 
   return (
     <>
-      <div className="border-2 border-[#E5E5E5] m-5 rounded-sm">
+      <div className="border-2 border-[#E5E5E5] m-5 rounded-sm z-[999]">
         <div className="relative p-3">
           <input
             type="text"
-            placeholder="Search by agency name"
-            className="w-[30%] border-2 border-[#E5E5E5] pl-10 p-2 rounded text-sm focus:outline-[#1976D2]"
+            placeholder="Search agency name"
+            className="w-[30%] border-2 border-[#E5E5E5] pl-10 p-2 rounded text-sm focus:outline-[#1976D2] placeholder:text-sm"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -242,7 +290,7 @@ const TableWithPagination = () => {
             <input
               type="text"
               placeholder="E.g- VM_IDOC_Handlers"
-              className="w-full border border-[#A2A2A2] p-2 rounded text-sm mr-2 h-[42px] focus:outline-[#1976D2]"
+              className="w-full border border-[#D1D1D1] p-3 rounded text-sm mr-2 h-[42px] focus:outline-[#1976D2] placeholder:text-sm placeholder:text-[#A2A2A2]"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
             />
@@ -254,6 +302,18 @@ const TableWithPagination = () => {
               refreshList={refresh}
             />
           </div>
+        </div>
+      )}
+      {anyRowSelected && (
+        <div className="flex justify-end mr-5">
+          <span title="Click to create a new package">
+            <button
+              className="pl-2 text-sm text-[#0A6ED1]"
+              onClick={handleOpenModal}
+            >
+              Create New Package
+            </button>
+          </span>
         </div>
       )}
       <footer
@@ -268,13 +328,44 @@ const TableWithPagination = () => {
 
         <span title="Migrate ICOs to IS">
           <button
-            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
+            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm hover:bg-blue-700"
             onClick={handleMigrate}
           >
             Migrate
           </button>
         </span>
       </footer>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999]">
+          <Loader />
+        </div>
+      )}
+      <CreatePackage
+        isOpen={packageModal}
+        onClose={handleCloseModal}
+        setIsLoading={setIsLoading}
+        onPackageCreated={handlePackageCreation}
+      />
+
+      <ToastContainer
+        position="bottom-center"
+        autoClose={1500}
+        hideProgressBar={true}
+        newestOnTop={true}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        transition={Zoom}
+      />
+      <VMReport
+        isOpen={isModalOpen}
+        inputValue={name}
+        base64Url={base64Url}
+        onClose={() => setIsModalOpen(false)}
+      />
     </>
   );
 };

@@ -1,11 +1,11 @@
 import Package from "./Package";
 import Ico from "./Ico";
 import { useState } from "react";
-import { handleMigration } from "../../apis/apiService";
+import { handleMigration } from "../../../apis/apiService";
 import MigrationReport from "./MigrationReport";
-import Loader from "../Loader";
-import CreatePackage from "../CreatePackage/CreatePackage";
-import CreateNotificationService from "../NotificationService/CreateNotificationService";
+import Loader from "../../Loader";
+import CreatePackage from "../../CreatePackage/CreatePackage";
+import CreateNotificationService from "../../NotificationService/CreateNotificationService";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import DetailsTable from "./DetailsTable";
@@ -33,7 +33,6 @@ const MigrateIcos = () => {
   const handleMigrate = async () => {
     try {
       if (icoDetails?.length === 0 || selectedValue === undefined) {
-        // toast.error("test")
         throw new Error("ICO or Package cannot be empty.");
       }
 
@@ -45,8 +44,8 @@ const MigrateIcos = () => {
       }
 
       const data = {
-        poAgent: currAgent.poData,
-        apiAgent: currAgent.apiData,
+        poAgent: currAgent?.poData,
+        apiAgent: currAgent?.apiData,
         migrationDetails: {
           artifactList: icoDetails,
           packageId: selectedValue,
@@ -56,8 +55,8 @@ const MigrateIcos = () => {
       setIsLoading(true);
 
       const response = await handleMigration(data, "icos");
-      setResponseData(response.icoDetailsList);
-      setReportBase64(response.reportBase64);
+      setResponseData(response?.icoDetailsList);
+      setReportBase64(response?.reportBase64);
       setIsModalOpen(true);
       toast.success("Migration Complete");
     } catch (error) {
@@ -120,7 +119,7 @@ const MigrateIcos = () => {
 
         <span title="Migrate ICOs to IS">
           <button
-            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
+            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm hover:bg-blue-700"
             onClick={handleMigrate}
           >
             Migrate

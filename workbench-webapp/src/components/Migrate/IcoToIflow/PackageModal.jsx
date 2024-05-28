@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 
 import { TextField } from "@mui/material";
-import { handleCreatePackage } from "../../apis/apiService";
+import { handleCreatePackage } from "../../../apis/apiService";
 import { useState } from "react";
 
 const PackageModal = ({ setPackageModal }) => {
