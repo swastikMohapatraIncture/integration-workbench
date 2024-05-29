@@ -120,12 +120,7 @@ const CFDetails = ({
     if (validateFields()) {
       setTestingConn(true);
       setErrorMessage("");
-      postCFData(
-        { oauth: CFData },
-        setDisableNext,
-        setTestingConn,
-        setConnectionMessage
-      );
+      postCFData(CFData, setDisableNext, setTestingConn, setConnectionMessage);
     } else {
       setErrorMessage("Please fill in all required fields.");
     }

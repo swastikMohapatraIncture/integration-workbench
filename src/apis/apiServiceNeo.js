@@ -23,7 +23,7 @@ export const postNEOConnection = async (
       "http://localhost:8082/api/v1/migration/get/source/access/token",
       {
         method: "POST",
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ formData: formData }),
         headers: { "Content-Type": "application/json" },
       }
     );
@@ -62,23 +62,23 @@ export const postNEOConnection = async (
 };
 
 export const postCFData = async (
-  oauth,
+  formData,
   setDisableNext,
   setTestingConn,
   // setConnectionStatus,
   setConnectionMessage
 ) => {
-  console.log(oauth);
+  console.log(formData);
   await postApi(
     "http://localhost:8082/api/v1/migration/get/target/access/token",
-    oauth
+    { oauth: formData }
   ).then((data) => {
     try {
       if (data) {
         const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
         const newData = {
           ...(prevData ? prevData : null),
-          CFdata: oauth,
+          CFdata: formData,
         };
         localStorage.setItem("currNeoAgent", JSON.stringify(newData));
         // setConnectionStatus(true);

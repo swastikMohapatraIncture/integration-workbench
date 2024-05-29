@@ -120,16 +120,16 @@ const Table = ({
                       />
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap  text-[#32363A]  border-gray-200">
-                      {tenant?.NeoData?.formData?.name}
+                      {tenant?.NeoData?.name}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                      {tenant?.NeoData?.formData?.environment}
+                      {tenant?.NeoData?.environment}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                      {tenant?.CFdata?.oauth?.name}
+                      {tenant?.CFdata?.name}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                      {tenant?.CFdata?.oauth?.environment}
+                      {tenant?.CFdata?.environment}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
                       <button
