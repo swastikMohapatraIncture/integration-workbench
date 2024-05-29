@@ -148,29 +148,16 @@ const NeoDetails = ({
         </div>
         <div className="flex flex-col">
           <span className="mb-2">Oauth Host</span>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type="text"
-            placeholder="Enter Oauth Host"
+          <TextField
             fullWidth
             size="small"
+            placeholder="Oauth Host"
+            variant="outlined"
             value={Neodetails?.Oauth_Host || ""}
             onChange={(e) => handleChange(e, "Oauth_Host")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
           />
         </div>
         <div className="flex flex-col">
@@ -207,6 +194,11 @@ const NeoDetails = ({
             size="small"
             id="combo-box-demo"
             fullWidth
+            value={
+              system.find(
+                (option) => option.label === Neodetails?.environment
+              ) || null
+            }
             onChange={(e, value) =>
               handleChangeInput(value?.label, "environment")
             }
@@ -216,10 +208,22 @@ const NeoDetails = ({
             sx={{
               "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
             }}
-            // sx={{ width: 300 }}
             renderInput={(params) => (
               <TextField {...params} placeholder="Select" />
             )}
+            // onChange={(e, value) =>
+            //   handleChangeInput(value?.label, "environment")
+            // }
+            // options={system}
+            // getOptionLabel={(option) => option?.label || ""}
+            // getOptionValue={(option) => option?.label || ""}
+            // sx={{
+            //   "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
+            // }}
+            // // sx={{ width: 300 }}
+            // renderInput={(params) => (
+            //   <TextField {...params} placeholder="Select" />
+            // )}
           />
         </div>
       </div>

@@ -141,49 +141,29 @@ const TenantModal = ({
               </div>
 
               <div className="p-3 w-full overflow-y-auto ">
-                {activeStep === 0 && (
-                  <div>
-                    <IntroContent />
-                  </div>
-                )}
+                {activeStep === 0 && <IntroContent />}
                 {activeStep === 1 && (
-                  <div>
-                    <NeoDetails
-                      showPassword={showPassword}
-                      setShowPassword={setShowPassword}
-                      setDisableNext={setDisableNext}
-                      testingConn={testingConn}
-                      setTestingConn={setTestingConn}
-                      currAgent={currAgent}
-                      // connectionMessage={connectionMessage}
-                      // setConnectionMessage={setConnectionMessage}
-                      // connectionStatus={connectionStatus}
-                      // setConnectionStatus={setConnectionStatus}
-                    />
-                  </div>
+                  <NeoDetails
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    setDisableNext={setDisableNext}
+                    testingConn={testingConn}
+                    setTestingConn={setTestingConn}
+                    currAgent={currAgent}
+                  />
                 )}
                 {activeStep === 2 && (
-                  <div>
-                    <CFDetails
-                      showPassword={showPassword}
-                      setShowPassword={setShowPassword}
-                      setDisableNext={setDisableNext}
-                      // fileName={fileName}
-                      // setFileName={setFileName}
-                      testingConn={testingConn}
-                      setTestingConn={setTestingConn}
-                      currAgent={currAgent}
-                      // connectionMessage={connectionMessage}
-                      // setConnectionMessage={setConnectionMessage}
-                      // connectionStatus={connectionStatus}
-                      // setConnectionStatus={setConnectionStatus}
-                    />
-                  </div>
+                  <CFDetails
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    setDisableNext={setDisableNext}
+                    testingConn={testingConn}
+                    setTestingConn={setTestingConn}
+                    currAgent={currAgent}
+                  />
                 )}
               </div>
             </div>
-            {/*footer*/}
-
             <div className="flex items-center gap-3 justify-end px-4 py-3 border-t border-solid border-blueGray-200 rounded-b">
               {activeStep > 0 && (
                 <button

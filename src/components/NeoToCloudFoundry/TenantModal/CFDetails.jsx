@@ -46,7 +46,7 @@ const CFDetails = ({
   // connectionStatus,
   // setConnectionStatus,
 }) => {
-  const [CFData, setCFData] = useState({});
+  const [CFData, setCFData] = useState(currAgent?.CFdata || {});
   const [fileName, setFileName] = useState(null);
   // const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
@@ -72,26 +72,26 @@ const CFDetails = ({
     validateFields();
   }, [CFData]);
 
-  useEffect(() => {
-    const fetchAgentData = () => {
-      if (currAgent && currAgent.CFData) {
-        setCFData(currAgent.CFData);
-      } else {
-        const storedAgent = localStorage.getItem("currNeoAgent");
-        if (storedAgent) {
-          const parsedAgent = JSON.parse(storedAgent);
-          const { name, environment } = parsedAgent.NeoData || {};
-          setCFData((prevState) => ({
-            ...prevState,
-            name: name || "",
-            environment: environment || "",
-          }));
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const fetchAgentData = () => {
+  //     if (currAgent && currAgent.CFdata) {
+  //       setCFData(currAgent.CFdata);
+  //     } else {
+  //       const storedAgent = localStorage.getItem("currNeoAgent");
+  //       if (storedAgent) {
+  //         const parsedAgent = JSON.parse(storedAgent);
+  //         const { name, environment } = parsedAgent.NeoData || {};
+  //         setCFData((prevState) => ({
+  //           ...prevState,
+  //           name: name || "",
+  //           environment: environment || "",
+  //         }));
+  //       }
+  //     }
+  //   };
 
-    fetchAgentData();
-  }, [currAgent]);
+  //   fetchAgentData();
+  // }, [currAgent]);
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -253,6 +253,10 @@ const CFDetails = ({
               handleChangeInput(value?.label, "environment")
             }
             options={system}
+            value={
+              system.find((option) => option.label === CFData?.environment) ||
+              null
+            } // Ensure the value is correctly matched
             getOptionLabel={(option) => option?.label || ""}
             getOptionValue={(option) => option?.label || ""}
             sx={{
