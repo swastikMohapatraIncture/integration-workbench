@@ -9,8 +9,9 @@ import IntroContent from "./TenantModal/IntroContent";
 import NeoDetails from "./TenantModal/NeoDetails";
 import CFDetails from "./TenantModal/CFDetails";
 import { ToastContainer } from "react-toastify";
+import ReadinessCheck from "./components/ReadinessCheck";
 
-const steps = ["Introduction", "NEO details", "CF details"];
+const steps = ["Introduction", "NEO details", "CF details", "Readiness Check"];
 
 const TenantModal = ({
   tenants,
@@ -33,7 +34,8 @@ const TenantModal = ({
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setCompletedSteps([...completedSteps, activeStep]);
-    setDisableNext(true);
+    // Set this true for validation to work !!
+    // setDisableNext(true);
   };
 
   const handleBack = () => {
@@ -162,6 +164,8 @@ const TenantModal = ({
                     currAgent={currAgent}
                   />
                 )}
+
+                {activeStep === 3 && <ReadinessCheck />}
               </div>
             </div>
             <div className="flex items-center gap-3 justify-end px-4 py-3 border-t border-solid border-blueGray-200 rounded-b">

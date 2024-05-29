@@ -105,3 +105,31 @@ export const postCFData = async (
     }
   });
 };
+
+export const readinessCheck = async () => {
+  try {
+    const response = await fetch(
+      "http://localhost:8082/api/v1/migration/Readiness/Check/PreIntegrationPackages",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Response:", response);
+    if (!response.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log("Readiness Check Data:", data);
+
+    // You can process the data further here if needed
+    return data;
+  } catch (error) {
+    console.error("Error fetching readiness check data:", error);
+    // Handle the error appropriately here
+    throw error; // Rethrow the error if you want to handle it at a higher level
+  }
+};
