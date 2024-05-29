@@ -99,7 +99,7 @@ const SideBar = () => {
               <span className=" gap-4 ">Monitoring </span>
             </ListItemButton>
           </ListItem> */}
-          <ListItem
+          {/* <ListItem
             disablePadding
             onClick={() => {
               navigate("/migrationAssessment");
@@ -113,7 +113,7 @@ const SideBar = () => {
               <RiFileCloudLine size={20} />
               <span className="gap-4">Migration Assessment</span>
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
           <ListItem
             disablePadding
             onClick={() => {

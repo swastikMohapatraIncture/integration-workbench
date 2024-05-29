@@ -40,12 +40,12 @@ const TableWithPagination = () => {
     if (
       !inputValue ||
       !selectedValue ||
-      !tableData.some((row) => row?.checked)
+      !tableData?.some((row) => row?.checked)
     ) {
       setErrors({
         inputValue: !inputValue,
         selectedValue: !selectedValue,
-        tableData: !tableData.some((row) => row.checked),
+        tableData: !tableData?.some((row) => row.checked),
       });
       toast.error("Please Enter the required details.");
       return;
@@ -53,7 +53,7 @@ const TableWithPagination = () => {
 
     try {
       setIsLoading(true);
-      const storedCurrAgent = localStorage.getItem("currAgent");
+      const storedCurrAgent = localStorage?.getItem("currAgent");
       const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
 
       const payload = {
@@ -76,7 +76,7 @@ const TableWithPagination = () => {
       const response = await migrateValueMapping(payload);
       console.log("Testing response", response);
       setbase64Url(response?.payload);
-      if (response.status === "Success") {
+      if (response?.status === "Success") {
         toast.success("Value Mapping migrated successfully");
         setSelectedValue(undefined);
         setName(inputValue);
@@ -103,9 +103,9 @@ const TableWithPagination = () => {
       if (currAgent && currAgent.poData) {
         const fetchedData = await valueMappingList(currAgent.poData);
         const formattedData = fetchedData.map((item) => ({
-          groupid: item.groupid,
-          agencyName: item.agency,
-          valueMapping: item.groupname,
+          groupid: item?.groupid,
+          agencyName: item?.agency,
+          valueMapping: item?.groupname,
           checked: false,
         }));
         setTableData(formattedData);
