@@ -85,7 +85,7 @@ const NeoDetails = ({
       setTestingConn(true);
       setErrorMessage("");
       postNEOConnection(
-        Neodetails,
+        { formData: Neodetails },
         setDisableNext,
         setTestingConn,
         setConnectionMessage
