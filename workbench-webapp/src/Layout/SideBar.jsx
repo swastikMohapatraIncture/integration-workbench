@@ -57,7 +57,7 @@ const SideBar = () => {
             width: drawerWidth,
             zIndex: 95,
             boxSizing: "border-box",
-            fontSize: "13px",
+            fontSize: "14px",
             transition: "width 0.3s ease",
             overflow: "hidden",
           },
@@ -102,21 +102,6 @@ const SideBar = () => {
           {/* <ListItem
             disablePadding
             onClick={() => {
-              navigate("/monitoring");
-              setOpenSubmenu(false);
-            }}
-          >
-            <ListItemButton
-              sx={isActiveRoute(["/monitoring"]) ? styles?.selectedItem : styles?.listItem}
-              className="flex flex-row justify-between items-center gap-4"
-            >
-              <MdMonitor size={20} />
-              <span className="gap-4">Monitoring</span>
-            </ListItemButton>
-          </ListItem> */}
-          <ListItem
-            disablePadding
-            onClick={() => {
               navigate("/migrationAssessment");
               setOpenSubmenu(false);
             }}
@@ -128,7 +113,7 @@ const SideBar = () => {
               <RiFileCloudLine size={20} />
               <span className="gap-4">Migration Assessment</span>
             </ListItemButton>
-          </ListItem>
+          </ListItem> */}
           <ListItem
             disablePadding
             onClick={() => {

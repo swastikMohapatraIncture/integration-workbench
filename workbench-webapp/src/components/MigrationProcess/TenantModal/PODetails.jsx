@@ -31,24 +31,34 @@ const PODetails = ({
   const [connectionMessage, setConnectionMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const requiredFields = [
+  const allFields = [
     "name",
-    // "username",
-    // "password",
-    // "host",
-    // "port",
+    "username",
+    "password",
+    "host",
+    "port",
     "environment",
     "destinationName"
   ];
 
+  const requiredFields = ["name", "environment", "destinationName"];
+
+  const ensureFieldsAreFilled = () => {
+    const updatedPoDetails = { ...poDetails };
+    allFields.forEach((field) => {
+      if (!updatedPoDetails[field]) {
+        updatedPoDetails[field] = "";
+      }
+    });
+    setPoDetails(updatedPoDetails);
+  };
+
   const validateFields = () => {
-    const allFieldsFilled = requiredFields.every((field) => poDetails[field]);
-    // setDisableNext(!allFieldsFilled);
-    return allFieldsFilled;
+    return requiredFields.every((field) => poDetails[field]);
   };
 
   useEffect(() => {
-    validateFields();
+    ensureFieldsAreFilled();
   }, [poDetails]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -74,6 +84,7 @@ const PODetails = ({
 
   const handlePODetails = (event) => {
     event.preventDefault();
+    ensureFieldsAreFilled();
     if (validateFields()) {
       setTestingConn(true);
       setErrorMessage("");
@@ -123,7 +134,7 @@ const PODetails = ({
             }}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="hidden flex-col">
           <span className="mb-2">Username</span>
           <TextField
             fullWidth
@@ -137,7 +148,7 @@ const PODetails = ({
             }}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="hidden flex-col">
           <span className="mb-2">Password</span>
           <OutlinedInput
             id="outlined-adornment-password"
@@ -164,7 +175,7 @@ const PODetails = ({
             }
           />
         </div>
-        <div className="flex flex-col">
+        <div className="hidden flex-col">
           <span className="mb-2">Host</span>
           <TextField
             fullWidth
@@ -178,7 +189,7 @@ const PODetails = ({
             }}
           />
         </div>
-        <div className="flex flex-col">
+        <div className="hidden flex-col">
           <span className="mb-2">Port</span>
           <TextField
             size="small"
@@ -216,7 +227,7 @@ const PODetails = ({
           <TextField
             fullWidth
             size="small"
-            placeholder="Enter name"
+            placeholder="Enter destination name"
             value={poDetails?.destinationName || ""}
             onChange={(e) => handleChange(e, "destinationName")}
             variant="outlined"
