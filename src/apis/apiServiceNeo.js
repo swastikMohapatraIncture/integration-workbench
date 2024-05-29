@@ -18,22 +18,23 @@ export const postNEOConnection = async (
 ) => {
   try {
     // Step 1: Get Access Token
-
+    console.log(formData);
     const tokenResponse = await fetch(
-      "http://localhost:8081/api/v1/migration/get/access/token",
+      "http://localhost:8082/api/v1/migration/get/source/access/token",
       {
         method: "POST",
         body: JSON.stringify(formData),
+        headers: { "Content-Type": "application/json" },
       }
     );
 
     console.log(tokenResponse);
     if (tokenResponse && tokenResponse.ok === true) {
-      const tokenData = await tokenResponse.json();
-      const accessToken = tokenData.access_token;
+      // const tokenData = await tokenResponse.json();
+      // const accessToken = tokenData.access_token;
 
-      console.log("Access Token:", accessToken);
-      console.log(formData);
+      // console.log("Access Token:", accessToken);
+      // console.log(formData);
 
       const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
       const newData = { ...(prevData ? prevData : null), NeoData: formData };
@@ -61,25 +62,24 @@ export const postNEOConnection = async (
 };
 
 export const postCFData = async (
-  formData,
+  oauth,
   setDisableNext,
   setTestingConn,
   // setConnectionStatus,
   setConnectionMessage
 ) => {
+  console.log(oauth);
   await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/is/api",
-    formData
+    "http://localhost:8082/api/v1/migration/get/target/access/token",
+    oauth
   ).then((data) => {
     try {
-      if (data && data.status === "Success") {
+      if (data) {
         const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
         const newData = {
           ...(prevData ? prevData : null),
-          CFdata: formData,
-          // adapter: [],
+          CFdata: oauth,
         };
-        // const newData = { ...(prevData ? prevData : null), formData, adapter: [] };
         localStorage.setItem("currNeoAgent", JSON.stringify(newData));
         // setConnectionStatus(true);
         setConnectionMessage({

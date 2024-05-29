@@ -47,10 +47,10 @@ const NeoDetails = ({
 
   const requiredFields = [
     "name",
-    "Integration_Host",
-    "Oauth_Host",
-    "Oauth_Clientid",
-    "Oauth_Secret",
+    "integrationHost",
+    "oauthHost",
+    "oauthClientId",
+    "oauthSecret",
     "environment",
   ];
 
@@ -139,8 +139,8 @@ const NeoDetails = ({
             size="small"
             placeholder="Enter Host Name"
             variant="outlined"
-            value={Neodetails?.Integration_Host || ""}
-            onChange={(e) => handleChange(e, "Integration_Host")}
+            value={Neodetails?.integrationHost || ""}
+            onChange={(e) => handleChange(e, "integrationHost")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -153,8 +153,8 @@ const NeoDetails = ({
             size="small"
             placeholder="Oauth Host"
             variant="outlined"
-            value={Neodetails?.Oauth_Host || ""}
-            onChange={(e) => handleChange(e, "Oauth_Host")}
+            value={Neodetails?.oauthHost || ""}
+            onChange={(e) => handleChange(e, "oauthHost")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -167,8 +167,8 @@ const NeoDetails = ({
             size="small"
             placeholder="Oauth Client Id"
             variant="outlined"
-            value={Neodetails?.Oauth_Clientid || ""}
-            onChange={(e) => handleChange(e, "Oauth_Clientid")}
+            value={Neodetails?.oauthClientId || ""}
+            onChange={(e) => handleChange(e, "oauthClientId")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -180,8 +180,8 @@ const NeoDetails = ({
             size="small"
             placeholder="Oauth Secret"
             variant="outlined"
-            value={Neodetails?.Oauth_Secret || ""}
-            onChange={(e) => handleChange(e, "Oauth_Secret")}
+            value={Neodetails?.oauthSecret || ""}
+            onChange={(e) => handleChange(e, "oauthSecret")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -211,19 +211,6 @@ const NeoDetails = ({
             renderInput={(params) => (
               <TextField {...params} placeholder="Select" />
             )}
-            // onChange={(e, value) =>
-            //   handleChangeInput(value?.label, "environment")
-            // }
-            // options={system}
-            // getOptionLabel={(option) => option?.label || ""}
-            // getOptionValue={(option) => option?.label || ""}
-            // sx={{
-            //   "& .MuiInputBase-input": { height: "1.2em", padding: "6px 12px" },
-            // }}
-            // // sx={{ width: 300 }}
-            // renderInput={(params) => (
-            //   <TextField {...params} placeholder="Select" />
-            // )}
           />
         </div>
       </div>

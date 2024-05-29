@@ -55,9 +55,9 @@ const CFDetails = ({
 
   const requiredFields = [
     "name",
-    "clientId",
-    "clientSecret",
-    "tokenUrl",
+    "clientid",
+    "clientsecret",
+    "tokenurl",
     "url",
     "environment",
   ];
@@ -120,7 +120,12 @@ const CFDetails = ({
     if (validateFields()) {
       setTestingConn(true);
       setErrorMessage("");
-      postCFData(CFData, setDisableNext, setTestingConn, setConnectionMessage);
+      postCFData(
+        { oauth: CFData },
+        setDisableNext,
+        setTestingConn,
+        setConnectionMessage
+      );
     } else {
       setErrorMessage("Please fill in all required fields.");
     }
@@ -151,10 +156,10 @@ const CFDetails = ({
       const { clientid, clientsecret, url, tokenurl } = oauth;
       setCFData((prevState) => ({
         ...prevState,
-        clientId: clientid,
-        clientSecret: clientsecret,
+        clientid: clientid,
+        clientsecret: clientsecret,
         url: url,
-        tokenUrl: tokenurl,
+        tokenurl: tokenurl,
       }));
       console.log("Updated CFData:", { clientid, clientsecret, url, tokenurl }); // Debugging statement
     } else {
@@ -183,8 +188,8 @@ const CFDetails = ({
           <TextField
             size="small"
             placeholder="Enter Client ID"
-            value={CFData?.clientId || ""}
-            onChange={(e) => handleChange(e, "clientId")}
+            value={CFData?.clientid || ""}
+            onChange={(e) => handleChange(e, "clientid")}
             variant="outlined"
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
@@ -197,8 +202,8 @@ const CFDetails = ({
             id="outlined-adornment-password"
             type={showPassword ? "text" : "password"}
             placeholder="Enter Client secret"
-            value={CFData?.clientSecret || ""}
-            onChange={(e) => handleChange(e, "clientSecret")}
+            value={CFData?.clientsecret || ""}
+            onChange={(e) => handleChange(e, "clientsecret")}
             size="small"
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
@@ -223,8 +228,8 @@ const CFDetails = ({
             size="small"
             placeholder="Token URL"
             variant="outlined"
-            value={CFData?.tokenUrl || ""}
-            onChange={(e) => handleChange(e, "tokenUrl")}
+            value={CFData?.tokenurl || ""}
+            onChange={(e) => handleChange(e, "tokenurl")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
             }}
