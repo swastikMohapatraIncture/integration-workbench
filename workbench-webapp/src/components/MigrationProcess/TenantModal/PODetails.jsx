@@ -33,11 +33,12 @@ const PODetails = ({
 
   const requiredFields = [
     "name",
-    "username",
-    "password",
-    "host",
-    "port",
+    // "username",
+    // "password",
+    // "host",
+    // "port",
     "environment",
+    "destinationName"
   ];
 
   const validateFields = () => {
@@ -208,6 +209,20 @@ const PODetails = ({
             renderInput={(params) => (
               <TextField {...params} placeholder="Select" />
             )}
+          />
+        </div>
+        <div className="flex flex-col">
+          <span className="mb-2">Destination</span>
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Enter name"
+            value={poDetails?.destinationName || ""}
+            onChange={(e) => handleChange(e, "destinationName")}
+            variant="outlined"
+            sx={{
+              "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
+            }}
           />
         </div>
       </div>
