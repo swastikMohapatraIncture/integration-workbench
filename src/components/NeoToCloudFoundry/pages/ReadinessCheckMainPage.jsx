@@ -31,30 +31,30 @@ const ReadinessCheckMainPage = () => {
   ];
 
   return (
-    <div className="flex flex-col p-4">
+    <div className="flex flex-col p-2">
       <div className="overflow-auto">
-        <h2 className="text-2xl font-bold mb-4">
-          System Readiness Check Results
+        <h2 className="text-xl font-bold mb-2">
+          System Readiness Check
         </h2>
-        <table className="table-auto w-full text-[#32363A] shadow-lg rounded-lg">
+        <table className="table-auto w-full text-[#32363A] shadow-lg rounded-lg text-sm">
           <thead className="bg-gray-200 sticky top-0 z-10">
             <tr>
-              <th className="border border-gray-200 px-4 py-4 text-center w-[10%]">
+              <th className="border border-gray-200 px-2 py-2 text-center w-[11%]">
                 Serial No
               </th>
-              <th className="border border-gray-200 px-4 py-4 w-[40%] text-left">
-                Test Case
+              <th className="border border-gray-200 px-2 py-2 w-[30%] text-left">
+                Total Checks
               </th>
-              <th className="border border-gray-200 px-4 py-4 text-left w-[10%]">
+              <th className="border border-gray-200 px-2 py-2 text-center w-[8%]">
                 Total
               </th>
-              <th className="border border-gray-200 px-4 py-4 text-left w-[10%]">
-                Passed
+              <th className="border border-gray-200 px-2 py-2 text-center w-[12%]">
+                Can Be Migrated
               </th>
-              <th className="border border-gray-200 px-4 py-4 text-left w-[10%]">
-                Failed
+              <th className="border border-gray-200 px-2 py-2 text-center w-[10%]">
+                Cannot Be Migrated
               </th>
-              <th className="border border-gray-200 px-4 py-4 text-left w-[10%]">
+              <th className="border border-gray-200 px-2 py-2 text-center w-[10%]">
                 Status
               </th>
             </tr>
@@ -62,24 +62,24 @@ const ReadinessCheckMainPage = () => {
           <tbody className="bg-white">
             {data.map((row, index) => (
               <tr key={index}>
-                <td className="border border-gray-200 px-4 py-4 text-center">
+                <td className="border border-gray-200 px-2 py-2 text-center">
                   {index + 1}
                 </td>
-                <td className="border border-gray-200 px-4 py-4">
+                <td className="border border-gray-200 px-2 py-2">
                   {row.action}
                 </td>
-                <td className="border border-gray-200 px-4 py-4 text-center">
+                <td className="border border-gray-200 px-2 py-2 text-center">
                   {row.passed + row.failed}
                 </td>
-                <td className="border border-gray-200 px-4 py-4">
+                <td className="border border-gray-200 px-2 py-2 text-center">
                   {row.passed}
                 </td>
-                <td className="border border-gray-200 px-4 py-4">
+                <td className="border border-gray-200 px-2 py-2 text-center">
                   {row.failed}
                 </td>
-                <td className="border border-gray-200 px-4 py-4 text-center">
+                <td className="border border-gray-200 px-2 py-3 flex justify-center items-center">
                   {row.failed > 0 ? (
-                    <FaTimes color="red" />
+                    <FaTimes color="red"/>
                   ) : (
                     <FaCheck color="green" />
                   )}

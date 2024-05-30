@@ -4,6 +4,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import TenantModal from "./NeoToCloudFoundry/TenantModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { readinessCheck } from "../apis/apiServiceNeo";
 
 const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
   return (
