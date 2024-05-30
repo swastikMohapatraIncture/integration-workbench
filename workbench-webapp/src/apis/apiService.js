@@ -464,7 +464,8 @@ export const migrateValueMapping = async (data) => {
     );
 
     // if(response.data.status === "Success")
-    console.log(response);
+    // console.log(response);
+    return response
   } catch (error) {
     return error.message;
   }

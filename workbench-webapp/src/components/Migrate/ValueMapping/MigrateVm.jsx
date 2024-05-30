@@ -74,9 +74,9 @@ const TableWithPagination = () => {
       };
 
       const response = await migrateValueMapping(payload);
-      console.log("Testing response", response);
-      setbase64Url(response?.payload);
-      if (response?.status === "Success") {
+      // console.log("Testing response", response);
+      setbase64Url(response?.data?.payload);
+      if (response?.data?.status === "Success") {
         toast.success("Value Mapping migrated successfully");
         setSelectedValue(undefined);
         setName(inputValue);
