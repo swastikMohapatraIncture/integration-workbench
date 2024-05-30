@@ -10,6 +10,16 @@ export const postApi = async (apiURL, toPostData) => {
   }
 };
 
+export const getApi = async (apiURL, params = {}) => {
+  try {
+    const res = await axios.get(apiURL, { params });
+    return res.data;
+  } catch (e) {
+    console.error("Error fetching data:", e);
+    return null;
+  }
+};
+
 export const postNEOConnection = async (
   formData,
   setDisableNext,
@@ -125,11 +135,80 @@ export const readinessCheck = async () => {
     const data = await response.json();
     console.log("Readiness Check Data:", data);
 
-    // You can process the data further here if needed
-    return data;
+    // Checking if pre package content exists and can be migrated or not
+    console.log(
+      "********************  Entering Request 'Check Pre-Package Content'  ********************"
+    );
+    let totalPackages = 0;
+    let prePkgNotMigrated = 0;
+    let customPackages = 0;
+    let custPkgNotMigrated = 0;
+    let packageIds = [];
+    let artifactVersion = [];
+
+    let versionCanNotMigrated = 0,
+      versionCanMigrated = 0;
+
+    for (let result of data.d.results) {
+      packageIds.push(result.Id);
+      if (
+        (result.Vendor === "SAP" || result.PartnerContent === true) &&
+        result.UpdateAvailable === true
+      ) {
+        totalPackages++;
+        if (result.Name != "") {
+          prePkgNotMigrated++;
+        }
+      } else if (result.Vendor != "SAP" && result.PartnerContent != true) {
+        customPackages++;
+        if (result.UpdateAvailable === true) {
+          custPkgNotMigrated++;
+        }
+      }
+    }
+    console.log(packageIds);
+
+    for (let id of packageIds) {
+      const checkIflowVersionReq = await fetch(
+        `http://localhost:8082/api/v1/migration/Readiness/Check/IntegrationFlowsVersion?PackageId=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!checkIflowVersionReq.ok) {
+        throw new Error(`Error: ${checkIflowVersionReq.statusText}`);
+      }
+
+      const versionRes = await checkIflowVersionReq.json();
+      for (let result of versionRes.d.results) {
+        artifactVersion = result.Version;
+        if (artifactVersion === "Active") {
+          versionCanNotMigrated++;
+        }
+      }
+    }
+
+    console.log("Version can not be migrated: ", versionCanNotMigrated);
+
+    versionCanMigrated = packageIds.length - versionCanNotMigrated;
+    console.log("Version can be migrated: ", versionCanMigrated);
+
+    return {
+      totalPackages,
+      prePkgNotMigrated,
+      customPackages,
+      custPkgNotMigrated,
+      packageIds,
+      versionCanMigrated,
+      versionCanNotMigrated,
+    };
   } catch (error) {
     console.error("Error fetching readiness check data:", error);
-    // Handle the error appropriately here
-    throw error; // Rethrow the error if you want to handle it at a higher level
+
+    throw error;
   }
 };

@@ -1,91 +1,136 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import { readinessCheck } from "../../../apis/apiServiceNeo";
 
 const ReadinessCheckMainPage = () => {
-  const data = [
-    {
-      method: "GET",
-      action: "Check Pre-Package Content",
-      passed: 1,
-      failed: 1,
-    },
-    {
-      method: "GET",
-      action: "Load List of Custom Packages",
-      passed: 1,
-      failed: 0,
-    },
-    {
-      method: "GET",
-      action: "Check Version of Integration Flows",
-      passed: 2,
-      failed: 1,
-    },
-    {
-      method: "GET",
-      action: "Check Version of Value Mappings",
-      passed: 2,
-      failed: 0,
-    },
-    { method: "GET", action: "Check JMS Resources", passed: 1, failed: 0 },
-  ];
+  const [checkData, setCheckData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await readinessCheck();
+        setCheckData(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!checkData) {
+    return <div>Error loading data</div>;
+  }
 
   return (
     <div className="flex flex-col p-2">
       <div className="overflow-auto">
         <h2 className="text-xl font-bold mb-2">
-          System Readiness Check
+          System Readiness Check Results
         </h2>
         <table className="table-auto w-full text-[#32363A] shadow-lg rounded-lg text-sm">
           <thead className="bg-gray-200 sticky top-0 z-10">
             <tr>
-              <th className="border border-gray-200 px-2 py-2 text-center w-[11%]">
+              <th className="border border-gray-200 px-2 py-2 text-center w-[10%]">
                 Serial No
               </th>
-              <th className="border border-gray-200 px-2 py-2 w-[30%] text-left">
+              <th className="border border-gray-200 px-2 py-2 w-[40%] text-left">
                 Total Checks
               </th>
-              <th className="border border-gray-200 px-2 py-2 text-center w-[8%]">
+              <th className="border border-gray-200 px-2 py-2 text-left w-[10%]">
                 Total
               </th>
-              <th className="border border-gray-200 px-2 py-2 text-center w-[12%]">
+              <th className="border border-gray-200 px-2 py-2 text-left w-[10%]">
                 Can Be Migrated
               </th>
-              <th className="border border-gray-200 px-2 py-2 text-center w-[10%]">
+              <th className="border border-gray-200 px-2 py-2 text-left w-[10%]">
                 Cannot Be Migrated
               </th>
-              <th className="border border-gray-200 px-2 py-2 text-center w-[10%]">
+              <th className="border border-gray-200 px-2 py-2 text-left w-[10%]">
                 Status
               </th>
             </tr>
           </thead>
           <tbody className="bg-white">
-            {data.map((row, index) => (
-              <tr key={index}>
-                <td className="border border-gray-200 px-2 py-2 text-center">
-                  {index + 1}
-                </td>
-                <td className="border border-gray-200 px-2 py-2">
-                  {row.action}
-                </td>
-                <td className="border border-gray-200 px-2 py-2 text-center">
-                  {row.passed + row.failed}
-                </td>
-                <td className="border border-gray-200 px-2 py-2 text-center">
-                  {row.passed}
-                </td>
-                <td className="border border-gray-200 px-2 py-2 text-center">
-                  {row.failed}
-                </td>
-                <td className="border border-gray-200 px-2 py-3 flex justify-center items-center">
-                  {row.failed > 0 ? (
-                    <FaTimes color="red"/>
-                  ) : (
-                    <FaCheck color="green" />
-                  )}
-                </td>
-              </tr>
-            ))}
+            <tr>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                1
+              </td>
+              <td className="border border-gray-200 px-2 py-2">
+                Pre-Packaged Content
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.totalPackages}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.totalPackages - checkData.prePkgNotMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.prePkgNotMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-3 text-center flex justify-center items-center">
+                {checkData.prePkgNotMigrated > 0 ? (
+                  <FaTimes color="red" />
+                ) : (
+                  <FaCheck color="green" />
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                2
+              </td>
+              <td className="border border-gray-200 px-2 py-2">
+                Custom Packages
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.customPackages}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.customPackages - checkData.custPkgNotMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.custPkgNotMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-3 text-center flex justify-center items-center">
+                {checkData.custPkgNotMigrated > 0 ? (
+                  <FaTimes color="red" />
+                ) : (
+                  <FaCheck color="green" />
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                3
+              </td>
+              <td className="border border-gray-200 px-2 py-2">
+                Check version of Iflows
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.packageIds.length}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.versionCanMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.versionCanNotMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-3 text-center flex justify-center items-center">
+                {checkData.versionCanNotMigrated > 0 ? (
+                  <FaTimes color="red" />
+                ) : (
+                  <FaCheck color="green" />
+                )}
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
