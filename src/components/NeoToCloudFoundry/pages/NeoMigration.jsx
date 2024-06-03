@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import MigrateIP from '../components/MigrateIP';
 import MigrateSA from '../components/MigrateSA';
 import MigrateOA from '../components/MigrateOA';
+// import { GetPackages } from '../../../apis/apiServiceNeo';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -43,6 +44,18 @@ function a11yProps(index) {
 
 const NeoMigration = () => {
   const [value, setValue] = useState(0);
+  const [prepackages, setPrePackages] = useState([]);
+  const [custompackages, setCustomPackages] = useState([]);
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      const packages= await GetPackages();
+      setPrePackages(packages.prepackages);
+      setCustomPackages(packages.custompackages);
+    };
+
+    fetchPackages();
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -52,21 +65,22 @@ const NeoMigration = () => {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab sx={{textTransform:"capitalize"}} label="Integration Packages" {...a11yProps(0)} />
-          <Tab sx={{textTransform:"capitalize"}} label="Security Artifacts" {...a11yProps(1)} />
-          <Tab sx={{textTransform:"capitalize"}} label="Other Artifacts" {...a11yProps(2)} />
+          <Tab sx={{ textTransform: "capitalize" }} label="Integration Packages" {...a11yProps(0)} />
+          <Tab sx={{ textTransform: "capitalize" }} label="Security Artifacts" {...a11yProps(1)} />
+          <Tab sx={{ textTransform: "capitalize" }} label="Other Artifacts" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <MigrateIP/>
+        <MigrateIP prepackages={prepackages} custompackages={custompackages}  />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <MigrateSA/>
+        <MigrateSA />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        <MigrateOA/>
+        <MigrateOA />
       </CustomTabPanel>
     </Box>
   );
-}
+};
+
 export default NeoMigration;

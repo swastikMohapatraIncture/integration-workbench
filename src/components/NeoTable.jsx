@@ -5,6 +5,7 @@ import TenantModal from "./NeoToCloudFoundry/TenantModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { readinessCheck } from "../apis/apiServiceNeo";
+// import { GetPackages } from "../apis/apiServiceNeo";
 
 const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
   return (
@@ -178,7 +179,7 @@ const Table = ({
                 Readiness Check
               </button>
             </Link>
-            <Link to="/Migrate">
+            <Link to="/neomigration">
               <button
                 className={`bg-[#0A6ED1] border border-[#0A6ED1] rounded-sm px-6 py-1  transition duration-200 text-sm ${
                   !agentSelected
@@ -186,6 +187,7 @@ const Table = ({
                     : "bg-[#0A6ED1] text-white"
                 } mr-3`}
                 disabled={!agentSelected}
+                
               >
                 Next
               </button>

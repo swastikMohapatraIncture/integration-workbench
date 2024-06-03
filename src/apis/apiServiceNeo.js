@@ -1,5 +1,21 @@
 import axios from "axios";
-import "react-toastify/dist/ReactToastify.css";
+
+if (!localStorage.getItem('pkgNotMigrate')) {
+  localStorage.setItem('pkgNotMigrate', JSON.stringify([]));
+}
+
+function addToPkgNotMigrate(newItem) {
+  // Retrieve the current array from localStorage
+  let pkgNotMigrate = JSON.parse(localStorage.getItem('pkgNotMigrate'));
+
+    // Append the new item to the array
+    pkgNotMigrate.push(newItem);
+  
+
+  // Store the updated array back in localStorage
+  localStorage.setItem('pkgNotMigrate', JSON.stringify(pkgNotMigrate));
+}
+
 
 export const postApi = async (apiURL, toPostData) => {
   try {
@@ -83,6 +99,7 @@ export const postCFData = async (
     "http://localhost:8082/api/v1/migration/get/target/access/token",
     { oauth: formData }
   ).then((data) => {
+    console.log(data);
     try {
       if (data) {
         const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
@@ -127,7 +144,6 @@ export const readinessCheck = async () => {
         },
       }
     );
-    console.log("Response:", response);
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
@@ -212,3 +228,4 @@ export const readinessCheck = async () => {
     throw error;
   }
 };
+

@@ -29,11 +29,34 @@ const ReadinessCheckMainPage = () => {
     return <div>Error loading data</div>;
   }
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await readinessCheck();
+        setCheckData(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!checkData) {
+    return <div>Error loading data</div>;
+  }
+
   return (
     <div className="flex flex-col p-2">
       <div className="overflow-auto">
         <h2 className="text-xl font-bold mb-2">
-          System Readiness Check Results
+          System Readiness Check Results Results
         </h2>
         <table className="table-auto w-full text-[#32363A] shadow-lg rounded-lg text-sm">
           <thead className="bg-gray-200 sticky top-0 z-10">
@@ -42,9 +65,11 @@ const ReadinessCheckMainPage = () => {
                 Serial No
               </th>
               <th className="border border-gray-200 px-2 py-2 w-[40%] text-left">
+             
                 Total Checks
               </th>
               <th className="border border-gray-200 px-2 py-2 text-left w-[10%]">
+              
                 Total
               </th>
               <th className="border border-gray-200 px-2 py-2 text-left w-[10%]">
