@@ -148,7 +148,9 @@ export const readinessCheck = async () => {
       throw new Error(`Error: ${response.statusText}`);
     }
 
-    const data = await response.json();
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};  // Handle empty response body
+
     console.log("Readiness Check Data:", data);
 
     // Checking if pre package content exists and can be migrated or not
@@ -212,6 +214,94 @@ export const readinessCheck = async () => {
 
     versionCanMigrated = packageIds.length - versionCanNotMigrated;
     console.log("Version can be migrated: ", versionCanMigrated);
+
+    // New fetch call for JMS Resources
+    // const jmsResourcesResponse = await fetch(
+    //   "http://localhost:8082/api/v1/migration/Readiness/Check/Source/JMSResources",
+    //   {
+    //     method: "GET",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //   }
+    // );
+
+    // if (!jmsResourcesResponse.ok) {
+    //   throw new Error(`Error: ${jmsResourcesResponse.statusText}`);
+    // }
+
+    // const jmsResourcesData = await jmsResourcesResponse.json();
+    // console.log("JMS Resources Data:", jmsResourcesData);
+
+     // New fetch call for Source JMS Resources
+     console.log("********************  Entering Request 'Check Source JMS Resources'  ********************");
+     const sourceJmsResponse = await fetch(
+       "http://localhost:8082/api/v1/migration/Readiness/Check/Source/JMSResources",
+       {
+         method: "GET",
+         headers: {
+           "Content-Type": "application/json",
+         },
+       }
+     );
+ 
+     if (!sourceJmsResponse.ok) {
+       throw new Error(`Error: ${sourceJmsResponse.statusText}`);
+     }
+ 
+     const sourceJmsData = await sourceJmsResponse.json();
+     console.log("Source JMS Resources Data:", sourceJmsData);
+ 
+     const srcQueueCount = sourceJmsData.d.QueueNumber || 0;
+     console.log("Source JMS Queue Count:", srcQueueCount);
+ 
+     // New fetch call for Target JMS Resources
+     console.log("********************  Entering Request 'Check Target JMS Resources'  ********************");
+     const targetJmsResponse = await fetch(
+       "http://localhost:8082/api/v1/migration/Readiness/Check/Target/JMSResources",
+       {
+         method: "GET",
+         headers: {
+           "Content-Type": "application/json",
+         },
+       }
+     );
+ 
+     if (!targetJmsResponse.ok) {
+       throw new Error(`Error: ${targetJmsResponse.statusText}`);
+     }
+ 
+     const targetJmsData = await targetJmsResponse.json();
+     console.log("Target JMS Resources Data:", targetJmsData);
+ 
+     const tgtMaxQueueCount = targetJmsData.d.MaxQueueNumber || 0;
+     console.log("Target JMS Queue Count:", tgtMaxQueueCount);
+ 
+     if (tgtMaxQueueCount < srcQueueCount) {
+       console.log(
+         `Total JMS Queue on target tenant is: ${tgtMaxQueueCount} as compared to source tenant: ${srcQueueCount}. Refer documentation to bring number of JMS Queue on Target equal to what is there on source tenant`
+       );
+       throw new Error(
+         `Not enough JMS queues available on target tenant. Used queues on source: ${srcQueueCount}, available on target: ${tgtMaxQueueCount}. Check https://blogs.sap.com/2018/12/12/cloud-integration-activating-and-managing-enterprise-messaging-capabilities-as2-jms-and-xi-adapters/.`
+       );
+     } else {
+       console.log(
+         "Maximum available JMS queue in target tenant is enough as per used queue on source Tenant."
+       );
+     }
+ 
+     if (targetJmsResponse.status === 500 && srcQueueCount > 0) {
+       console.log(
+         "Enterprise Messaging is not activated on target tenant, however source tenant has JMS queue usage."
+       );
+       throw new Error(
+         "Enterprise Messaging is not activated on target tenant, however source tenant has JMS queue usage. Check https://blogs.sap.com/2018/12/12/cloud-integration-activating-and-managing-enterprise-messaging-capabilities-as2-jms-and-xi-adapters/."
+       );
+     }
+ 
+     console.log(
+       "********************  Exiting Request 'Check JMS Resources'  ********************"
+     );
 
     return {
       totalPackages,

@@ -10,6 +10,7 @@ const ReadinessCheckMainPage = () => {
     const fetchData = async () => {
       try {
         const data = await readinessCheck();
+        console.log("hi",data.jmsResourcesData);
         setCheckData(data);
       } catch (error) {
         console.error(error);
@@ -29,28 +30,6 @@ const ReadinessCheckMainPage = () => {
     return <div>Error loading data</div>;
   }
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await readinessCheck();
-        setCheckData(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!checkData) {
-    return <div>Error loading data</div>;
-  }
 
   return (
     <div className="flex flex-col p-2">
@@ -138,6 +117,54 @@ const ReadinessCheckMainPage = () => {
               </td>
               <td className="border border-gray-200 px-2 py-2">
                 Check version of Iflows
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.packageIds.length}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.versionCanMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.versionCanNotMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-3 text-center flex justify-center items-center">
+                {checkData.versionCanNotMigrated > 0 ? (
+                  <FaTimes color="red" />
+                ) : (
+                  <FaCheck color="green" />
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                4
+              </td>
+              <td className="border border-gray-200 px-2 py-2">
+                VM
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.packageIds.length}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.versionCanMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                {checkData.versionCanNotMigrated}
+              </td>
+              <td className="border border-gray-200 px-2 py-3 text-center flex justify-center items-center">
+                {checkData.versionCanNotMigrated > 0 ? (
+                  <FaTimes color="red" />
+                ) : (
+                  <FaCheck color="green" />
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td className="border border-gray-200 px-2 py-2 text-center">
+                5
+              </td>
+              <td className="border border-gray-200 px-2 py-2">
+                JMS
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
                 {checkData.packageIds.length}
