@@ -10,7 +10,6 @@ const ReadinessCheckMainPage = () => {
     const fetchData = async () => {
       try {
         const data = await readinessCheck();
-        console.log("hi",data.jmsResourcesData);
         setCheckData(data);
       } catch (error) {
         console.error(error);
@@ -164,19 +163,19 @@ const ReadinessCheckMainPage = () => {
                 5
               </td>
               <td className="border border-gray-200 px-2 py-2">
-                JMS
+                Java Messaging Service
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
-                {checkData.packageIds.length}
+                {checkData.migratejms}
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
-                {checkData.versionCanMigrated}
+                {checkData.migratejms}
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
-                {checkData.versionCanNotMigrated}
+                {checkData.cantmigratejms}
               </td>
               <td className="border border-gray-200 px-2 py-3 text-center flex justify-center items-center">
-                {checkData.versionCanNotMigrated > 0 ? (
+                {checkData.cantmigratejms > 0 ? (
                   <FaTimes color="red" />
                 ) : (
                   <FaCheck color="green" />

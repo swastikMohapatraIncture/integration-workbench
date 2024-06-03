@@ -25,7 +25,8 @@ export const postApi = async (apiURL, toPostData) => {
     return null;
   }
 };
-
+let migratejms=0;
+let cantmigratejms=0;
 export const getApi = async (apiURL, params = {}) => {
   try {
     const res = await axios.get(apiURL, { params });
@@ -215,23 +216,6 @@ export const readinessCheck = async () => {
     versionCanMigrated = packageIds.length - versionCanNotMigrated;
     console.log("Version can be migrated: ", versionCanMigrated);
 
-    // New fetch call for JMS Resources
-    // const jmsResourcesResponse = await fetch(
-    //   "http://localhost:8082/api/v1/migration/Readiness/Check/Source/JMSResources",
-    //   {
-    //     method: "GET",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //   }
-    // );
-
-    // if (!jmsResourcesResponse.ok) {
-    //   throw new Error(`Error: ${jmsResourcesResponse.statusText}`);
-    // }
-
-    // const jmsResourcesData = await jmsResourcesResponse.json();
-    // console.log("JMS Resources Data:", jmsResourcesData);
 
      // New fetch call for Source JMS Resources
      console.log("********************  Entering Request 'Check Source JMS Resources'  ********************");
@@ -278,6 +262,7 @@ export const readinessCheck = async () => {
      console.log("Target JMS Queue Count:", tgtMaxQueueCount);
  
      if (tgtMaxQueueCount < srcQueueCount) {
+      const cantmigratejms=srcQueueCount-tgtMaxQueueCount;
        console.log(
          `Total JMS Queue on target tenant is: ${tgtMaxQueueCount} as compared to source tenant: ${srcQueueCount}. Refer documentation to bring number of JMS Queue on Target equal to what is there on source tenant`
        );
@@ -285,6 +270,7 @@ export const readinessCheck = async () => {
          `Not enough JMS queues available on target tenant. Used queues on source: ${srcQueueCount}, available on target: ${tgtMaxQueueCount}. Check https://blogs.sap.com/2018/12/12/cloud-integration-activating-and-managing-enterprise-messaging-capabilities-as2-jms-and-xi-adapters/.`
        );
      } else {
+       migratejms=srcQueueCount;
        console.log(
          "Maximum available JMS queue in target tenant is enough as per used queue on source Tenant."
        );
@@ -311,6 +297,8 @@ export const readinessCheck = async () => {
       packageIds,
       versionCanMigrated,
       versionCanNotMigrated,
+      migratejms,
+      cantmigratejms,
     };
   } catch (error) {
     console.error("Error fetching readiness check data:", error);
