@@ -29,7 +29,6 @@ const ReadinessCheckMainPage = () => {
     return <div>Error loading data</div>;
   }
 
-
   return (
     <div className="flex flex-col p-2">
       <div className="overflow-auto">
@@ -43,11 +42,9 @@ const ReadinessCheckMainPage = () => {
                 Serial No
               </th>
               <th className="border border-gray-200 px-2 py-2 w-[40%] text-left">
-             
                 Total Checks
               </th>
               <th className="border border-gray-200 px-2 py-2 text-left w-[10%]">
-              
                 Total
               </th>
               <th className="border border-gray-200 px-2 py-2 text-left w-[10%]">
