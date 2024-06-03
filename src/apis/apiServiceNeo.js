@@ -27,6 +27,9 @@ export const postApi = async (apiURL, toPostData) => {
 };
 let migratejms=0;
 let cantmigratejms=0;
+let totalValueMappings = 0;
+    let valueMappingsCanMigrate = 0;
+    let valueMappingsCannotMigrate = 0;
 export const getApi = async (apiURL, params = {}) => {
   try {
     const res = await axios.get(apiURL, { params });
@@ -187,7 +190,9 @@ export const readinessCheck = async () => {
     }
     console.log(packageIds);
 
+    
     for (let id of packageIds) {
+      // Check integration flows version
       const checkIflowVersionReq = await fetch(
         `http://localhost:8082/api/v1/migration/Readiness/Check/IntegrationFlowsVersion?PackageId=${id}`,
         {
@@ -209,37 +214,81 @@ export const readinessCheck = async () => {
           versionCanNotMigrated++;
         }
       }
+
+      console.log("Version can not be migrated: ", versionCanNotMigrated);
+
+      versionCanMigrated = packageIds.length - versionCanNotMigrated;
+      console.log("Version can be migrated: ", versionCanMigrated);
+
+     // Value mappings version check
+    
+    for (let id of packageIds) {
+      const checkValueMappingsVersionReq = await fetch(
+        `http://localhost:8082/api/v1/migration/Readiness/Check/ValueMappingsVersion?PackageId=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!checkValueMappingsVersionReq.ok) {
+        throw new Error(`Error: ${checkValueMappingsVersionReq.statusText}`);
+      }
+
+      const valueMappingsRes = await checkValueMappingsVersionReq.json();
+      totalValueMappings += valueMappingsRes.d.results.length;
+
+      const draftArtifactNames = valueMappingsRes.d.results
+        .filter(result => result.Version === "Active" || result.Version === "Draft")
+        .map(result => result.Name);
+
+      if (draftArtifactNames.length > 0) {
+        console.log(
+          `Following ValueMappings ${draftArtifactNames} of Package ${id} are in draft state. Refer Pre-requisite to adopt before proceeding with Migration`
+        );
+        valueMappingsCannotMigrate++;
+      } else {
+        valueMappingsCanMigrate++;
+      }
     }
 
-    console.log("Version can not be migrated: ", versionCanNotMigrated);
+    // Post-script logic
+    console.log("Total Value Mappings:", totalValueMappings);
+    console.log("Value Mappings Can Be Migrated:", valueMappingsCanMigrate);
+    console.log("Value Mappings Cannot Be Migrated:", valueMappingsCannotMigrate);
+  
+  }
+  // catch (error) {
+  //   console.error("Error fetching readiness check data:", error);
+  //   throw error;
+  // }
+  
 
-    versionCanMigrated = packageIds.length - versionCanNotMigrated;
-    console.log("Version can be migrated: ", versionCanMigrated);
 
-
-     // New fetch call for Source JMS Resources
-     console.log("********************  Entering Request 'Check Source JMS Resources'  ********************");
-     const sourceJmsResponse = await fetch(
-       "http://localhost:8082/api/v1/migration/Readiness/Check/Source/JMSResources",
-       {
-         method: "GET",
-         headers: {
-           "Content-Type": "application/json",
-         },
-       }
-     );
- 
-     if (!sourceJmsResponse.ok) {
-       throw new Error(`Error: ${sourceJmsResponse.statusText}`);
-     }
- 
-     const sourceJmsData = await sourceJmsResponse.json();
-     console.log("Source JMS Resources Data:", sourceJmsData);
- 
-     const srcQueueCount = sourceJmsData.d.QueueNumber || 0;
-     console.log("Source JMS Queue Count:", srcQueueCount);
- 
      // New fetch call for Target JMS Resources
+     console.log("********************  Entering Request 'Check Source JMS Resources'  ********************");
+    const sourceJmsResponse = await fetch(
+      "http://localhost:8082/api/v1/migration/Readiness/Check/Source/JMSResources",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!sourceJmsResponse.ok) {
+      throw new Error(`Error: ${sourceJmsResponse.statusText}`);
+    }
+
+    const sourceJmsData = await sourceJmsResponse.json();
+    console.log("Source JMS Resources Data:", sourceJmsData);
+
+    const srcQueueCount = sourceJmsData.d.QueueNumber || 0;
+    console.log("Source JMS Queue Count:", srcQueueCount);
+
      console.log("********************  Entering Request 'Check Target JMS Resources'  ********************");
      const targetJmsResponse = await fetch(
        "http://localhost:8082/api/v1/migration/Readiness/Check/Target/JMSResources",
@@ -262,7 +311,7 @@ export const readinessCheck = async () => {
      console.log("Target JMS Queue Count:", tgtMaxQueueCount);
  
      if (tgtMaxQueueCount < srcQueueCount) {
-      const cantmigratejms=srcQueueCount-tgtMaxQueueCount;
+       cantmigratejms=srcQueueCount-tgtMaxQueueCount;
        console.log(
          `Total JMS Queue on target tenant is: ${tgtMaxQueueCount} as compared to source tenant: ${srcQueueCount}. Refer documentation to bring number of JMS Queue on Target equal to what is there on source tenant`
        );
@@ -295,10 +344,9 @@ export const readinessCheck = async () => {
       customPackages,
       custPkgNotMigrated,
       packageIds,
-      versionCanMigrated,
-      versionCanNotMigrated,
-      migratejms,
-      cantmigratejms,
+      versionCanMigrated,versionCanNotMigrated,
+      migratejms,cantmigratejms,
+      totalValueMappings,valueMappingsCanMigrate,valueMappingsCannotMigrate,
     };
   } catch (error) {
     console.error("Error fetching readiness check data:", error);

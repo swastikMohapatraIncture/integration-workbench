@@ -139,19 +139,19 @@ const ReadinessCheckMainPage = () => {
                 4
               </td>
               <td className="border border-gray-200 px-2 py-2">
-                VM
+                Value Mappings
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
-                {checkData.packageIds.length}
+                {checkData.totalValueMappings}
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
-                {checkData.versionCanMigrated}
+                {checkData.valueMappingsCanMigrate}
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
-                {checkData.versionCanNotMigrated}
+                {checkData.valueMappingsCannotMigrate}
               </td>
               <td className="border border-gray-200 px-2 py-3 text-center flex justify-center items-center">
-                {checkData.versionCanNotMigrated > 0 ? (
+                {checkData.vvalueMappingsCannotMigrate > 0 ? (
                   <FaTimes color="red" />
                 ) : (
                   <FaCheck color="green" />
