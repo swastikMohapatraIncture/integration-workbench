@@ -16,6 +16,8 @@ import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReadinessCheckMainPage from "./components/NeoToCloudFoundry/pages/ReadinessCheckMainPage";
 import NeoMigration from "./components/NeoToCloudFoundry/pages/NeoMigration";
+import GetArtifactsPage from "./components/NeoToCloudFoundry/pages/GetArtifactsPage";
+
 
 function App() {
   return (
@@ -123,6 +125,14 @@ function App() {
           element={
             <Layout>
               <NeoMigration/>
+            </Layout>
+          }
+        ></Route>
+        <Route
+          path="/getartifacts"
+          element={
+            <Layout>
+              <GetArtifactsPage/>
             </Layout>
           }
         ></Route>
