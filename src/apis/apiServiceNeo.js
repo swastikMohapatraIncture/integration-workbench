@@ -17,6 +17,11 @@ function addToPkgNotMigrate(newItem) {
   // Store the updated array back in localStorage
   localStorage.setItem("pkgNotMigrate", JSON.stringify(uniqueArray));
 }
+let migratejms = 0;
+let cantmigratejms = 0;
+let totalValueMappings = 0;
+let valueMappingsCanMigrate = 0;
+let valueMappingsCannotMigrate = 0;
 
 export const postApi = async (apiURL, toPostData) => {
   try {
@@ -26,11 +31,6 @@ export const postApi = async (apiURL, toPostData) => {
     return null;
   }
 };
-let migratejms = 0;
-let cantmigratejms = 0;
-let totalValueMappings = 0;
-let valueMappingsCanMigrate = 0;
-let valueMappingsCannotMigrate = 0;
 export const getApi = async (apiURL, params = {}) => {
   try {
     const res = await axios.get(apiURL, { params });
@@ -210,7 +210,7 @@ export const readinessCheck = async () => {
       const versionRes = await checkIflowVersionReq.json();
       for (let result of versionRes.d.results) {
         artifactVersion = result.Version;
-        if (artifactVersion === "Active") {
+        if (artifactVersion === "Active" || artifactVersion === "Draft") {
           versionCanNotMigrated++;
           addToPkgNotMigrate(result.PackageId);
         }
@@ -393,11 +393,11 @@ export const GetPackages = async () => {
           headers: { "Content-Type": "application/json" },
         }
       );
+      console.log("fetchPackagesRaw :", fetchPackagesRaw);
 
       if (!fetchPackagesRaw.ok) {
         throw new Error(`Error: ${response.statusText}`);
       }
-      console.log("fetchPackagesRaw :", fetchPackagesRaw);
       const fetchPackages = await fetchPackagesRaw.json();
       console.log(fetchPackages);
 
@@ -422,7 +422,7 @@ export const GetPackages = async () => {
     throw error;
   }
   console.log("Pre - ", prepackages);
-  console.log("Cus - ", custompackages);
+  console.log("Cust - ", custompackages);
 
   return { prepackages, custompackages };
 };
@@ -446,47 +446,100 @@ export const PostPackages = async (
 
     console.log(fetchToken);
     if (fetchToken && fetchToken.ok === true) {
-      for (let pkg of selectedPrePackages) {
-        const postPrePackage = await fetch(
-          `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+      if (selectedPrePackages.length !== 0) {
+        for (let pkg of selectedPrePackages) {
+          const postPrePackageRaw = await fetch(
+            `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
+            {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
 
-        if (!postPrePackage.ok) {
-          throw new Error(`Error: ${response.statusText}`);
+          const postPrePackage = await postPrePackageRaw.json();
+          console.log(postPrePackage);
+
+          if (postPrePackage.statusCodeValue !== 200) {
+            throw new Error(
+              `Failed to create Pre-Package ${pkg.value} message: ${postPrePackage.body.message}`
+            );
+          } else {
+            console.log(`PRE PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`);
+            // add the pkg in a variable or local store
+            GetArtifacts(pkg.value);
+          }
         }
-        console.log("postPrePackage Res - :", postPrePackage);
+      } else {
+        console.log("SELECTED PRE PACKAGE ARRAY LENGTH 0");
       }
 
-      for (let pkg of selectedCustomPackages) {
-        const postCustomPackage = await fetch(
-          `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
-          {
-            method: "GET",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+      if (selectedCustomPackages.length !== 0) {
+        for (let pkg of selectedCustomPackages) {
+          const postCustomPackageRaw = await fetch(
+            `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
+            {
+              method: "GET",
+              headers: { "Content-Type": "application/json" },
+            }
+          );
 
-        if (!postCustomPackage.ok) {
-          throw new Error(`Error: ${response.statusText}`);
+          const postCustomPackage = await postCustomPackageRaw.json();
+          console.log("postCustomPackage Res - :", postCustomPackage);
+          if (postCustomPackage.statusCodeValue !== 200) {
+            throw new Error(
+              `Failed to create Custom-Package ${pkg.value} message: ${postPrePackage.body.message}`
+            );
+          } else {
+            console.log(`CUSTOM PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`);
+            GetArtifacts(pkg.value);
+          }
         }
-        console.log("postCustomPackage Res - :", postCustomPackage);
+      } else {
+        console.log("SELECTED CUSTOM PACKAGE ARRAY LENGTH 0");
       }
     }
   } catch (error) {
-    console.error("Error fetching GetPackages:", error);
+    console.error("Error posting PostPackages:", error);
 
     throw error;
   }
 };
 
-export const GetArtifacts = async () => {
+export const GetArtifacts = async (pkdId) => {
   try {
+    const getArtifactsRaw = await fetch(
+      `http://localhost:8082/api/v1/migration/Get/Custom/Artifacts?packageTechnicalName=${pkdId}`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (!getArtifactsRaw.ok) {
+      throw new Error(`Error: ${response.statusText}`);
+    }
+    console.log("getArtifactsRaw Res - :", getArtifactsRaw);
+    const getArtifacts = await getArtifactsRaw.json();
+    console.log(getArtifacts);
+
+    for (let artifact of getArtifacts) {
+      const uploadArtifactRaw = await fetch(
+        `http://localhost:8082/api/v1/migration/Set/Custom/Configurations?artifactId=${artifact.Id}`,
+        {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (!uploadArtifactRaw.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+      console.log("uploadArtifactRaw Res - :", uploadArtifactRaw);
+      const uploadArtifact = await uploadArtifactRaw.json();
+      console.log(uploadArtifact);
+    }
   } catch (error) {
-    console.error("Error fetching GetPackages:", error);
+    console.error("Error uploading artifact configuration:", error);
 
     throw error;
   }
