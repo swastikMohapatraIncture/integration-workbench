@@ -431,9 +431,12 @@ export const PostPackages = async (
   selectedPrePackages,
   selectedCustomPackages
 ) => {
+  console.log(
+    "********************  Entering PostPackages  ********************"
+  );
   const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
-  console.log(selectedPrePackages);
-  console.log(selectedCustomPackages);
+  console.log("Selected Pre Packages : ", selectedPrePackages);
+  console.log("Selected Custom Packages : ", selectedCustomPackages);
   try {
     const fetchToken = await fetch(
       "http://localhost:8082/api/v1/migration/get/target/access/token",
@@ -448,25 +451,30 @@ export const PostPackages = async (
     if (fetchToken && fetchToken.ok === true) {
       if (selectedPrePackages.length !== 0) {
         for (let pkg of selectedPrePackages) {
-          const postPrePackageRaw = await fetch(
-            `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
-            {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-
-          const postPrePackage = await postPrePackageRaw.json();
-          console.log(postPrePackage);
-
-          if (postPrePackage.statusCodeValue !== 200) {
-            throw new Error(
-              `Failed to create Pre-Package ${pkg.value} message: ${postPrePackage.body.message}`
+          // Try Catch used for handling errors for each Pre Package individually
+          try {
+            const postPrePackageRaw = await fetch(
+              `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
+              {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+              }
             );
-          } else {
-            console.log(`PRE PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`);
-            // add the pkg in a variable or local store
-            GetArtifacts(pkg.value);
+
+            const postPrePackage = await postPrePackageRaw.json();
+            console.log(postPrePackage);
+
+            if (postPrePackage.statusCodeValue !== 200) {
+              throw new Error(
+                `Failed to create Pre-Package ${pkg.value} message: ${postPrePackage.body.message}`
+              );
+            } else {
+              console.log(`PRE PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`);
+              // add the pkg in a variable or local store
+              GetArtifacts(pkg.value);
+            }
+          } catch (error) {
+            console.error(`Error uploading Pre package ${pkg.value}:`, error);
           }
         }
       } else {
@@ -475,29 +483,42 @@ export const PostPackages = async (
 
       if (selectedCustomPackages.length !== 0) {
         for (let pkg of selectedCustomPackages) {
-          const postCustomPackageRaw = await fetch(
-            `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
-            {
-              method: "GET",
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-
-          const postCustomPackage = await postCustomPackageRaw.json();
-          console.log("postCustomPackage Res - :", postCustomPackage);
-          if (postCustomPackage.statusCodeValue !== 200) {
-            throw new Error(
-              `Failed to create Custom-Package ${pkg.value} message: ${postPrePackage.body.message}`
+          // Try Catch used for handling errors for each Post Package individually
+          try {
+            const postCustomPackageRaw = await fetch(
+              `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
+              {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+              }
             );
-          } else {
-            console.log(`CUSTOM PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`);
-            GetArtifacts(pkg.value);
+
+            const postCustomPackage = await postCustomPackageRaw.json();
+            console.log("postCustomPackage Res - :", postCustomPackage);
+            if (postCustomPackage.statusCodeValue !== 200) {
+              throw new Error(
+                `Failed to create Custom-Package ${pkg.value} message: ${postPrePackage.body.message}`
+              );
+            } else {
+              console.log(
+                `CUSTOM PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`
+              );
+              GetArtifacts(pkg.value);
+            }
+          } catch (error) {
+            console.error(
+              `Error uploading Custom package ${pkg.value}:`,
+              error
+            );
           }
         }
       } else {
         console.log("SELECTED CUSTOM PACKAGE ARRAY LENGTH 0");
       }
     }
+    console.log(
+      "********************  Exit PostPackages  ********************"
+    );
   } catch (error) {
     console.error("Error posting PostPackages:", error);
 
@@ -506,6 +527,9 @@ export const PostPackages = async (
 };
 
 export const GetArtifacts = async (pkdId) => {
+  console.log(
+    "********************  Entering GetArtifacts  ********************"
+  );
   try {
     const getArtifactsRaw = await fetch(
       `http://localhost:8082/api/v1/migration/Get/Custom/Artifacts?packageTechnicalName=${pkdId}`,
@@ -516,31 +540,51 @@ export const GetArtifacts = async (pkdId) => {
     );
 
     if (!getArtifactsRaw.ok) {
-      throw new Error(`Error: ${response.statusText}`);
+      throw new Error(`Error: ${getArtifactsRaw.statusText}`);
     }
+
     console.log("getArtifactsRaw Res - :", getArtifactsRaw);
     const getArtifacts = await getArtifactsRaw.json();
-    console.log(getArtifacts);
+    console.log("Iflow's fetched: ", getArtifacts);
 
+    let artifactConfigured = 0;
+    let artifactNotConfigured = 0;
     for (let artifact of getArtifacts) {
-      const uploadArtifactRaw = await fetch(
-        `http://localhost:8082/api/v1/migration/Set/Custom/Configurations?artifactId=${artifact.Id}`,
-        {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
+      // Try Catch used for handling errors for each Artifact individually
+      try {
+        const uploadArtifactRaw = await fetch(
+          `http://localhost:8082/api/v1/migration/Set/Custom/Configurations?artifactId=${artifact.Id}`,
+          {
+            method: "GET",
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+
+        if (!uploadArtifactRaw.ok) {
+          throw new Error(`Error: ${uploadArtifactRaw.statusText}`);
         }
-      );
 
-      if (!uploadArtifactRaw.ok) {
-        throw new Error(`Error: ${response.statusText}`);
+        console.log("uploadArtifactRaw Res - :", uploadArtifactRaw);
+        const uploadArtifact = await uploadArtifactRaw.json();
+        console.log(uploadArtifact);
+
+        artifactConfigured++;
+        console.log("artifacts configured: ", artifactConfigured);
+      } catch (artifactError) {
+        artifactNotConfigured++;
+        console.error(
+          `Error uploading artifact ${artifact.Id}:`,
+          artifactError
+        );
       }
-      console.log("uploadArtifactRaw Res - :", uploadArtifactRaw);
-      const uploadArtifact = await uploadArtifactRaw.json();
-      console.log(uploadArtifact);
     }
+    console.log(`Total artifacts configured: ${artifactConfigured}`);
+    console.log(`Total artifacts not configured: ${artifactNotConfigured}`);
+    console.log(
+      "********************  Exit GetArtifacts  ********************"
+    );
   } catch (error) {
-    console.error("Error uploading artifact configuration:", error);
-
+    console.error("Error fetching artifacts:", error);
     throw error;
   }
 };
