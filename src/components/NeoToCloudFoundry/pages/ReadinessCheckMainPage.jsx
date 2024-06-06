@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { FaCheck, FaTimes } from "react-icons/fa";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import { readinessCheck } from "../../../apis/apiServiceNeo";
+import "./RMP.css";
+import Loader from "../../Loader";
 
 const ReadinessCheckMainPage = () => {
   const [checkData, setCheckData] = useState(null);
@@ -22,7 +26,8 @@ const ReadinessCheckMainPage = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    // return <div>Loading...</div>;
+    return <Loader />;
   }
 
   if (!checkData) {

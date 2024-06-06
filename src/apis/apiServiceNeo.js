@@ -239,6 +239,7 @@ export const readinessCheck = async () => {
         }
 
         const valueMappingsRes = await checkValueMappingsVersionReq.json();
+        console.log("vm response: ", valueMappingsRes);
         totalValueMappings += valueMappingsRes.d.results.length;
 
         const draftArtifactNames = valueMappingsRes.d.results
@@ -247,14 +248,17 @@ export const readinessCheck = async () => {
               result.Version === "Active" || result.Version === "Draft"
           )
           .map((result) => result.Name);
+        console.log("dan:", draftArtifactNames);
 
-        if (draftArtifactNames.length > 0) {
-          console.log(
-            `Following ValueMappings ${draftArtifactNames} of Package ${id} are in draft state. Refer Pre-requisite to adopt before proceeding with Migration`
-          );
-          valueMappingsCannotMigrate++;
-        } else {
-          valueMappingsCanMigrate++;
+        if (draftArtifactNames != 0) {
+          if (draftArtifactNames.length > 0) {
+            console.log(
+              `Following ValueMappings ${draftArtifactNames} of Package ${id} are in draft state. Refer Pre-requisite to adopt before proceeding with Migration`
+            );
+            valueMappingsCannotMigrate++;
+          } else {
+            valueMappingsCanMigrate++;
+          }
         }
       }
 
@@ -431,6 +435,7 @@ export const PostPackages = async (
   selectedPrePackages,
   selectedCustomPackages
 ) => {
+  let successful = false;
   console.log(
     "********************  Entering PostPackages  ********************"
   );
@@ -471,7 +476,8 @@ export const PostPackages = async (
             } else {
               console.log(`PRE PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`);
               // add the pkg in a variable or local store
-              GetArtifacts(pkg.value);
+              await GetArtifacts(pkg.value);
+              successful = true;
             }
           } catch (error) {
             console.error(`Error uploading Pre package ${pkg.value}:`, error);
@@ -497,13 +503,14 @@ export const PostPackages = async (
             console.log("postCustomPackage Res - :", postCustomPackage);
             if (postCustomPackage.statusCodeValue !== 200) {
               throw new Error(
-                `Failed to create Custom-Package ${pkg.value} message: ${postPrePackage.body.message}`
+                `Failed to create Custom-Package ${pkg.value} message: ${postCustomPackage.body.message}`
               );
             } else {
               console.log(
                 `CUSTOM PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`
               );
-              GetArtifacts(pkg.value);
+              await GetArtifacts(pkg.value);
+              successful = true;
             }
           } catch (error) {
             console.error(
@@ -515,15 +522,20 @@ export const PostPackages = async (
       } else {
         console.log("SELECTED CUSTOM PACKAGE ARRAY LENGTH 0");
       }
+    } else {
+      throw new Error(`Error fetching token - ${fetchToken.statusText}`);
     }
+  } catch (error) {
+    console.error("Error posting PostPackages:", error);
+    successful = false;
+    throw error;
+  } finally {
     console.log(
       "********************  Exit PostPackages  ********************"
     );
-  } catch (error) {
-    console.error("Error posting PostPackages:", error);
-
-    throw error;
   }
+
+  return successful;
 };
 
 export const GetArtifacts = async (pkdId) => {
