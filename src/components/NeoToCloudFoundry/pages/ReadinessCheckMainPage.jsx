@@ -120,7 +120,7 @@ const ReadinessCheckMainPage = () => {
                 Check version of Iflows
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
-                {checkData.packageIds.length}
+                {checkData.totalIflows}
               </td>
               <td className="border border-gray-200 px-2 py-2 text-center">
                 {checkData.versionCanMigrated}

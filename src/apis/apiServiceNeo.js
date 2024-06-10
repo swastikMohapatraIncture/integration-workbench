@@ -17,11 +17,6 @@ function addToPkgNotMigrate(newItem) {
   // Store the updated array back in localStorage
   localStorage.setItem("pkgNotMigrate", JSON.stringify(uniqueArray));
 }
-// let migratejms = 0;
-// let cantmigratejms = 0;
-// let totalValueMappings = 0;
-// let valueMappingsCanMigrate = 0;
-// let valueMappingsCannotMigrate = 0;
 
 export const postApi = async (apiURL, toPostData) => {
   try {
@@ -147,13 +142,12 @@ export const readinessCheck = async () => {
         headers: {
           "Content-Type": "application/json",
         },
-        redirect: 'follow' 
+        redirect: "follow",
       }
     );
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
-
 
     const text = await response.text();
     const data = text ? JSON.parse(text) : {}; // Handle empty response body
@@ -169,16 +163,16 @@ export const readinessCheck = async () => {
     let customPackages = 0;
     let custPkgNotMigrated = 0;
     let packageIds = [];
-    let artifactVersion = [];
-
-    let migratejms = 0;
-let cantmigratejms = 0;
-let totalValueMappings = 0;
-let valueMappingsCanMigrate = 0;
-let valueMappingsCannotMigrate = 0;
 
     let versionCanNotMigrated = 0,
-      versionCanMigrated = 0;
+      versionCanMigrated = 0,
+      totalIflows = 0;
+
+    let migratejms = 0;
+    let cantmigratejms = 0;
+    let totalValueMappings = 0;
+    let valueMappingsCanMigrate = 0;
+    let valueMappingsCannotMigrate = 0;
 
     for (let result of data.d.results) {
       packageIds.push(result.Id);
@@ -189,6 +183,11 @@ let valueMappingsCannotMigrate = 0;
         totalPackages++;
         if (result.Name != "") {
           prePkgNotMigrated++;
+          // If the Pre Package is not on latest Version, adding to pkgNotMigrate Local Storage
+          console.log(
+            `!! Integration Package ${result.Id} can not be migrated because it is not on the latest version !!`
+          );
+          addToPkgNotMigrate(result.Id);
         }
       } else if (result.Vendor != "SAP" && result.PartnerContent != true) {
         customPackages++;
@@ -201,6 +200,7 @@ let valueMappingsCannotMigrate = 0;
 
     for (let id of packageIds) {
       // Check integration flows version
+      console.log("Checking Iflow's version of PACKAGE : ", id);
       const checkIflowVersionReq = await fetch(
         `http://localhost:8082/api/v1/migration/Readiness/Check/IntegrationFlowsVersion?PackageId=${id}`,
         {
@@ -216,59 +216,74 @@ let valueMappingsCannotMigrate = 0;
       }
 
       const versionRes = await checkIflowVersionReq.json();
+      console.log(`Iflow Version response of ${id} -- `, versionRes);
+      let packageIflows = versionRes.d.results.length;
+      let packageIflowsNotMigrate = 0;
+      let packageIflowsMigrate = 0;
+
       for (let result of versionRes.d.results) {
-        artifactVersion = result.Version;
-        if (artifactVersion === "Active" || artifactVersion === "Draft") {
-          versionCanNotMigrated++;
+        if (result.Version === "Active" || result.Version === "Draft") {
+          packageIflowsNotMigrate++;
           addToPkgNotMigrate(result.PackageId);
         }
       }
 
-      console.log("Version can not be migrated: ", versionCanNotMigrated);
+      console.log(
+        `Iflow can not be migrated in ${id}: `,
+        packageIflowsNotMigrate
+      );
 
-      versionCanMigrated = packageIds.length - versionCanNotMigrated;
-      console.log("Version can be migrated: ", versionCanMigrated);
+      packageIflowsMigrate = packageIflows - packageIflowsNotMigrate;
+      console.log(`Iflow can be migrated in ${id}: `, packageIflowsMigrate);
+
+      versionCanMigrated += packageIflowsMigrate;
+      versionCanNotMigrated += packageIflowsNotMigrate;
+      totalIflows += packageIflows;
 
       // Value mappings version check
 
-
-        const checkValueMappingsVersionReq = await fetch(
-          `http://localhost:8082/api/v1/migration/Readiness/Check/ValueMappingsVersion?PackageId=${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (!checkValueMappingsVersionReq.ok) {
-          throw new Error(`Error: ${checkValueMappingsVersionReq.statusText}`);
+      const checkValueMappingsVersionReq = await fetch(
+        `http://localhost:8082/api/v1/migration/Readiness/Check/ValueMappingsVersion?PackageId=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
+      );
 
-        const valueMappingsRes = await checkValueMappingsVersionReq.json();
-        console.log("vm response: ", valueMappingsRes);
-        totalValueMappings += valueMappingsRes.d.results.length;
+      if (!checkValueMappingsVersionReq.ok) {
+        throw new Error(`Error: ${checkValueMappingsVersionReq.statusText}`);
+      }
 
+      const valueMappingsRes = await checkValueMappingsVersionReq.json();
+      console.log(`vm response of Package: ${id}: `, valueMappingsRes);
 
-        const draftArtifactNames = valueMappingsRes.d.results
-          .filter(
-            (result) =>
-              result.Version === "Active" || result.Version === "Draft"
-          )
-          .map((result) => result.Name);
-        console.log("dan:", draftArtifactNames);
+      // ----- Only for debugging, remove later
+      if (valueMappingsRes.d.results.length > 0) {
+        console.log(` ------------- Found Value Mapping in PACKAGE: ${id}`);
+      }
+      // -----
 
-          if (draftArtifactNames.length > 0) {
-            console.log(
-              `Following ValueMappings ${draftArtifactNames} of Package ${id} are in draft state. Refer Pre-requisite to adopt before proceeding with Migration`
-            );
-            valueMappingsCannotMigrate = draftArtifactNames.length ;
-          } else {
-            valueMappingsCanMigrate = totalValueMappings - valueMappingsCannotMigrate
-          }
-        
-      
+      totalValueMappings += valueMappingsRes.d.results.length;
+
+      const draftArtifactNames = valueMappingsRes.d.results
+        .filter(
+          (result) => result.Version === "Active" || result.Version === "Draft"
+        )
+        .map((result) => result.Name);
+      console.log("dan:", draftArtifactNames);
+
+      // Updated Logic for value mapping
+      if (draftArtifactNames.length > 0) {
+        console.log(
+          `Following ValueMappings ${draftArtifactNames} of Package ${id} are in draft state. Refer Pre-requisite to adopt before proceeding with Migration`
+        );
+        valueMappingsCannotMigrate = draftArtifactNames.length;
+      } else {
+        valueMappingsCanMigrate =
+          totalValueMappings - valueMappingsCannotMigrate;
+      }
 
       // Post-script logic
       console.log("Total Value Mappings:", totalValueMappings);
@@ -278,10 +293,6 @@ let valueMappingsCannotMigrate = 0;
         valueMappingsCannotMigrate
       );
     }
-    // catch (error) {
-    //   console.error("Error fetching readiness check data:", error);
-    //   throw error;
-    // }
 
     // New fetch call for Target JMS Resources
     console.log(
@@ -304,53 +315,59 @@ let valueMappingsCannotMigrate = 0;
     const sourceJmsData = await sourceJmsResponse.json();
     console.log("Source JMS Resources Data:", sourceJmsData);
 
-    const srcQueueCount = sourceJmsData.d.QueueNumber || 0;
-    console.log("Source JMS Queue Count:", srcQueueCount);
-
-    console.log(
-      "********************  Entering Request 'Check Target JMS Resources'  ********************"
-    );
-    const targetJmsResponse = await fetch(
-      "http://localhost:8082/api/v1/migration/Readiness/Check/Target/JMSResources",
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!targetJmsResponse.ok) {
-      throw new Error(`Error: ${targetJmsResponse.statusText}`);
-    }
-
-    const targetJmsData = await targetJmsResponse.json();
-    console.log("Target JMS Resources Data:", targetJmsData);
-
-    const tgtMaxQueueCount = targetJmsData.d.MaxQueueNumber || 0;
-    console.log("Target JMS Queue Count:", tgtMaxQueueCount);
-
-    if (tgtMaxQueueCount < srcQueueCount) {
-      cantmigratejms = srcQueueCount - tgtMaxQueueCount;
-      console.log(
-        `Total JMS Queue on target tenant is: ${tgtMaxQueueCount} as compared to source tenant: ${srcQueueCount}. Refer documentation to bring number of JMS Queue on Target equal to what is there on source tenant`
-      );
-      throw new Error(
-        `Not enough JMS queues available on target tenant. Used queues on source: ${srcQueueCount}, available on target: ${tgtMaxQueueCount}. Check https://blogs.sap.com/2018/12/12/cloud-integration-activating-and-managing-enterprise-messaging-capabilities-as2-jms-and-xi-adapters/.`
-      );
+    if (sourceJmsData.error) {
+      console.log(`Error - ${sourceJmsData.error.message.value}`);
+      // throw new Error(`${sourceJmsData.error.message.value}`);
     } else {
-      migratejms = srcQueueCount;
+      const srcQueueCount = sourceJmsData.d.QueueNumber || 0;
+      console.log("Source JMS Queue Count:", srcQueueCount);
+
       console.log(
-        "Maximum available JMS queue in target tenant is enough as per used queue on source Tenant."
+        "********************  Entering Request 'Check Target JMS Resources'  ********************"
       );
-    }
-    if (targetJmsResponse.status === 500 && srcQueueCount > 0) {
-      console.log(
-        "Enterprise Messaging is not activated on target tenant, however source tenant has JMS queue usage."
+      const targetJmsResponse = await fetch(
+        "http://localhost:8082/api/v1/migration/Readiness/Check/Target/JMSResources",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      throw new Error(
-        "Enterprise Messaging is not activated on target tenant, however source tenant has JMS queue usage. Check https://blogs.sap.com/2018/12/12/cloud-integration-activating-and-managing-enterprise-messaging-capabilities-as2-jms-and-xi-adapters/."
-      );
+
+      if (!targetJmsResponse.ok) {
+        throw new Error(`Error: ${targetJmsResponse.statusText}`);
+      }
+
+      const targetJmsData = await targetJmsResponse.json();
+      console.log("Target JMS Resources Data:", targetJmsData);
+
+      const tgtMaxQueueCount = targetJmsData.d.MaxQueueNumber || 0;
+      console.log("Target JMS Queue Count:", tgtMaxQueueCount);
+
+      if (tgtMaxQueueCount < srcQueueCount) {
+        cantmigratejms = srcQueueCount - tgtMaxQueueCount;
+        console.log(
+          `Total JMS Queue on target tenant is: ${tgtMaxQueueCount} as compared to source tenant: ${srcQueueCount}. Refer documentation to bring number of JMS Queue on Target equal to what is there on source tenant`
+        );
+        throw new Error(
+          `Not enough JMS queues available on target tenant. Used queues on source: ${srcQueueCount}, available on target: ${tgtMaxQueueCount}. Check https://blogs.sap.com/2018/12/12/cloud-integration-activating-and-managing-enterprise-messaging-capabilities-as2-jms-and-xi-adapters/.`
+        );
+      } else {
+        migratejms = srcQueueCount;
+        console.log(
+          "Maximum available JMS queue in target tenant is enough as per used queue on source Tenant."
+        );
+      }
+
+      if (targetJmsResponse.status === 500 && srcQueueCount > 0) {
+        console.log(
+          "Enterprise Messaging is not activated on target tenant, however source tenant has JMS queue usage."
+        );
+        throw new Error(
+          "Enterprise Messaging is not activated on target tenant, however source tenant has JMS queue usage. Check https://blogs.sap.com/2018/12/12/cloud-integration-activating-and-managing-enterprise-messaging-capabilities-as2-jms-and-xi-adapters/."
+        );
+      }
     }
 
     console.log(
@@ -363,6 +380,7 @@ let valueMappingsCannotMigrate = 0;
       customPackages,
       custPkgNotMigrated,
       packageIds,
+      totalIflows,
       versionCanMigrated,
       versionCanNotMigrated,
       migratejms,
@@ -632,7 +650,7 @@ export const fetchUserCredentials = async () => {
       CompanyId: user.CompanyId,
       Kind: user.Kind,
       Password: user.Password,
-      label: user.Name
+      label: user.Name,
     }));
   } catch (error) {
     console.error("Error fetching user credentials:", error);
@@ -642,7 +660,9 @@ export const fetchUserCredentials = async () => {
 
 export const fetchOAuthCredentials = async () => {
   try {
-    const response = await fetch("http://localhost:8082/api/v1/migration/Get/Source/OAuthCredentials");
+    const response = await fetch(
+      "http://localhost:8082/api/v1/migration/Get/Source/OAuthCredentials"
+    );
     if (!response.ok) {
       throw new Error("Failed to fetch OAuth credentials");
     }
