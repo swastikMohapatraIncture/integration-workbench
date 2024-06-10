@@ -89,7 +89,7 @@ const MigrateIP = ({ prepackages, custompackages }) => {
         <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
           Pre Packages
         </h4>
-        <div className="w-full">
+        <div className="w-full mb-5">
           <Autocomplete
             multiple
             options={prePackageOptions}
@@ -180,11 +180,11 @@ const MigrateIP = ({ prepackages, custompackages }) => {
           )}
         </div>
         {isButtonVisible && (
-          <Box display="flex" justifyContent="flex-end" mt={2}>
-            <Button variant="contained" color="primary" onClick={handleSubmit}>
-              Submit
-            </Button>
-          </Box>
+          <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
+            Submit
+          </Button>
+        </Box>
         )}
       </div>
       {loading && (

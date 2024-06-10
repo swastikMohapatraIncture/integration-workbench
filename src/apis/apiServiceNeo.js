@@ -17,11 +17,11 @@ function addToPkgNotMigrate(newItem) {
   // Store the updated array back in localStorage
   localStorage.setItem("pkgNotMigrate", JSON.stringify(uniqueArray));
 }
-let migratejms = 0;
-let cantmigratejms = 0;
-let totalValueMappings = 0;
-let valueMappingsCanMigrate = 0;
-let valueMappingsCannotMigrate = 0;
+// let migratejms = 0;
+// let cantmigratejms = 0;
+// let totalValueMappings = 0;
+// let valueMappingsCanMigrate = 0;
+// let valueMappingsCannotMigrate = 0;
 
 export const postApi = async (apiURL, toPostData) => {
   try {
@@ -147,11 +147,13 @@ export const readinessCheck = async () => {
         headers: {
           "Content-Type": "application/json",
         },
+        redirect: 'follow' 
       }
     );
     if (!response.ok) {
       throw new Error(`Error: ${response.statusText}`);
     }
+
 
     const text = await response.text();
     const data = text ? JSON.parse(text) : {}; // Handle empty response body
@@ -168,6 +170,12 @@ export const readinessCheck = async () => {
     let custPkgNotMigrated = 0;
     let packageIds = [];
     let artifactVersion = [];
+
+    let migratejms = 0;
+let cantmigratejms = 0;
+let totalValueMappings = 0;
+let valueMappingsCanMigrate = 0;
+let valueMappingsCannotMigrate = 0;
 
     let versionCanNotMigrated = 0,
       versionCanMigrated = 0;
@@ -223,7 +231,7 @@ export const readinessCheck = async () => {
 
       // Value mappings version check
 
-      for (let id of packageIds) {
+
         const checkValueMappingsVersionReq = await fetch(
           `http://localhost:8082/api/v1/migration/Readiness/Check/ValueMappingsVersion?PackageId=${id}`,
           {
@@ -242,6 +250,7 @@ export const readinessCheck = async () => {
         console.log("vm response: ", valueMappingsRes);
         totalValueMappings += valueMappingsRes.d.results.length;
 
+
         const draftArtifactNames = valueMappingsRes.d.results
           .filter(
             (result) =>
@@ -250,17 +259,16 @@ export const readinessCheck = async () => {
           .map((result) => result.Name);
         console.log("dan:", draftArtifactNames);
 
-        if (draftArtifactNames != 0) {
           if (draftArtifactNames.length > 0) {
             console.log(
               `Following ValueMappings ${draftArtifactNames} of Package ${id} are in draft state. Refer Pre-requisite to adopt before proceeding with Migration`
             );
-            valueMappingsCannotMigrate++;
+            valueMappingsCannotMigrate = draftArtifactNames.length ;
           } else {
-            valueMappingsCanMigrate++;
+            valueMappingsCanMigrate = totalValueMappings - valueMappingsCannotMigrate
           }
-        }
-      }
+        
+      
 
       // Post-script logic
       console.log("Total Value Mappings:", totalValueMappings);
@@ -336,7 +344,6 @@ export const readinessCheck = async () => {
         "Maximum available JMS queue in target tenant is enough as per used queue on source Tenant."
       );
     }
-
     if (targetJmsResponse.status === 500 && srcQueueCount > 0) {
       console.log(
         "Enterprise Messaging is not activated on target tenant, however source tenant has JMS queue usage."
@@ -598,5 +605,60 @@ export const GetArtifacts = async (pkdId) => {
   } catch (error) {
     console.error("Error fetching artifacts:", error);
     throw error;
+  }
+};
+export const fetchUserCredentials = async () => {
+  try {
+    const response = await fetch(
+      "http://localhost:8082/api/v1/migration/Get/Source/UserCredentials",
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        redirect: "follow",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const data = await response.json();
+    return data.map((user) => ({
+      User: user.User,
+      Name: user.Name,
+      Description: user.Description,
+      CompanyId: user.CompanyId,
+      Kind: user.Kind,
+      Password: user.Password,
+      label: user.Name
+    }));
+  } catch (error) {
+    console.error("Error fetching user credentials:", error);
+    return [];
+  }
+};
+
+export const fetchOAuthCredentials = async () => {
+  try {
+    const response = await fetch("http://localhost:8082/api/v1/migration/Get/Source/OAuthCredentials");
+    if (!response.ok) {
+      throw new Error("Failed to fetch OAuth credentials");
+    }
+    const data = await response.json();
+    return data.map((cred) => ({
+      id: cred.ClientId,
+      label: cred.Name,
+      description: cred.Description,
+      ClientSecret: cred.ClientSecret,
+      TokenServiceUrl: cred.TokenServiceUrl,
+      ClientAuthentication: cred.ClientAuthentication,
+      Scope: cred.Scope,
+      ScopeContentType: cred.ScopeContentType,
+    }));
+  } catch (error) {
+    console.error("Error fetching OAuth credentials:", error);
+    return [];
   }
 };
