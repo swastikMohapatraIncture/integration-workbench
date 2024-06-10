@@ -261,9 +261,8 @@ const TableWithPagination = () => {
             </button>
             {visiblePages.map((page) => (
               <button
-                className={`rounded-full px-3 py-1 mr-1 text-sm ${
-                  currentPage === page ? "bg-[#CCCCCC]" : "bg-[#F2F2F2]"
-                }`}
+                className={`rounded-full px-3 py-1 mr-1 text-sm ${currentPage === page ? "bg-[#CCCCCC]" : "bg-[#F2F2F2]"
+                  }`}
                 key={page}
                 disabled={currentPage === page}
                 onClick={() => handlePageChange(page)}

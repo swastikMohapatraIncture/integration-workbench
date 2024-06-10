@@ -22,7 +22,7 @@ function App() {
   useEffect(() => {
     const getToken = () => {
       const myHeaders = new Headers();
-      myHeaders.append("Authorization", "Basic c2ItbmEtYmJiNGZmZGUtNWRlYi00ZmJjLTgzZDktZTcyNWIwZGY3NjhhIXQzNzk1ODA6elNSWlIzVG1OVE85SjhuMmNVY0ZFbWVJampjPQ==");
+      myHeaders.append("Authorization", "Basic c2ItV29ya0JlbmNoQXBwbGljYXRpb25fWHN1YSF0Mzc5NTgwOm1DMHNFR3M5V3pVa0d1ZmVzOXQ0enNzN1hKQT0=");
       myHeaders.append("Cookie", "__VCAP_ID__=39b099b4-f39d-4e60-5a99-0e46; JSESSIONID=EF6737ECDC9B8430354CE498583A2778; __VCAP_ID__=2d27c4d9-1cb0-4f2a-68d6-56e6");
       const requestOptions = {
         method: "GET",
