@@ -16,30 +16,30 @@ import Monitoring from "./pages/Monitroing";
 import { ToastContainer, Zoom } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Loader from "./components/Loader";
+import axios from "axios";
 
 function App() {
   const [token, setToken] = useState(null)
   useEffect(() => {
     const getToken = () => {
-      const myHeaders = new Headers();
-      myHeaders.append("Authorization", "Basic c2ItbmEtYmJiNGZmZGUtNWRlYi00ZmJjLTgzZDktZTcyNWIwZGY3NjhhIXQzNzk1ODA6elNSWlIzVG1OVE85SjhuMmNVY0ZFbWVJampjPQ==");
-      myHeaders.append("Cookie", "__VCAP_ID__=39b099b4-f39d-4e60-5a99-0e46; JSESSIONID=EF6737ECDC9B8430354CE498583A2778; __VCAP_ID__=2d27c4d9-1cb0-4f2a-68d6-56e6");
-      const requestOptions = {
-        method: "GET",
-        headers: myHeaders,
-        redirect: "follow"
-      };
-
-      fetch("https://inc-cust-poc.authentication.eu10.hana.ondemand.com/oauth/token?grant_type=client_credentials", requestOptions)
-        .then((response) => response.text())
-        .then((result) => {
-          let obj = JSON.parse(result)
-          if (obj?.access_token) {
-            setToken(obj?.access_token)
-            localStorage.setItem("token", obj?.access_token);
-          }
-        })
-        .catch((error) => console.error(error));
+      axios.get("/user").then((res)=>{
+        if(res?.data?.token){
+          setToken(res?.data?.token)
+          localStorage.setItem("token", res?.data?.token);
+          
+        }
+        console.log(res)
+      })
+      // fetch("/user")
+      //   .then((response) => response.text())
+      //   .then((result) => {
+      //     let obj = JSON.parse(result)
+      //     if (obj?.access_token) {
+      //       setToken(obj?.access_token)
+      //       localStorage.setItem("token", obj?.access_token);
+      //     }
+      //   })
+      //   .catch((error) => console.error(error));
     }
 
     getToken()
