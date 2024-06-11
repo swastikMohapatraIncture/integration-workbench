@@ -19,7 +19,7 @@ const Layout = ({ children }) => {
           <div
             style={{
               minWidth: "calc(100vw - 230px)",
-              minHeight: "calc(100vh - 50px)",
+              minHeight: "calc(180vh - 50px)",
               overflowX: "scroll",
             }}
             className="bg-primary mt-[50px] mb-12"

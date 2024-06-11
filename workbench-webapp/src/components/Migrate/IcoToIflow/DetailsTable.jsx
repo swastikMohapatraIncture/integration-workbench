@@ -67,7 +67,7 @@ const DetailsTable = ({ icoDetails, setIcoDetails }) => {
             </th>
           </tr>
         </thead>
-        <tbody className="max-h-40 overflow-y-auto">
+        <tbody className="max-h-40 overflow-y-auto border">
           {icoDetails?.map((detail, index) => (
             <tr key={index}>
               <td className="border border-gray-200 px-2 text-center">
@@ -97,7 +97,7 @@ const DetailsTable = ({ icoDetails, setIcoDetails }) => {
                   detail.description
                 )}
               </td>
-              <td className="border border-gray-200 overflow-hidden px-2">
+              <td className="border-b overflow-hidden py-8 flex justify-evenly items-center">
                 {editIndex === index ? (
                   <>
                     <button
