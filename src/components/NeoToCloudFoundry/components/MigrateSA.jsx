@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Autocomplete, TextField, Button, Box, Alert, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import { fetchUserCredentials, fetchOAuthCredentials } from "../../../apis/apiServiceNeo"; // Import your fetch functions
+import { fetchUserCredentials, fetchOAuthCredentials ,fetchCertificates} from "../../../apis/apiServiceNeo"; // Import your fetch functions
 import Loader from "../../Loader";
 
 const MigrateSA = () => {
@@ -9,6 +9,8 @@ const MigrateSA = () => {
   const [selectedUserOption, setSelectedUserOption] = useState(null);
   const [selectedOauthOptions, setSelectedOauthOptions] = useState([]);
   const [userCredentials,setuserCredentials]=useState([]);
+  const [certificateOptions, setCertificateOptions] = useState([]);
+  const [selectedCertificates, setSelectedCertificates] = useState([]);
   const [notification, setNotification] = useState({
     open: false,
     message: "",
@@ -28,13 +30,19 @@ const MigrateSA = () => {
       const oauthCredentials = await fetchOAuthCredentials();
       setOAuthOptions(oauthCredentials);
     };
+    const getCertificates = async () => {
+      const certificates = await fetchCertificates();
+      setCertificateOptions(certificates);
+    };
 
+    getCertificates();
+    console.log("SC: ",selectedCertificates);
     loadUserCredentials();
     loadOAuthCredentials();
-  }, []);
+  }, [selectedCertificates]);
 
   const handleSubmit = async () => {
-    if (!selectedUserOption && selectedOauthOptions.length === 0) return;
+    if (!selectedUserOption && !selectedOauthOptions.length && !selectedCertificates.length) return;
 
     setLoading(true);
 
@@ -116,6 +124,35 @@ const MigrateSA = () => {
           });
         }
       }
+  
+      if (selectedCertificates) {
+        const certificateHexalias  = selectedCertificates[0].id;
+       
+        const certResponse = await fetch(
+          `http://localhost:8082/api/v1/migration/Upload/customPublicCertificates?certificateHexalias=${certificateHexalias}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(certResponse);
+        if (certResponse.ok) {
+          setNotification({
+            open: true,
+            message: "Certificate uploaded successfully",
+            severity: "success",
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: "Certificate with the same name already exists",
+            severity: "error",
+          });
+        }
+      }
+
     } catch (error) {
       setNotification({
         open: true,
@@ -136,7 +173,7 @@ const MigrateSA = () => {
   };
 
   const isButtonVisible =
-    selectedUserOption !== null || selectedOauthOptions.length > 0;
+    selectedUserOption !== null || selectedOauthOptions.length || selectedCertificates.length > 0;
 
   const handleOpenModal = async () => {
     setLoading(true);
@@ -269,6 +306,52 @@ const MigrateSA = () => {
             </table>
           </div>
         )}
+        <div className="">
+        <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
+        Custom Certificates
+        </h4>
+        <Autocomplete
+          multiple
+          options={certificateOptions}
+          getOptionLabel={(option) => option.label}
+          onChange={(event, value) => setSelectedCertificates(value)}
+          renderInput={(params) => (
+            <TextField {...params} label="Custom Certificates" />
+          )}
+          PopperProps={{
+            className: "mt-4", // Adjust this value as needed
+          }}
+        />
+        {selectedCertificates.length > 0 && (
+          <div>
+            <h3 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
+              Selected Certificates:
+            </h3>
+            <table className="w-full mt-4 border-collapse border border-gray-300">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-300 px-4 py-2">Name</th>
+                  <th className="border border-gray-300 px-4 py-2">Content</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedCertificates.map((cert, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {cert.id}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2">
+                      {cert.label}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+
        <div className="flex justify-between">
   <Button variant="contained" color="primary" onClick={handleOpenModal} style={{  marginRight: 'auto' }}>
     Check Uploaded Credentials

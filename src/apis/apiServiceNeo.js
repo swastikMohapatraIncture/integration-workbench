@@ -535,6 +535,8 @@ export const PostPackages = async (
                 `CUSTOM PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`
               );
               await GetArtifacts(pkg.value);
+              const dd=await ConfigureValueMapping();
+              consolelog("VM: ",dd);
               successful = true;
             }
           } catch (error) {
@@ -584,6 +586,8 @@ export const GetArtifacts = async (pkdId) => {
     const getArtifacts = await getArtifactsRaw.json();
     console.log("Iflow's fetched: ", getArtifacts);
 
+
+
     let artifactConfigured = 0;
     let artifactNotConfigured = 0;
     for (let artifact of getArtifacts) {
@@ -615,6 +619,9 @@ export const GetArtifacts = async (pkdId) => {
         );
       }
     }
+
+
+
     console.log(`Total artifacts configured: ${artifactConfigured}`);
     console.log(`Total artifacts not configured: ${artifactNotConfigured}`);
     console.log(
@@ -679,6 +686,19 @@ export const fetchOAuthCredentials = async () => {
     }));
   } catch (error) {
     console.error("Error fetching OAuth credentials:", error);
+    return [];
+  }
+};
+export const fetchCertificates = async () => {
+  try {
+    const response = await axios.get('http://localhost:8082/api/v1/migration/Get/customPublicCertificates');
+    const certificates = response.data.map(cert => ({
+      id: cert.Hexalias,
+      label: cert.Alias
+    }));
+    return certificates;
+  } catch (error) {
+    console.error('Error fetching certificates:', error);
     return [];
   }
 };
