@@ -1,6 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { Autocomplete, TextField, Button, Box, Alert, Modal, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-import { fetchUserCredentials, fetchOAuthCredentials ,fetchCertificates} from "../../../apis/apiServiceNeo"; // Import your fetch functions
+import {
+  Autocomplete,
+  TextField,
+  Button,
+  Box,
+  Alert,
+  Modal,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+import {
+  fetchUserCredentials,
+  fetchOAuthCredentials,
+  fetchCertificates,
+} from "../../../apis/apiServiceNeo"; // Import your fetch functions
 import Loader from "../../Loader";
 
 const MigrateSA = () => {
@@ -8,7 +26,7 @@ const MigrateSA = () => {
   const [oauthOptions, setOAuthOptions] = useState([]);
   const [selectedUserOption, setSelectedUserOption] = useState(null);
   const [selectedOauthOptions, setSelectedOauthOptions] = useState([]);
-  const [userCredentials,setuserCredentials]=useState([]);
+  const [userCredentials, setuserCredentials] = useState([]);
   const [certificateOptions, setCertificateOptions] = useState([]);
   const [selectedCertificates, setSelectedCertificates] = useState([]);
   const [notification, setNotification] = useState({
@@ -36,13 +54,18 @@ const MigrateSA = () => {
     };
 
     getCertificates();
-    console.log("SC: ",selectedCertificates);
+    console.log("SC: ", selectedCertificates);
     loadUserCredentials();
     loadOAuthCredentials();
   }, [selectedCertificates]);
 
   const handleSubmit = async () => {
-    if (!selectedUserOption && !selectedOauthOptions.length && !selectedCertificates.length) return;
+    if (
+      !selectedUserOption &&
+      !selectedOauthOptions.length &&
+      !selectedCertificates.length
+    )
+      return;
 
     setLoading(true);
 
@@ -124,10 +147,10 @@ const MigrateSA = () => {
           });
         }
       }
-  
+
       if (selectedCertificates) {
-        const certificateHexalias  = selectedCertificates[0].id;
-       
+        const certificateHexalias = selectedCertificates[0].id;
+
         const certResponse = await fetch(
           `http://localhost:8082/api/v1/migration/Upload/customPublicCertificates?certificateHexalias=${certificateHexalias}`,
           {
@@ -152,7 +175,6 @@ const MigrateSA = () => {
           });
         }
       }
-
     } catch (error) {
       setNotification({
         open: true,
@@ -173,13 +195,17 @@ const MigrateSA = () => {
   };
 
   const isButtonVisible =
-    selectedUserOption !== null || selectedOauthOptions.length || selectedCertificates.length > 0;
+    selectedUserOption !== null ||
+    selectedOauthOptions.length ||
+    selectedCertificates.length > 0;
 
   const handleOpenModal = async () => {
     setLoading(true);
     setModalOpen(true);
     try {
-      const response = await fetch("http://localhost:8082/api/v1/migration/Get/Target/OAuthCredentials");
+      const response = await fetch(
+        "http://localhost:8082/api/v1/migration/Get/Target/OAuthCredentials"
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch uploaded credentials");
       }
@@ -187,18 +213,17 @@ const MigrateSA = () => {
       console.log(data);
       setUploadedCredentials(data);
 
-      
-    //  Fetch User Credentials
+      //  Fetch User Credentials
 
-     
-    const userResponse = await fetch("http://localhost:8082/api/v1/migration/Get/Target/UserCredentials");
-    if (!userResponse.ok) {
-      throw new Error("Failed to fetch user credentials");
-    }
-    
-    const userData = await userResponse.json();
-    setuserCredentials(userData);
+      const userResponse = await fetch(
+        "http://localhost:8082/api/v1/migration/Get/Target/UserCredentials"
+      );
+      if (!userResponse.ok) {
+        throw new Error("Failed to fetch user credentials");
+      }
 
+      const userData = await userResponse.json();
+      setuserCredentials(userData);
     } catch (error) {
       setNotification({
         open: true,
@@ -214,14 +239,13 @@ const MigrateSA = () => {
     setModalOpen(false);
   };
 
-  
   return (
     <>
       <div className="m-4 space-y-8 mb-5">
         <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
           User Credentials
         </h4>
-        
+
         <Autocomplete
           options={userOptions}
           getOptionLabel={(option) => option.label}
@@ -235,7 +259,10 @@ const MigrateSA = () => {
         />
         {selectedUserOption && (
           <div>
-            <h3 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
+            <h3
+              className="text-lg font-semibold mb-4"
+              style={{ color: "#2A4862" }}
+            >
               Selected User Details:
             </h3>
             <table className="w-full mt-4 border-collapse border border-gray-300">
@@ -243,7 +270,9 @@ const MigrateSA = () => {
                 <tr className="bg-gray-200">
                   <th className="border border-gray-300 px-4 py-2">ID</th>
                   <th className="border border-gray-300 px-4 py-2">Name</th>
-                  <th className="border border-gray-300 px-4 py-2">Description</th>
+                  <th className="border border-gray-300 px-4 py-2">
+                    Description
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -268,7 +297,7 @@ const MigrateSA = () => {
           Oauth2 Client Credentials
         </h4>
         <Autocomplete
-        multiple
+          multiple
           options={oauthOptions}
           getOptionLabel={(option) => option.label}
           onChange={(event, value) => setSelectedOauthOptions(value)}
@@ -281,7 +310,10 @@ const MigrateSA = () => {
         />
         {selectedOauthOptions.length > 0 && (
           <div>
-            <h3 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
+            <h3
+              className="text-lg font-semibold mb-4"
+              style={{ color: "#2A4862" }}
+            >
               Selected Options Details:
             </h3>
             <table className="w-full mt-4 border-collapse border border-gray-300">
@@ -307,62 +339,78 @@ const MigrateSA = () => {
           </div>
         )}
         <div className="">
-        <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
-        Custom Certificates
-        </h4>
-        <Autocomplete
-          multiple
-          options={certificateOptions}
-          getOptionLabel={(option) => option.label}
-          onChange={(event, value) => setSelectedCertificates(value)}
-          renderInput={(params) => (
-            <TextField {...params} label="Custom Certificates" />
-          )}
-          PopperProps={{
-            className: "mt-4", // Adjust this value as needed
-          }}
-        />
-        {selectedCertificates.length > 0 && (
-          <div>
-            <h3 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
-              Selected Certificates:
-            </h3>
-            <table className="w-full mt-4 border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-gray-300 px-4 py-2">Name</th>
-                  <th className="border border-gray-300 px-4 py-2">Content</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedCertificates.map((cert, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {cert.id}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {cert.label}
-                    </td>
+          <h4
+            className="text-lg font-semibold mb-4"
+            style={{ color: "#2A4862" }}
+          >
+            Custom Certificates
+          </h4>
+          <Autocomplete
+            multiple
+            options={certificateOptions}
+            getOptionLabel={(option) => option.label}
+            onChange={(event, value) => setSelectedCertificates(value)}
+            renderInput={(params) => (
+              <TextField {...params} label="Custom Certificates" />
+            )}
+            PopperProps={{
+              className: "mt-4", // Adjust this value as needed
+            }}
+          />
+          {selectedCertificates.length > 0 && (
+            <div>
+              <h3
+                className="text-lg font-semibold mb-4"
+                style={{ color: "#2A4862" }}
+              >
+                Selected Certificates:
+              </h3>
+              <table className="w-full mt-4 border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-300 px-4 py-2">Name</th>
+                    <th className="border border-gray-300 px-4 py-2">
+                      Content
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                </thead>
+                <tbody>
+                  {selectedCertificates.map((cert, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {cert.id}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {cert.label}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
 
-
-       <div className="flex justify-between">
-  <Button variant="contained" color="primary" onClick={handleOpenModal} style={{  marginRight: 'auto' }}>
-    Check Uploaded Credentials
-  </Button>
-  {isButtonVisible && (
-    <Button variant="contained" color="primary" onClick={handleSubmit} style={{  marginLeft: 'auto' }}>
-      Submit
-    </Button>
-  )}
-</div>
-
+        <div className="flex justify-between">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleOpenModal}
+            style={{ marginRight: "auto" }}
+          >
+            Check Uploaded Credentials
+          </Button>
+          {isButtonVisible && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleSubmit}
+              style={{ marginLeft: "auto" }}
+            >
+              Submit
+            </Button>
+          )}
+        </div>
       </div>
       {loading && (
         <Box
@@ -399,99 +447,228 @@ const MigrateSA = () => {
         </Box>
       )}
 
-<Modal open={modalOpen} onClose={handleCloseModal}>
-  <Box
-    display="flex"
-    justifyContent="center"
-    alignItems="center"
-    height="100vh"
-    p={2}
-    bgcolor="rgba(0, 0, 0, 0.5)" // Dark background with transparency
-  >
-    <Paper
-      style={{
-        maxWidth: "90%", // Increase the max width
-        maxHeight: "80%",
-        overflow: "auto",
-        padding: "20px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        borderRadius: "8px",
-      }}
-    >
-      <h2 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
-        Uploaded Credentials
-      </h2>
-      
-      <h3 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
-        OAuth Credentials
-      </h3>
-      <TableContainer sx={{ padding: '22px' }}>
-        <Table sx={{ width: '100%' }}>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>S.No</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>ID</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>Name</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>Description</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>TokenServiceUrl</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {uploadedCredentials.map((credential, index) => (
-              <TableRow key={`${credential.ClientId}-${index}`}>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{index + 1}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.ClientId}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.Name}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.Description}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.TokenServiceUrl}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      
-      <h3 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
-        User Credentials
-      </h3>
-      <TableContainer sx={{ padding: '22px' }}>
-        <Table sx={{ width: '100%' }}>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>S.No</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>User</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>Description</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>CompanyId</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>Kind</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#f5f5f5', color: '#2A4862', padding: '12px' }}>Name</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {userCredentials.map((credential, index) => (
-              <TableRow key={`${credential.User}-${index}`}>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{index + 1}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.User}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.Description}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.CompanyId}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.Kind}</TableCell>
-                <TableCell sx={{ fontWeight: 'medium', padding: '12px' }}>{credential.Name}</TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleCloseModal}
-        style={{ marginTop: '16px' }}
-      >
-        Close
-      </Button>
-    </Paper>
-  </Box>
-</Modal>
+      <Modal open={modalOpen} onClose={handleCloseModal}>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100vh"
+          p={2}
+          bgcolor="rgba(0, 0, 0, 0.5)" // Dark background with transparency
+        >
+          <Paper
+            style={{
+              maxWidth: "90%", // Increase the max width
+              maxHeight: "80%",
+              overflow: "auto",
+              padding: "20px",
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
+              borderRadius: "8px",
+            }}
+          >
+            <h2
+              className="text-lg font-semibold mb-4"
+              style={{ color: "#2A4862" }}
+            >
+              Uploaded Credentials
+            </h2>
 
+            <h3
+              className="text-lg font-semibold mb-4"
+              style={{ color: "#2A4862" }}
+            >
+              OAuth Credentials
+            </h3>
+            <TableContainer sx={{ padding: "22px" }}>
+              <Table sx={{ width: "100%" }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      S.No
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      ID
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      Name
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      Description
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      TokenServiceUrl
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {uploadedCredentials.map((credential, index) => (
+                    <TableRow key={`${credential.ClientId}-${index}`}>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {index + 1}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.ClientId}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.Name}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.Description}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.TokenServiceUrl}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <h3
+              className="text-lg font-semibold mb-4"
+              style={{ color: "#2A4862" }}
+            >
+              User Credentials
+            </h3>
+            <TableContainer sx={{ padding: "22px" }}>
+              <Table sx={{ width: "100%" }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      S.No
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      User
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      Description
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      CompanyId
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      Kind
+                    </TableCell>
+                    <TableCell
+                      sx={{
+                        fontWeight: "bold",
+                        backgroundColor: "#f5f5f5",
+                        color: "#2A4862",
+                        padding: "12px",
+                      }}
+                    >
+                      Name
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {userCredentials.map((credential, index) => (
+                    <TableRow key={`${credential.User}-${index}`}>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {index + 1}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.User}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.Description}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.CompanyId}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.Kind}
+                      </TableCell>
+                      <TableCell sx={{ fontWeight: "medium", padding: "12px" }}>
+                        {credential.Name}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCloseModal}
+              style={{ marginTop: "16px" }}
+            >
+              Close
+            </Button>
+          </Paper>
+        </Box>
+      </Modal>
     </>
   );
 };

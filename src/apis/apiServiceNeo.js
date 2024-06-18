@@ -478,6 +478,7 @@ export const PostPackages = async (
     );
 
     console.log(fetchToken);
+
     if (fetchToken && fetchToken.ok === true) {
       if (selectedPrePackages.length !== 0) {
         for (let pkg of selectedPrePackages) {
@@ -486,7 +487,7 @@ export const PostPackages = async (
             const postPrePackageRaw = await fetch(
               `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
               {
-                method: "GET",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
               }
             );
@@ -519,7 +520,7 @@ export const PostPackages = async (
             const postCustomPackageRaw = await fetch(
               `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
               {
-                method: "GET",
+                method: "POST",
                 headers: { "Content-Type": "application/json" },
               }
             );
@@ -535,8 +536,7 @@ export const PostPackages = async (
                 `CUSTOM PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`
               );
               await GetArtifacts(pkg.value);
-              const dd=await ConfigureValueMapping();
-              consolelog("VM: ",dd);
+              await configureValueMappings(pkg.value);
               successful = true;
             }
           } catch (error) {
@@ -565,13 +565,13 @@ export const PostPackages = async (
   return successful;
 };
 
-export const GetArtifacts = async (pkdId) => {
+export const GetArtifacts = async (pkgId) => {
   console.log(
     "********************  Entering GetArtifacts  ********************"
   );
   try {
     const getArtifactsRaw = await fetch(
-      `http://localhost:8082/api/v1/migration/Get/Custom/Artifacts?packageTechnicalName=${pkdId}`,
+      `http://localhost:8082/api/v1/migration/Get/Custom/Artifacts?packageTechnicalName=${pkgId}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -586,8 +586,6 @@ export const GetArtifacts = async (pkdId) => {
     const getArtifacts = await getArtifactsRaw.json();
     console.log("Iflow's fetched: ", getArtifacts);
 
-
-
     let artifactConfigured = 0;
     let artifactNotConfigured = 0;
     for (let artifact of getArtifacts) {
@@ -596,7 +594,7 @@ export const GetArtifacts = async (pkdId) => {
         const uploadArtifactRaw = await fetch(
           `http://localhost:8082/api/v1/migration/Set/Custom/Configurations?artifactId=${artifact.Id}`,
           {
-            method: "GET",
+            method: "POST",
             headers: { "Content-Type": "application/json" },
           }
         );
@@ -620,8 +618,6 @@ export const GetArtifacts = async (pkdId) => {
       }
     }
 
-
-
     console.log(`Total artifacts configured: ${artifactConfigured}`);
     console.log(`Total artifacts not configured: ${artifactNotConfigured}`);
     console.log(
@@ -632,6 +628,7 @@ export const GetArtifacts = async (pkdId) => {
     throw error;
   }
 };
+
 export const fetchUserCredentials = async () => {
   try {
     const response = await fetch(
@@ -689,16 +686,78 @@ export const fetchOAuthCredentials = async () => {
     return [];
   }
 };
+
+export const configureValueMappings = async (pkgId) => {
+  const pkgNotMigrated = JSON.parse(localStorage.getItem("pkgNotMigrate"));
+
+  try {
+    const getValueMapping = await fetch(
+      `http://localhost:8082/api/v1/migration/get/valuemappings`,
+      {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    if (!getValueMapping.ok) {
+      throw new Error(`Error fetching: ${getValueMapping.statusText}`);
+    }
+
+    console.log("getValueMapping Res - :", getValueMapping);
+    const valueMappings = await getValueMapping.json();
+    console.log("Value Mapping's fetched: ", valueMappings);
+
+    for (let valueMapping of valueMappings.d.results) {
+      if (valueMapping.PackageId === pkgId) {
+        if (!pkgNotMigrated.includes(valueMapping.PackageId)) {
+          try {
+            const configureValueMapping = await fetch(
+              `http://localhost:8082/api/v1/migration/Upload/ValueMappings?artifactId=${valueMapping.Id}`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+              }
+            );
+
+            if (configureValueMapping.status !== 200) {
+              const configureValueMappingResponse = await configureValueMapping.json();
+              throw new Error(`${configureValueMappingResponse.message}`);
+            }
+            console.log(
+              `Value Mapping ${valueMapping.Id} configured :`,
+              configureValueMapping
+            );
+          } catch (error) {
+            console.error(
+              `Error configuring Value Mapping - ${valueMapping.Id}:`,
+              error
+            );
+          }
+        }
+      } else {
+        console.log(
+          `Value Mapping ${valueMapping.Id} is of PACKAGE - ${valueMapping.PackageId}`
+        );
+        console.log(`Current Package in Loop - ${pkgId}`);
+      }
+    }
+  } catch (error) {
+    console.error("Error configuring ValueMappings:", error);
+  }
+};
+
 export const fetchCertificates = async () => {
   try {
-    const response = await axios.get('http://localhost:8082/api/v1/migration/Get/customPublicCertificates');
-    const certificates = response.data.map(cert => ({
+    const response = await axios.get(
+      "http://localhost:8082/api/v1/migration/Get/customPublicCertificates"
+    );
+    const certificates = response.data.map((cert) => ({
       id: cert.Hexalias,
-      label: cert.Alias
+      label: cert.Alias,
     }));
     return certificates;
   } catch (error) {
-    console.error('Error fetching certificates:', error);
+    console.error("Error fetching certificates:", error);
     return [];
   }
 };
