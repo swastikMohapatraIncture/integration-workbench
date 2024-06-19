@@ -18,7 +18,6 @@ import ReadinessCheckMainPage from "./components/NeoToCloudFoundry/pages/Readine
 import NeoMigration from "./components/NeoToCloudFoundry/pages/NeoMigration";
 import GetArtifactsPage from "./components/NeoToCloudFoundry/pages/GetArtifactsPage";
 
-
 function App() {
   return (
     <>
@@ -45,14 +44,6 @@ function App() {
           element={
             <Layout>
               <MigrationProcess />
-            </Layout>
-          }
-        />
-        <Route
-          path="migrationAssessment"
-          element={
-            <Layout>
-              <MigrationAssessment />
             </Layout>
           }
         />
@@ -124,7 +115,7 @@ function App() {
           path="/neomigration"
           element={
             <Layout>
-              <NeoMigration/>
+              <NeoMigration />
             </Layout>
           }
         ></Route>
@@ -132,7 +123,7 @@ function App() {
           path="/getartifacts"
           element={
             <Layout>
-              <GetArtifactsPage/>
+              <GetArtifactsPage />
             </Layout>
           }
         ></Route>
