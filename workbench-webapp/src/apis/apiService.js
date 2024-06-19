@@ -2,24 +2,14 @@ import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 
-let config = () => {
-  let header = {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-  }
-  return header
-};
-
 export const postApi = async (apiURL, toPostData) => {
   try {
-    const res = await axios.post(apiURL, toPostData, config());
+    const res = await axios.post(apiURL, toPostData);
     return res.data;
   } catch (e) {
     return null;
   }
 };
-
-// const apiUrl = "https://integration-workbench.cfapps.eu10-004.hana.ondemand.com/api"
-const apiUrl = "/java_services";
 
 export const postESRConnection = async (
   formData,
@@ -28,11 +18,14 @@ export const postESRConnection = async (
   setConnectionMessage
 ) => {
   await postApi(
-    `${apiUrl}/v1/migration/configuration/connect/esr`,
+    "http://localhost:8080/api/v1/migration/configuration/connect/esr",
     formData
   ).then((data) => {
     if (data && data.status === "Success") {
-      postApi(`${apiUrl}/v1/migration/configuration/connect/id`, formData)
+      postApi(
+        "http://localhost:8080/api/v1/migration/configuration/connect/id",
+        formData
+      )
         .then((data2) => {
           if (data2 && data2.status === "Success") {
             const prevData =
@@ -47,7 +40,6 @@ export const postESRConnection = async (
               type: "success",
             });
             setDisableNext(false);
-
           } else {
             setConnectionMessage({
               text: data?.message || "Connection unsuccessful",
@@ -73,95 +65,6 @@ export const postESRConnection = async (
   });
 };
 
-//NEO to  CF functions
-
-export const postNEOConnection = async (
-  formData,
-  setDisableNext,
-  setTestingConn,
-  setConnectionMessage
-) => {
-  await postApi(
-    "https://webhook.site/3d69f502-16c9-4316-bc63-e0caa1e6fd61",
-
-    formData
-  )
-    .then((data) => {
-      if (true) {
-        const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
-        const newData = { ...(prevData ? prevData : null), NeoData: formData };
-        localStorage.setItem("currNeoAgent", JSON.stringify(newData));
-        setConnectionMessage({
-          text: "Connection successful",
-          type: "success",
-        });
-        setDisableNext(false);
-      } else {
-        setConnectionMessage({
-          text: data?.message || "Connection unsuccessful",
-          type: "error",
-        });
-        setDisableNext(true);
-      }
-    })
-    .catch((error) => {
-      console.error("API call failed:", error);
-      // setConnectionStatus(false);
-      setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
-      setDisableNext(true);
-    })
-    .finally(() => {
-      setTestingConn(false);
-    });
-};
-
-export const postCFData = async (
-  formData,
-  setDisableNext,
-  setTestingConn,
-  // setConnectionStatus,
-  setConnectionMessage
-) => {
-  await postApi(
-    `${apiUrl}/v1/migration/configuration/connect/is/api`,
-    formData
-  ).then((data) => {
-    try {
-      if (data && data.status === "Success") {
-        const prevData = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
-        const newData = {
-          ...(prevData ? prevData : null),
-          CFdata: formData,
-          // adapter: [],
-        };
-        // const newData = { ...(prevData ? prevData : null), formData, adapter: [] };
-        localStorage.setItem("currNeoAgent", JSON.stringify(newData));
-        // setConnectionStatus(true);
-        setConnectionMessage({
-          text: "Connection successful",
-          type: "success",
-        });
-        setDisableNext(false);
-      } else {
-        // setConnectionStatus(false);
-        setConnectionMessage({
-          text: data?.message || "Connection unsuccessful",
-          type: "error",
-        });
-        setDisableNext(true);
-      }
-    } catch (error) {
-      console.error("API call failed:", error);
-      // setConnectionStatus(false);
-      setConnectionMessage({ text: "Connection unsuccessful", type: "error" });
-      setDisableNext(true);
-    } finally {
-      setTestingConn(false); // Ensure this is called regardless of success or failure
-    }
-  });
-};
-
-//--------------------------------------------------------------------------------------------------
 export const postCPIData = async (
   formData,
   setDisableNext,
@@ -169,7 +72,7 @@ export const postCPIData = async (
   setConnectionMessage
 ) => {
   await postApi(
-    `${apiUrl}/v1/migration/configuration/connect/is/cpi`,
+    "http://localhost:8080/api/v1/migration/configuration/connect/is/cpi",
     formData
   ).then((data) => {
     try {
@@ -206,7 +109,7 @@ export const postAPIData = async (
   setConnectionMessage
 ) => {
   await postApi(
-    `${apiUrl}/v1/migration/configuration/connect/is/api`,
+    "http://localhost:8080/api/v1/migration/configuration/connect/is/api",
     formData
   ).then((data) => {
     try {
@@ -244,8 +147,8 @@ export const handleIcoList = async (poData) => {
   try {
     const toPostData = poData;
     const response = await axios.post(
-      `${apiUrl}/v1/metadata/get/ico/list`,
-      toPostData, config()
+      "http://localhost:8080/api/v1/metadata/get/ico/list",
+      toPostData
     );
     // console.log(response);
     if (response.data.status === "Success") {
@@ -263,7 +166,10 @@ export const handleIcoList = async (poData) => {
 export const handlePackageList = (cpiData) => {
   const toPostData = cpiData;
   return axios
-    .post(`${apiUrl}/v1/migration/designtime/get/package/list`, toPostData, config())
+    .post(
+      "http://localhost:8080/api/v1/migration/designtime/get/package/list",
+      toPostData
+    )
     .then((response) => {
       if (response?.data?.status === "Success") {
         return response?.data?.payload?.list;
@@ -282,8 +188,8 @@ export const handleCreatePackage = async (data) => {
   try {
     const toPostData = data;
     const response = await axios.post(
-      `${apiUrl}/v1/migration/designtime/create/package`,
-      toPostData, config()
+      "http://localhost:8080/api/v1/migration/designtime/create/package",
+      toPostData
     );
     if (response?.data?.status === "Success") {
       return response?.data;
@@ -299,7 +205,7 @@ export const handleCreatePackage = async (data) => {
 export const handleIcoDetails = (data) => {
   const toPostData = data;
   return postApi(
-    `${apiUrl}/v1/migration/designtime/get/iflow/details`,
+    "http://localhost:8080/api/v1/migration/designtime/get/iflow/details",
     toPostData
   ).then((response) => {
     const { iflowName, description } = response.payload;
@@ -312,7 +218,7 @@ export const handleExceptionServices = async (data) => {
   try {
     const toPostData = data;
     const response = await postApi(
-      `${apiUrl}/v1/migration/designtime/create/exception/service`,
+      "http://localhost:8080/api/v1/migration/designtime/create/exception/service",
       toPostData
     );
     if (response) {
@@ -330,15 +236,17 @@ export const handleExceptionServices = async (data) => {
 export const handleMigration = async (data, type) => {
   try {
     const toPostData = data;
-    let apiUrl2;
+    let apiUrl;
 
     if (type === "icos") {
-      apiUrl2 = `${apiUrl}/v1/migration/designtime/migrate/ico/to/iflow`;
+      apiUrl =
+        "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/iflow";
     } else {
-      apiUrl2 = `${apiUrl}/v1/migration/designtime/migrate/ico/to/vm`;
+      apiUrl =
+        "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm";
     }
 
-    const response = await postApi(apiUrl2, toPostData);
+    const response = await postApi(apiUrl, toPostData);
     return response;
   } catch (error) {
     console.error("Error during migration:", error);
@@ -346,7 +254,7 @@ export const handleMigration = async (data, type) => {
 };
 
 // export const compareFiles = async (data) => {
-//   await postApi("${apiUrl}/v1/comparison/files", data).then(
+//   await postApi("http://localhost:8081/api/v1/comparison/files", data).then(
 //     (data) => {
 //       if (data?.status == "Success") {
 //         return data?.message;
@@ -372,21 +280,20 @@ export const postFileCompareApi = async (files) => {
 
   // Append files from xmlFile1
   files.xmlFile1.forEach((file) => {
-    formData.append("requestFiles", file);
+    formData.append("xmlFile1", file);
   });
 
   // Append files from xmlFile2
   files.xmlFile2.forEach((file) => {
-    formData.append("responseFiles", file);
+    formData.append("xmlFile2", file);
   });
 
   try {
     const response = await axios.post(
-      `${apiUrl}/v1/comparison/files`,
+      "http://localhost:8081/api/v1/comparison/files",
       formData,
       {
         headers: {
-          ...config().headers,
           "Content-Type": "multipart/form-data",
         },
       }
@@ -402,8 +309,8 @@ export const getIFlows = async (poData) => {
   try {
     const toPostData = poData;
     const response = await axios.post(
-      `${apiUrl}/v1/comparison/get/artifacts/Id`,
-      toPostData, config()
+      "http://localhost:8081/api/v1/comparison/get/artifacts/Id",
+      toPostData
     );
     // console.log(response);
     if (response.data.status === "Success") {
@@ -421,8 +328,8 @@ export const generateReport = async (data) => {
   const toPostData = data;
   try {
     const response = await axios.post(
-      `${apiUrl}/v1/comparison/generate/report`,
-      toPostData, config()
+      "http://localhost:8081/api/v1/comparison/generate/report",
+      toPostData
     );
 
     // Check if the status code is in the range of 200-299 (success)
@@ -442,8 +349,8 @@ export const generateReport = async (data) => {
 export const valueMappingList = async (data) => {
   try {
     const response = await axios.post(
-      `${apiUrl}/v1/metadata/get/vm/list`,
-      data, config()
+      "http://localhost:8080/api/v1/metadata/get/vm/list",
+      data
     );
 
     if (response.data.status === "Success") {
@@ -459,12 +366,13 @@ export const valueMappingList = async (data) => {
 export const migrateValueMapping = async (data) => {
   try {
     const response = await axios.post(
-      `${apiUrl}/v1/migration/designtime/migrate/ico/to/vm`,
-      data, config()
+      "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm",
+      data
     );
+    console.log("status:", response.data.status);
+    if (response?.data?.status === "Success") return response?.data;
 
-    // if(response.data.status === "Success")
-    console.log(response);
+    // console.log(response);
   } catch (error) {
     return error.message;
   }

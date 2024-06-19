@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -14,7 +14,7 @@ import {
   Visibility,
   VisibilityOff,
 } from "@mui/icons-material";
-import { postCFData } from "../../../apis/apiService";
+import { postCFData } from "../../../apis/apiServiceNeo";
 import { FaRegCheckCircle } from "react-icons/fa";
 import { ImCross } from "react-icons/im";
 
@@ -40,16 +40,59 @@ const CFDetails = ({
   // fileName,
   // setFileName,
   setTestingConn,
+  currAgent,
   // connectionMessage,
   // setConnectionMessage,
   // connectionStatus,
   // setConnectionStatus,
 }) => {
-  const [CFData, setCFData] = useState({});
+  const [CFData, setCFData] = useState(currAgent?.CFdata || {});
   const [fileName, setFileName] = useState(null);
   // const [connectionStatus, setConnectionStatus] = useState(false);
   const [connectionMessage, setConnectionMessage] = useState("");
- 
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const requiredFields = [
+    "name",
+    "clientid",
+    "clientsecret",
+    "tokenurl",
+    "url",
+    "environment",
+  ];
+
+  const validateFields = () => {
+    const allFieldsFilled = requiredFields.every((field) => CFData[field]);
+    // setDisableNext(!allFieldsFilled);
+    return allFieldsFilled;
+  };
+
+  useEffect(() => {
+    validateFields();
+  }, [CFData]);
+
+  // useEffect(() => {
+  //   const fetchAgentData = () => {
+  //     if (currAgent && currAgent.CFdata) {
+  //       setCFData(currAgent.CFdata);
+  //     } else {
+  //       const storedAgent = localStorage.getItem("currNeoAgent");
+  //       if (storedAgent) {
+  //         const parsedAgent = JSON.parse(storedAgent);
+  //         const { name, environment } = parsedAgent.NeoData || {};
+  //         setCFData((prevState) => ({
+  //           ...prevState,
+  //           name: name || "",
+  //           environment: environment || "",
+  //         }));
+  //       }
+  //     }
+  //   };
+
+  //   fetchAgentData();
+  // }, [currAgent]);
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -74,14 +117,13 @@ const CFDetails = ({
 
   const handleAPITest = (event) => {
     event.preventDefault();
-    // setTestingConn(true);
-    postCFData(
-      // { dataType: "cpiData", formData: cpiData },
-      CFData,
-      setDisableNext,
-      setTestingConn,
-      setConnectionMessage
-    );
+    if (validateFields()) {
+      setTestingConn(true);
+      setErrorMessage("");
+      postCFData(CFData, setDisableNext, setTestingConn, setConnectionMessage);
+    } else {
+      setErrorMessage("Please fill in all required fields.");
+    }
   };
 
   // const handleAPITest = () => {
@@ -109,10 +151,10 @@ const CFDetails = ({
       const { clientid, clientsecret, url, tokenurl } = oauth;
       setCFData((prevState) => ({
         ...prevState,
-        clientId: clientid,
-        clientSecret: clientsecret,
+        clientid: clientid,
+        clientsecret: clientsecret,
         url: url,
-        tokenUrl: tokenurl,
+        tokenurl: tokenurl,
       }));
       console.log("Updated CFData:", { clientid, clientsecret, url, tokenurl }); // Debugging statement
     } else {
@@ -141,8 +183,8 @@ const CFDetails = ({
           <TextField
             size="small"
             placeholder="Enter Client ID"
-            value={CFData?.clientId || ""}
-            onChange={(e) => handleChange(e, "clientId")}
+            value={CFData?.clientid || ""}
+            onChange={(e) => handleChange(e, "clientid")}
             variant="outlined"
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
@@ -155,8 +197,8 @@ const CFDetails = ({
             id="outlined-adornment-password"
             type={showPassword ? "text" : "password"}
             placeholder="Enter Client secret"
-            value={CFData?.clientSecret || ""}
-            onChange={(e) => handleChange(e, "clientSecret")}
+            value={CFData?.clientsecret || ""}
+            onChange={(e) => handleChange(e, "clientsecret")}
             size="small"
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
@@ -181,8 +223,8 @@ const CFDetails = ({
             size="small"
             placeholder="Token URL"
             variant="outlined"
-            value={CFData?.tokenUrl || ""}
-            onChange={(e) => handleChange(e, "tokenUrl")}
+            value={CFData?.tokenurl || ""}
+            onChange={(e) => handleChange(e, "tokenurl")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
             }}
@@ -211,6 +253,10 @@ const CFDetails = ({
               handleChangeInput(value?.label, "environment")
             }
             options={system}
+            value={
+              system.find((option) => option.label === CFData?.environment) ||
+              null
+            } // Ensure the value is correctly matched
             getOptionLabel={(option) => option?.label || ""}
             getOptionValue={(option) => option?.label || ""}
             sx={{
@@ -266,17 +312,19 @@ const CFDetails = ({
         >
           {testingConn ? "Testing..." : "Test Connection"}
         </button>
+
+        {errorMessage && <span className="text-red-500">{errorMessage}</span>}
         {connectionMessage.text && (
           <div className="flex items-center">
             {connectionMessage.type === "success" ? (
-              <FaRegCheckCircle style={{ color: 'green' }} />
+              <FaRegCheckCircle style={{ color: "green" }} />
             ) : (
-              <ImCross style={{ color: 'red' }} />
+              <ImCross style={{ color: "red" }} />
             )}
             <span
               className="ml-2"
               style={{
-                color: connectionMessage.type === "success" ? 'green' : 'red',
+                color: connectionMessage.type === "success" ? "green" : "red",
               }}
             >
               {connectionMessage.text}

@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import WorkInProg from "../components/WorkInProg/WorkInProg";
-import ReadinessCheck from "../components/NeoToCloudFoundry/components/ReadinessCheck";
+import MigrateIP from "../components/MigrateIP";
+import MigrateSA from "../components/MigrateSA";
+import MigrateOA from "../components/MigrateOA";
+import { GetPackages } from "../../../apis/apiServiceNeo";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -19,7 +21,7 @@ function CustomTabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 0 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -40,8 +42,20 @@ function a11yProps(index) {
   };
 }
 
-const MigrationAssessment = ({ renderTab }) => {
-  const [value, setValue] = useState(renderTab || 0);
+const NeoMigration = () => {
+  const [value, setValue] = useState(0);
+  const [prepackages, setPrePackages] = useState([]);
+  const [custompackages, setCustomPackages] = useState([]);
+
+  useEffect(() => {
+    const fetchPackages = async () => {
+      const packages = await GetPackages();
+      setPrePackages(packages.prepackages);
+      setCustomPackages(packages.custompackages);
+    };
+
+    fetchPackages();
+  }, []);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -57,34 +71,32 @@ const MigrationAssessment = ({ renderTab }) => {
         >
           <Tab
             sx={{ textTransform: "capitalize" }}
-            label="PO to Integration Suite"
+            label="Integration Packages"
             {...a11yProps(0)}
           />
           <Tab
             sx={{ textTransform: "capitalize" }}
-            label="NEO to Cloud Foundry"
+            label="Security Artifacts"
             {...a11yProps(1)}
           />
-          {/* <Tab label="Item Three" {...a11yProps(2)} /> */}
+          <Tab
+            sx={{ textTransform: "capitalize" }}
+            label="Other Artifacts"
+            {...a11yProps(2)}
+          />
         </Tabs>
       </Box>
-
-      <CustomTabPanel
-        sx={{
-          "& .MuiTypography-root": {
-            height: "73vh",
-          },
-        }}
-        value={value}
-        index={0}
-      >
-        <WorkInProg />
+      <CustomTabPanel value={value} index={0}>
+        <MigrateIP prepackages={prepackages} custompackages={custompackages} />
       </CustomTabPanel>
-      {/* <CustomTabPanel value={value} index={2}>
-        Item Three
-      </CustomTabPanel> */}
+      <CustomTabPanel value={value} index={1}>
+        <MigrateSA />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={2}>
+        <MigrateOA />
+      </CustomTabPanel>
     </Box>
   );
 };
 
-export default MigrationAssessment;
+export default NeoMigration;

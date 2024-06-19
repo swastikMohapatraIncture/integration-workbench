@@ -55,8 +55,8 @@ const MigrateIcos = () => {
       setIsLoading(true);
 
       const response = await handleMigration(data, "icos");
-      setResponseData(response?.icoDetailsList);
-      setReportBase64(response?.reportBase64);
+      setResponseData(response.icoDetailsList);
+      setReportBase64(response.reportBase64);
       setIsModalOpen(true);
       toast.success("Migration Complete");
     } catch (error) {
@@ -119,7 +119,7 @@ const MigrateIcos = () => {
 
         <span title="Migrate ICOs to IS">
           <button
-            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm hover:bg-blue-700"
+            className="bg-[#0A6ED1] rounded-sm px-6 py-1 transition duration-200 mr-3 text-white border border-[#0A6ED1] text-sm"
             onClick={handleMigrate}
           >
             Migrate

@@ -4,6 +4,8 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import TenantModal from "./NeoToCloudFoundry/TenantModal";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { readinessCheck } from "../apis/apiServiceNeo";
+// import { GetPackages } from "../apis/apiServiceNeo";
 
 const DeleteModal = ({ setDeleteModal, handleDeleteAgent, index }) => {
   return (
@@ -52,6 +54,7 @@ const Table = ({
   setEditingAgentIdx,
 }) => {
   const [agentSelected, setAgentSelected] = useState(false);
+  const [currData, setCurrData] = useState();
   const [deleteModal, setDeleteModal] = useState({ open: false, index: null });
   const handleAddAgent = () => {
     localStorage.removeItem("currNeoAgent");
@@ -115,15 +118,17 @@ const Table = ({
                             "currNeoAgent",
                             JSON?.stringify(tenant)
                           );
+                          setCurrData(tenant);
+                          console.log(currData);
                           setAgentSelected(true);
                         }}
                       />
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap  text-[#32363A]  border-gray-200">
-                      {tenant?.NeoData?.formData?.name}
+                      {tenant?.NeoData?.name}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
-                      {tenant?.NeoData?.formData?.environment}
+                      {tenant?.NeoData?.environment}
                     </td>
                     <td className="px-6 py-3 whitespace-nowrap text-[#32363A]  border-gray-200">
                       {tenant?.CFdata?.name}
@@ -155,20 +160,13 @@ const Table = ({
             className="border-t text-[#32363A] flex flex-row items-center justify-end gap-2 py-4 h-[60px]"
             style={{ position: "fixed", bottom: 50, left: 0, right: 0 }}
           >
-            <Link to="/migrationAssessment">
-            <button
-              className="hover:bg-[#0A6ED1] text-[#0A6ED1] text-sm rounded-sm px-3 py-1 border border-[#0A6ED1] hover:text-white transition duration-200 "
-              onClick={handleAddAgent}
-            > Readiness Check
-            </button>
-            </Link>
             <button
               className="hover:bg-[#0A6ED1] text-[#0A6ED1] text-sm rounded-sm px-3 py-1 border border-[#0A6ED1] hover:text-white transition duration-200 "
               onClick={handleAddAgent}
             >
               Add System
             </button>
-            <Link to="/Migrate">
+            <Link to="/neomigration">
               <button
                 className={`bg-[#0A6ED1] border border-[#0A6ED1] rounded-sm px-6 py-1  transition duration-200 text-sm ${
                   !agentSelected

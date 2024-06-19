@@ -51,7 +51,7 @@ const DetailsTable = ({ icoDetails, setIcoDetails }) => {
   return (
     <div className="overflow-x-auto p-3 text-sm">
       <table className="table-auto w-full text-[#32363A]">
-        <thead className="bg-[#F2F2F2]">
+        <thead className="bg-gray-50">
           <tr>
             <th className="border border-gray-200 px-2 py-2 text-center w-[5%]">
               No.

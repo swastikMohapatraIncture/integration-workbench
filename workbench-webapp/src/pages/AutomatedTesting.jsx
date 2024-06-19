@@ -59,7 +59,7 @@ const ReportModal = ({ setReportModal, reportPayload, resetForm }) => {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "payload_comparion.xlsx";
+      a.download = "migration_report.xlsx";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
