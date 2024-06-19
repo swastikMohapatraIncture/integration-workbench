@@ -112,7 +112,11 @@ const SideBar = () => {
           >
             <ListItemButton
               sx={
-                isActiveRoute(["/migrationProcess", "/Migrate"])
+                isActiveRoute([
+                  "/migrationProcess",
+                  "/Migrate",
+                  "/neomigration",
+                ])
                   ? styles?.selectedItem
                   : styles?.listItem
               }

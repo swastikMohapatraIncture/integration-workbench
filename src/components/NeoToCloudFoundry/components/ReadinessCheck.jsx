@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import ReadinessCheckMainPage from "../pages/ReadinessCheckMainPage";
 import { readinessCheck } from "../../../apis/apiServiceNeo";
 
-const ReadinessCheck = () => {
+const ReadinessCheck = ({ setDisableNext }) => {
   const [isCheckStarted, setIsCheckStarted] = useState(false);
 
   const readinessCheckHandler = () => {
@@ -14,7 +14,7 @@ const ReadinessCheck = () => {
   return (
     <>
       {isCheckStarted ? (
-        <ReadinessCheckMainPage />
+        <ReadinessCheckMainPage setDisableNext={setDisableNext} />
       ) : (
         <div className="bg-[#EBf5FF] p-5 rounded">
           <h3 className="text-xl font-bold mb-4 text-[#2A4862]">
