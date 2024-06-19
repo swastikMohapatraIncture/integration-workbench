@@ -80,9 +80,6 @@ const MigrationAssessment = ({ renderTab }) => {
       >
         <WorkInProg />
       </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        <ReadinessCheck />
-      </CustomTabPanel>
       {/* <CustomTabPanel value={value} index={2}>
         Item Three
       </CustomTabPanel> */}

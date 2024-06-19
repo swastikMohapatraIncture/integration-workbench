@@ -1,5 +1,4 @@
 import axios from "axios";
-import { json } from "react-router-dom";
 
 if (!localStorage.getItem("pkgNotMigrate")) {
   localStorage.setItem("pkgNotMigrate", JSON.stringify([]));
@@ -26,15 +25,6 @@ export const postApi = async (apiURL, toPostData) => {
     return null;
   }
 };
-export const getApi = async (apiURL, params = {}) => {
-  try {
-    const res = await axios.get(apiURL, { params });
-    return res.data;
-  } catch (e) {
-    console.error("Error fetching data:", e);
-    return null;
-  }
-};
 
 export const postNEOConnection = async (
   formData,
@@ -43,7 +33,7 @@ export const postNEOConnection = async (
   setConnectionMessage
 ) => {
   try {
-    // Step 1: Get Access Token
+    // Get Access Token
     console.log(formData);
     const tokenResponse = await fetch(
       "http://localhost:8082/api/v1/migration/get/source/access/token",
@@ -414,6 +404,8 @@ export const GetPackages = async () => {
     );
 
     console.log(fetchToken);
+    const tokenParsed = await fetchToken.text();
+    console.log(tokenParsed);
     if (fetchToken && fetchToken.ok === true) {
       const fetchPackagesRaw = await fetch(
         "http://localhost:8082/api/v1/migration/Get/Custom/Packages",
@@ -759,5 +751,302 @@ export const fetchCertificates = async () => {
   } catch (error) {
     console.error("Error fetching certificates:", error);
     return [];
+  }
+};
+
+export const fetchNumberRanges = async (setNumberRanges) => {
+  try {
+    const response = await fetch(
+      "http://localhost:8082/api/v1/migration/Get/NumberRanges"
+    );
+    const data = await response.json();
+    setNumberRanges(data.d.results);
+  } catch (error) {
+    console.error("Error fetching number ranges:", error);
+  }
+};
+
+export const postNumberRanges = async (
+  selectedNumberRange,
+  setNotification
+) => {
+  try {
+    const response = await fetch(
+      `http://localhost:8082/api/v1/migration/Upload/NumberRanges?NumberRangeName=${selectedNumberRange.Name}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setNotification({
+        open: true,
+        message: "Number range uploaded successfully",
+        severity: "success",
+      });
+    } else {
+      setNotification({
+        open: true,
+        message: data.message,
+        severity: "error",
+      });
+    }
+  } catch (error) {
+    console.error("Error uploading number range:", error);
+    setNotification({
+      open: true,
+      message: "An error occurred while uploading the number range",
+      severity: "error",
+    });
+  }
+};
+
+export const fetchVariables = async (setVariables) => {
+  try {
+    const response = await fetch(
+      "http://localhost:8082/api/v1/migration/get/variables"
+    );
+    const data = await response.json();
+    setVariables(data.d.results);
+  } catch (error) {
+    console.error("Error fetching variables:", error);
+  }
+};
+
+export const postVariables = async (selectedVariable, setNotification) => {
+  const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
+
+  const fetchSourceToken = await fetch(
+    "http://localhost:8082/api/v1/migration/get/source/access/token",
+    {
+      method: "POST",
+      body: JSON.stringify({ formData: currNeoAgent.NeoData }),
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+
+  console.log(fetchSourceToken);
+  const sourceToken = await fetchSourceToken.text();
+  console.log(sourceToken);
+
+  try {
+    if (fetchSourceToken && fetchSourceToken.ok === true) {
+      try {
+        const uploadVariable = await fetch(
+          `http://localhost:8082/api/v1/migration/upload/variables?VariableName=${selectedVariable.VariableName}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const uploadedVariable = await uploadVariable.json();
+
+        // Checking if the name of DataStore is in CF Tenant
+        const getvariablesCf = await fetch(
+          `http://localhost:8082/api/v1/migration/get/target/variables`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const variablesCf = await getvariablesCf.json();
+        const variablesInCf = variablesCf.d.results.map(
+          (result) => result.VariableName
+        );
+        console.log(`All the Variables in CF`, variablesInCf);
+
+        if (variablesInCf.includes(selectedVariable.VariableName)) {
+          setNotification({
+            open: true,
+            message: "Variable uploaded successfully",
+            severity: "success",
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: uploadedVariable.message,
+            severity: "error",
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading variable:", error);
+        setNotification({
+          open: true,
+          message: "An error occurred while uploading the variable",
+          severity: "error",
+        });
+      }
+    } else {
+      throw new Error("Source Token fetching not successful");
+    }
+  } catch (error) {
+    console.error("Error fetching source token:", error);
+    setNotification({
+      open: true,
+      message: `An error occurred while uploading the variable`,
+      severity: "error",
+    });
+  }
+};
+
+export const fetchDataStores = async (setDataStores) => {
+  try {
+    const response = await fetch(
+      "http://localhost:8082/api/v1/migration/get/datastores"
+    );
+
+    const data = await response.json();
+    setDataStores(data.d.results);
+  } catch (error) {
+    console.error("Error fetching data stores:", error);
+  }
+};
+
+export const postDataStore = async (selectedDataStore, setNotification) => {
+  const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
+
+  const fetchSourceToken = await fetch(
+    "http://localhost:8082/api/v1/migration/get/source/access/token",
+    {
+      method: "POST",
+      body: JSON.stringify({ formData: currNeoAgent.NeoData }),
+      headers: { "Content-Type": "application/json" },
+    }
+  );
+
+  console.log(fetchSourceToken);
+  const sourceToken = await fetchSourceToken.text();
+  console.log(sourceToken);
+
+  try {
+    if (fetchSourceToken && fetchSourceToken.ok === true) {
+      try {
+        const getDataStoreIds = await fetch(
+          `http://localhost:8082/api/v1/migration/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const dataStoresIds = await getDataStoreIds.json();
+        console.log(
+          `Data Store ${selectedDataStore.DataStoreName} Id: `,
+          dataStoresIds
+        );
+        const dataStoreId = dataStoresIds.d.results[0].Id;
+
+        const uploadDataStore = await fetch(
+          `http://localhost:8082/api/v1/migration/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("Uploading res raw - ", uploadDataStore);
+        const uploadedDataStore = await uploadDataStore.json();
+        console.log("Data Store Uploaded: ", uploadedDataStore);
+
+        // Checking if the name of DataStore is in CF Tenant
+        const getDataStoresCf = await fetch(
+          `http://localhost:8082/api/v1/migration/get/target/datastores`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        const dataStoresCf = await getDataStoresCf.json();
+        const dataStoreInCf = dataStoresCf.d.results.map(
+          (result) => result.DataStoreName
+        );
+        console.log(`All the DataStores in CF`, dataStoreInCf);
+
+        if (dataStoreInCf.includes(selectedDataStore.DataStoreName)) {
+          setNotification({
+            open: true,
+            message: "Data store uploaded successfully",
+            severity: "success",
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: uploadedDataStore.message,
+            severity: "error",
+          });
+        }
+      } catch (error) {
+        console.error("Error uploading data store:", error);
+        setNotification({
+          open: true,
+          message: "An error occurred while uploading the data store",
+          severity: "error",
+        });
+      }
+    } else {
+      throw new Error("Source Token fetching not successful");
+    }
+  } catch (error) {
+    console.error("Error fetching source token:", error);
+    setNotification({
+      open: true,
+      message: `An error occurred while uploading DataStore`,
+      severity: "error",
+    });
+  }
+};
+
+export const postCustomTags = async (setNotification) => {
+  try {
+    const postCustomTags = await fetch(
+      `http://localhost:8082/api/v1/migration/Upload/CustomTags`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+
+    console.log("post custom TAGS Response - ", postCustomTags);
+
+    const postCustomTagsResponse = await postCustomTags.json();
+    console.log("postCustomTagsResponse Res - :", postCustomTagsResponse);
+
+    if (postCustomTags.ok) {
+      setNotification({
+        open: true,
+        message: "Custom Tags Migrated",
+        severity: "success",
+      });
+    } else {
+      setNotification({
+        open: true,
+        message: postCustomTagsResponse.message,
+        severity: "error",
+      });
+    }
+  } catch (error) {
+    console.error("Error calling API:", error);
+    setNotification({
+      open: true,
+      message: "An error occurred while calling the API",
+      severity: "error",
+    });
   }
 };

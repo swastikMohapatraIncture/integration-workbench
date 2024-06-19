@@ -35,7 +35,7 @@ const TenantModal = ({
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
     setCompletedSteps([...completedSteps, activeStep]);
     // Set this true for validation to work !!
-    // setDisableNext(true);
+    setDisableNext(true);
   };
 
   const handleBack = () => {

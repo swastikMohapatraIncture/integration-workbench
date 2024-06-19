@@ -166,19 +166,6 @@ const Table = ({
             >
               Add System
             </button>
-            <Link to="/migrationAssessment/neo">
-              <button
-                className={`hover:bg-[#0A6ED1] text-[#0A6ED1] text-sm rounded-sm px-3 py-1 border border-[#0A6ED1] hover:text-white transition duration-200 
-               ${
-                 !currData
-                   ? " bg-[#0A6ED1] opacity-50 text-white cursor-not-allowed"
-                   : "bg-[#0A6ED1] text-white"
-               }`}
-                disabled={!currData}
-              >
-                Readiness Check
-              </button>
-            </Link>
             <Link to="/neomigration">
               <button
                 className={`bg-[#0A6ED1] border border-[#0A6ED1] rounded-sm px-6 py-1  transition duration-200 text-sm ${
@@ -187,7 +174,6 @@ const Table = ({
                     : "bg-[#0A6ED1] text-white"
                 } mr-3`}
                 disabled={!agentSelected}
-                
               >
                 Next
               </button>

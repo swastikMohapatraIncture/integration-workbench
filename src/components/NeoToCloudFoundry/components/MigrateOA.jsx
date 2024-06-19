@@ -2,6 +2,15 @@ import React, { useState, useEffect } from "react";
 import { TextField, Autocomplete, Button, Box, Alert } from "@mui/material";
 import { Link } from "react-router-dom";
 import Loader from "../../Loader";
+import {
+  fetchDataStores,
+  fetchNumberRanges,
+  fetchVariables,
+  postCustomTags,
+  postDataStore,
+  postNumberRanges,
+  postVariables,
+} from "../../../apis/apiServiceNeo";
 
 const MigrateOA = () => {
   const [numberRanges, setNumberRanges] = useState([]);
@@ -24,228 +33,40 @@ const MigrateOA = () => {
   const [customTagsCheckbox, setCustomTagsCheckbox] = useState(false);
 
   useEffect(() => {
-    const fetchNumberRanges = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8082/api/v1/migration/Get/NumberRanges"
-        );
-        const data = await response.json();
-        setNumberRanges(data.d.results);
-      } catch (error) {
-        console.error("Error fetching number ranges:", error);
-      }
-    };
-
-    const fetchVariables = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8082/api/v1/migration/get/variables"
-        );
-        const data = await response.json();
-        setVariables(data.d.results);
-      } catch (error) {
-        console.error("Error fetching variables:", error);
-      }
-    };
-
-    const fetchDataStores = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8082/api/v1/migration/get/datastores"
-        );
-
-        const data = await response.json();
-        setDataStores(data.d.results);
-      } catch (error) {
-        console.error("Error fetching data stores:", error);
-      }
-    };
-
-    fetchNumberRanges();
-    fetchVariables();
-    fetchDataStores();
+    fetchNumberRanges(setNumberRanges);
+    fetchVariables(setVariables);
+    fetchDataStores(setDataStores);
   }, []);
 
   const handleSubmit = async () => {
-    if (selectedNumberRange) {
+    setLoading(true);
+    try {
+      const promises = [];
+
       // Handle number range submission
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `http://localhost:8082/api/v1/migration/Upload/NumberRanges?NumberRangeName=${selectedNumberRange.Name}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setNotification({
-            open: true,
-            message: "Number range uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: data.message,
-            severity: "error",
-          });
-        }
-      } catch (error) {
-        console.error("Error uploading number range:", error);
-        setNotification({
-          open: true,
-          message: "An error occurred while uploading the number range",
-          severity: "error",
-        });
-      } finally {
-        setLoading(false);
+      if (selectedNumberRange) {
+        promises.push(postNumberRanges(selectedNumberRange, setNotification));
       }
-    }
 
-    if (selectedVariable) {
       // Handle variable submission
-      try {
-        setLoading(true);
-        const response = await fetch(
-          `http://localhost:8082/api/v1/migration/upload/variables?VariableName=${selectedVariable.VariableName}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        if (response.ok) {
-          setNotification({
-            open: true,
-            message: "Variable uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: "Variable already exists",
-            severity: "error",
-          });
-        }
-      } catch (error) {
-        console.error("Error uploading variable:", error);
-        setNotification({
-          open: true,
-          message: "An error occurred while uploading the variable",
-          severity: "error",
-        });
-      } finally {
-        setLoading(false);
+      if (selectedVariable) {
+        promises.push(postVariables(selectedVariable, setNotification));
       }
-    }
 
-    if (selectedDataStore) {
       // Handle data store submission
-      try {
-        setLoading(true);
-        const getDataStoreIds = await fetch(
-          `http://localhost:8082/api/v1/migration/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const dataStoresIds = await getDataStoreIds.json();
-        console.log(
-          `Data Store ${selectedDataStore.DataStoreName} Id: `,
-          dataStoresIds
-        );
-        const dataStoreId = dataStoresIds.d.results.Id;
-
-        const uploadDataStore = await fetch(
-          `http://localhost:8082/api/v1/migration/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        console.log("Uploading res raw - ", uploadDataStore);
-        const uploadedDataStore = await uploadDataStore.json();
-        console.log("Data Store Uploaded: ", uploadedDataStore);
-
-        if (uploadDataStore.ok) {
-          setNotification({
-            open: true,
-            message: "Data store uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: "Data store already exists",
-            severity: "error",
-          });
-        }
-      } catch (error) {
-        console.error("Error uploading data store:", error);
-        setNotification({
-          open: true,
-          message: "An error occurred while uploading the data store",
-          severity: "error",
-        });
-      } finally {
-        setLoading(false);
+      if (selectedDataStore) {
+        promises.push(postDataStore(selectedDataStore, setNotification));
       }
-    }
 
-    // Handle Customtags API call
-    if (customTagsCheckbox) {
-      try {
-        setLoading(true);
-        const postCustomTags = await fetch(
-          `http://localhost:8082/api/v1/migration/Upload/CustomTags`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-          }
-        );
-
-        console.log("post custom TAGS Response - ", postCustomTags);
-
-        const postCustomTagsResponse = await postCustomTags.json();
-        console.log("postCustomTagsResponse Res - :", postCustomTagsResponse);
-
-        if (postCustomTags.ok) {
-          setNotification({
-            open: true,
-            message: "Custom Tags Migrated",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: postCustomTagsResponse.message,
-            severity: "error",
-          });
-        }
-      } catch (error) {
-        console.error("Error calling API:", error);
-        setNotification({
-          open: true,
-          message: "An error occurred while calling the API",
-          severity: "error",
-        });
-      } finally {
-        setLoading(false);
+      // Handle Customtags API call
+      if (customTagsCheckbox) {
+        promises.push(postCustomTags(setNotification));
       }
+
+      // Execute all promises concurrently
+      await Promise.all(promises);
+    } finally {
+      setLoading(false);
     }
   };
 
