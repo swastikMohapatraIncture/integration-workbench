@@ -94,83 +94,109 @@ const MigrateSA = () => {
     try {
       // Post user credentials
       if (userPayload) {
-        const userResponse = await fetch(
-          "http://localhost:8082/api/v1/migration/Upload/UserCredentials",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(userPayload),
+        try {
+          const userResponse = await fetch(
+            "http://localhost:8082/api/v1/migration/Upload/UserCredentials",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(userPayload),
+            }
+          );
+    
+          if (userResponse.ok) {
+            setNotification({
+              open: true,
+              message: "User credentials uploaded successfully",
+              severity: "success",
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: "User credentials with the same name already exist",
+              severity: "error",
+            });
           }
-        );
-
-        if (userResponse.ok) {
+        } catch (error) {
           setNotification({
             open: true,
-            message: "User credentials uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: "User credentials with the same name already exist",
+            message: "Error uploading user credentials",
             severity: "error",
           });
         }
       }
-
+    
       // Post OAuth credentials
       for (const oauthPayload of oauthPayloads) {
-        const oauthResponse = await fetch(
-          "http://localhost:8082/api/v1/migration/Upload/OAuthCredentials",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(oauthPayload),
+        try {
+          const oauthResponse = await fetch(
+            "http://localhost:8082/api/v1/migration/Upload/OAuthCredentials",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(oauthPayload),
+            }
+          );
+          const res = await oauthResponse.json();
+    
+          if (oauthResponse.ok) {
+            setNotification({
+              open: true,
+              message: "OAuth credentials uploaded successfully",
+              severity: "success",
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: res.message,
+              severity: "error",
+            });
           }
-        );
-
-        if (oauthResponse.ok) {
+        } catch (error) {
           setNotification({
             open: true,
-            message: "OAuth credentials uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: "OAuth Cedentials with same name already exists",
+            message: "Error uploading OAuth credentials",
             severity: "error",
           });
         }
       }
-
-      if (selectedCertificates) {
-        const certificateHexalias = selectedCertificates[0].id;
-
-        const certResponse = await fetch(
-          `http://localhost:8082/api/v1/migration/Upload/customPublicCertificates?certificateHexalias=${certificateHexalias}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+    
+      // Post certificates
+      if (selectedCertificates && selectedCertificates.length > 0) {
+        try {
+          const certificateHexalias = selectedCertificates[0].id;
+    
+          const certResponse = await fetch(
+            `http://localhost:8082/api/v1/migration/Upload/customPublicCertificates?certificateHexalias=${certificateHexalias}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log(certResponse);
+          if (certResponse.ok) {
+            setNotification({
+              open: true,
+              message: "Certificate uploaded successfully",
+              severity: "success",
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: "Certificate with the same name already exists",
+              severity: "error",
+            });
           }
-        );
-        console.log(certResponse);
-        if (certResponse.ok) {
+        } catch (error) {
           setNotification({
             open: true,
-            message: "Certificate uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: "Certificate with the same name already exists",
+            message: "Error uploading certificate",
             severity: "error",
           });
         }
@@ -178,12 +204,13 @@ const MigrateSA = () => {
     } catch (error) {
       setNotification({
         open: true,
-        message: "Error uploading credentials",
+        message: "Unexpected error during upload",
         severity: "error",
       });
     } finally {
       setLoading(false);
     }
+    
 
     setTimeout(() => {
       setNotification({ ...notification, open: false });
@@ -201,7 +228,7 @@ const MigrateSA = () => {
 
   const handleOpenModal = async () => {
     setLoading(true);
-    setModalOpen(true);
+    
     try {
       const response = await fetch(
         "http://localhost:8082/api/v1/migration/Get/Target/OAuthCredentials"
@@ -232,6 +259,7 @@ const MigrateSA = () => {
       });
     } finally {
       setLoading(false);
+      setModalOpen(true);
     }
   };
 
@@ -241,7 +269,14 @@ const MigrateSA = () => {
 
   return (
     <>
+    <div
+          style={{
+            position: "relative",
+            filter: loading ? "blur(5px)" : "none",
+          }}
+        >
       <div className="m-4 space-y-8 mb-5">
+        
         <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
           User Credentials
         </h4>
@@ -412,6 +447,7 @@ const MigrateSA = () => {
           )}
         </div>
       </div>
+      </div>  
       {loading && (
         <Box
           display="flex"

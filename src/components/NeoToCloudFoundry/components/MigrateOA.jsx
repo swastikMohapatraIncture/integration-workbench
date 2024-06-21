@@ -106,6 +106,7 @@ const MigrateOA = () => {
           </h4>
 
           <Autocomplete
+         
             options={numberRanges}
             getOptionLabel={(option) => option.Name}
             onChange={(event, value) => setSelectedNumberRange(value)}
@@ -209,6 +210,7 @@ const MigrateOA = () => {
             </h4>
 
             <Autocomplete
+              multiple
               options={dataStores}
               getOptionLabel={(option) => option.DataStoreName}
               onChange={(event, value) => setSelectedDataStore(value)}

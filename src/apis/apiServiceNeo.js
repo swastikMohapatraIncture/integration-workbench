@@ -450,7 +450,8 @@ export const GetPackages = async () => {
 
 export const PostPackages = async (
   selectedPrePackages,
-  selectedCustomPackages
+  selectedCustomPackages,
+  setNotification
 ) => {
   let successful = false;
   console.log(
@@ -520,6 +521,11 @@ export const PostPackages = async (
             const postCustomPackage = await postCustomPackageRaw.json();
             console.log("postCustomPackage Res - :", postCustomPackage);
             if (postCustomPackage.statusCodeValue !== 200) {
+              setNotification({
+                open: true,
+                message: postCustomPackage.body.message,
+                severity: "error",
+              });
               throw new Error(
                 `Failed to create Custom-Package ${pkg.value} message: ${postCustomPackage.body.message}`
               );
@@ -529,6 +535,11 @@ export const PostPackages = async (
               );
               await GetArtifacts(pkg.value);
               await configureValueMappings(pkg.value);
+              setNotification({
+                open: true,
+                message: "Migration completed successfully!",
+                severity: "success",
+              });
               successful = true;
             }
           } catch (error) {
@@ -577,6 +588,8 @@ export const GetArtifacts = async (pkgId) => {
     console.log("getArtifactsRaw Res - :", getArtifactsRaw);
     const getArtifacts = await getArtifactsRaw.json();
     console.log("Iflow's fetched: ", getArtifacts);
+
+
 
     let artifactConfigured = 0;
     let artifactNotConfigured = 0;

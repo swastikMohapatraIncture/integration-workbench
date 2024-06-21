@@ -43,22 +43,23 @@ const MigrateIP = ({ prepackages, custompackages }) => {
     try {
       const postPack = await PostPackages(
         selectedPrePackages,
-        selectedCustomPackages
+        selectedCustomPackages,
+        setNotification
       );
       console.log("Post Package value: ", postPack);
-      if (postPack) {
-        setNotification({
-          open: true,
-          message: "Migration completed successfully!",
-          severity: "success",
-        });
-      } else {
-        setNotification({
-          open: true,
-          message: "Migration failed. Please check the console for details.",
-          severity: "error",
-        });
-      }
+      // if (postPack) {
+      //   setNotification({
+      //     open: true,
+      //     message: "Migration completed successfully!",
+      //     severity: "success",
+      //   });
+      // } else {
+      //   setNotification({
+      //     open: true,
+      //     message: "Migration failed. Please check the console for details.",
+      //     severity: "error",
+      //   });
+      // }
     } catch (error) {
       setNotification({
         open: true,
