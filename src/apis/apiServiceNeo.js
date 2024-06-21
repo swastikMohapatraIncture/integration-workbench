@@ -489,13 +489,23 @@ export const PostPackages = async (
             console.log(postPrePackage);
 
             if (postPrePackage.statusCodeValue !== 200) {
+              setNotification({
+                open: true,
+                message: postPrePackage.body.message,
+                severity: "error",
+              });
               throw new Error(
                 `Failed to create Pre-Package ${pkg.value} message: ${postPrePackage.body.message}`
               );
             } else {
               console.log(`PRE PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`);
-              // add the pkg in a variable or local store
               await GetArtifacts(pkg.value);
+              await configureValueMappings(pkg.value);
+              setNotification({
+                open: true,
+                message: "Migration completed successfully!",
+                severity: "success",
+              });
               successful = true;
             }
           } catch (error) {
@@ -588,8 +598,6 @@ export const GetArtifacts = async (pkgId) => {
     console.log("getArtifactsRaw Res - :", getArtifactsRaw);
     const getArtifacts = await getArtifactsRaw.json();
     console.log("Iflow's fetched: ", getArtifacts);
-
-
 
     let artifactConfigured = 0;
     let artifactNotConfigured = 0;
@@ -780,42 +788,44 @@ export const fetchNumberRanges = async (setNumberRanges) => {
 };
 
 export const postNumberRanges = async (
-  selectedNumberRange,
+  selectedNumberRanges,
   setNotification
 ) => {
-  try {
-    const response = await fetch(
-      `http://localhost:8082/api/v1/migration/Upload/NumberRanges?NumberRangeName=${selectedNumberRange.Name}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+  for (let selectedNumberRange of selectedNumberRanges) {
+    try {
+      const response = await fetch(
+        `http://localhost:8082/api/v1/migration/Upload/NumberRanges?NumberRangeName=${selectedNumberRange.Name}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setNotification({
+          open: true,
+          message: `Number range ${selectedNumberRange.Name} uploaded successfully`,
+          severity: "success",
+        });
+      } else {
+        setNotification({
+          open: true,
+          message: data.message,
+          severity: "error",
+        });
       }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
+    } catch (error) {
+      console.error("Error uploading number range:", error);
       setNotification({
         open: true,
-        message: "Number range uploaded successfully",
-        severity: "success",
-      });
-    } else {
-      setNotification({
-        open: true,
-        message: data.message,
+        message: "An error occurred while uploading the number range",
         severity: "error",
       });
     }
-  } catch (error) {
-    console.error("Error uploading number range:", error);
-    setNotification({
-      open: true,
-      message: "An error occurred while uploading the number range",
-      severity: "error",
-    });
   }
 };
 
@@ -831,7 +841,7 @@ export const fetchVariables = async (setVariables) => {
   }
 };
 
-export const postVariables = async (selectedVariable, setNotification) => {
+export const postVariables = async (selectedVariables, setNotification) => {
   const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
 
   const fetchSourceToken = await fetch(
@@ -849,56 +859,62 @@ export const postVariables = async (selectedVariable, setNotification) => {
 
   try {
     if (fetchSourceToken && fetchSourceToken.ok === true) {
-      try {
-        const uploadVariable = await fetch(
-          `http://localhost:8082/api/v1/migration/upload/variables?VariableName=${selectedVariable.VariableName}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+      for (let selectedVariable of selectedVariables) {
+        try {
+          const uploadVariable = await fetch(
+            `http://localhost:8082/api/v1/migration/upload/variables?VariableName=${selectedVariable.VariableName}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log(uploadVariable);
+
+          const uploadedVariable = await uploadVariable.json();
+
+          // Checking if the name of DataStore is in CF Tenant
+          const getvariablesCf = await fetch(
+            `http://localhost:8082/api/v1/migration/get/target/variables`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const variablesCf = await getvariablesCf.json();
+          const variablesInCf = variablesCf.d.results.map(
+            (result) => result.VariableName
+          );
+          console.log(`All the Variables in CF`, variablesInCf);
+
+          if (
+            variablesInCf.includes(selectedVariable.VariableName) &&
+            uploadVariable.ok
+          ) {
+            setNotification({
+              open: true,
+              message: `Variable ${selectedVariable.VariableName} uploaded successfully`,
+              severity: "success",
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: uploadedVariable.message,
+              severity: "error",
+            });
           }
-        );
-
-        const uploadedVariable = await uploadVariable.json();
-
-        // Checking if the name of DataStore is in CF Tenant
-        const getvariablesCf = await fetch(
-          `http://localhost:8082/api/v1/migration/get/target/variables`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const variablesCf = await getvariablesCf.json();
-        const variablesInCf = variablesCf.d.results.map(
-          (result) => result.VariableName
-        );
-        console.log(`All the Variables in CF`, variablesInCf);
-
-        if (variablesInCf.includes(selectedVariable.VariableName)) {
+        } catch (error) {
+          console.error("Error uploading variable:", error);
           setNotification({
             open: true,
-            message: "Variable uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: uploadedVariable.message,
+            message: "An error occurred while uploading the variable",
             severity: "error",
           });
         }
-      } catch (error) {
-        console.error("Error uploading variable:", error);
-        setNotification({
-          open: true,
-          message: "An error occurred while uploading the variable",
-          severity: "error",
-        });
       }
     } else {
       throw new Error("Source Token fetching not successful");
@@ -907,7 +923,7 @@ export const postVariables = async (selectedVariable, setNotification) => {
     console.error("Error fetching source token:", error);
     setNotification({
       open: true,
-      message: `An error occurred while uploading the variable`,
+      message: `Error Fetching soruce token`,
       severity: "error",
     });
   }
@@ -926,7 +942,7 @@ export const fetchDataStores = async (setDataStores) => {
   }
 };
 
-export const postDataStore = async (selectedDataStore, setNotification) => {
+export const postDataStore = async (selectedDataStores, setNotification) => {
   const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
 
   const fetchSourceToken = await fetch(
@@ -944,74 +960,79 @@ export const postDataStore = async (selectedDataStore, setNotification) => {
 
   try {
     if (fetchSourceToken && fetchSourceToken.ok === true) {
-      try {
-        const getDataStoreIds = await fetch(
-          `http://localhost:8082/api/v1/migration/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
+      for (let selectedDataStore of selectedDataStores) {
+        try {
+          const getDataStoreIds = await fetch(
+            `http://localhost:8082/api/v1/migration/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const dataStoresIds = await getDataStoreIds.json();
+          console.log(
+            `Data Store ${selectedDataStore.DataStoreName} Id: `,
+            dataStoresIds
+          );
+          const dataStoreId = dataStoresIds.d.results[0].Id;
+
+          const uploadDataStore = await fetch(
+            `http://localhost:8082/api/v1/migration/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          console.log("Uploading res raw - ", uploadDataStore);
+          const uploadedDataStore = await uploadDataStore.json();
+          console.log("Data Store Uploaded: ", uploadedDataStore);
+
+          // Checking if the name of DataStore is in CF Tenant
+          const getDataStoresCf = await fetch(
+            `http://localhost:8082/api/v1/migration/get/target/datastores`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const dataStoresCf = await getDataStoresCf.json();
+          const dataStoreInCf = dataStoresCf.d.results.map(
+            (result) => result.DataStoreName
+          );
+          console.log(`All the DataStores in CF`, dataStoreInCf);
+
+          if (
+            dataStoreInCf.includes(selectedDataStore.DataStoreName) &&
+            uploadDataStore.ok
+          ) {
+            setNotification({
+              open: true,
+              message: "Data store uploaded successfully",
+              severity: "success",
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: uploadedDataStore.message,
+              severity: "error",
+            });
           }
-        );
-        const dataStoresIds = await getDataStoreIds.json();
-        console.log(
-          `Data Store ${selectedDataStore.DataStoreName} Id: `,
-          dataStoresIds
-        );
-        const dataStoreId = dataStoresIds.d.results[0].Id;
-
-        const uploadDataStore = await fetch(
-          `http://localhost:8082/api/v1/migration/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        console.log("Uploading res raw - ", uploadDataStore);
-        const uploadedDataStore = await uploadDataStore.json();
-        console.log("Data Store Uploaded: ", uploadedDataStore);
-
-        // Checking if the name of DataStore is in CF Tenant
-        const getDataStoresCf = await fetch(
-          `http://localhost:8082/api/v1/migration/get/target/datastores`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const dataStoresCf = await getDataStoresCf.json();
-        const dataStoreInCf = dataStoresCf.d.results.map(
-          (result) => result.DataStoreName
-        );
-        console.log(`All the DataStores in CF`, dataStoreInCf);
-
-        if (dataStoreInCf.includes(selectedDataStore.DataStoreName)) {
+        } catch (error) {
+          console.error("Error uploading data store:", error);
           setNotification({
             open: true,
-            message: "Data store uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: uploadedDataStore.message,
+            message: "An error occurred while uploading the data store",
             severity: "error",
           });
         }
-      } catch (error) {
-        console.error("Error uploading data store:", error);
-        setNotification({
-          open: true,
-          message: "An error occurred while uploading the data store",
-          severity: "error",
-        });
       }
     } else {
       throw new Error("Source Token fetching not successful");
