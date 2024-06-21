@@ -13,6 +13,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Checkbox, ListItemText ,Popper
 } from "@mui/material";
 import {
   fetchUserCredentials,
@@ -20,11 +21,12 @@ import {
   fetchCertificates,
 } from "../../../apis/apiServiceNeo"; // Import your fetch functions
 import Loader from "../../Loader";
+import { CheckBoxOutlineBlank, CheckBox } from '@mui/icons-material';
 
 const MigrateSA = () => {
   const [userOptions, setUserOptions] = useState([]);
   const [oauthOptions, setOAuthOptions] = useState([]);
-  const [selectedUserOption, setSelectedUserOption] = useState(null);
+  const [selectedUserOption, setSelectedUserOption] = useState([]);
   const [selectedOauthOptions, setSelectedOauthOptions] = useState([]);
   const [userCredentials, setuserCredentials] = useState([]);
   const [certificateOptions, setCertificateOptions] = useState([]);
@@ -54,12 +56,12 @@ const MigrateSA = () => {
     };
 
     getCertificates();
-    console.log("SC: ", selectedCertificates);
     loadUserCredentials();
     loadOAuthCredentials();
-  }, [selectedCertificates]);
+  }, []);
 
   const handleSubmit = async () => {
+    console.log(selectedOauthOptions);
     if (
       !selectedUserOption &&
       !selectedOauthOptions.length &&
@@ -269,35 +271,42 @@ const MigrateSA = () => {
 
   return (
     <>
-    <div
-          style={{
-            position: "relative",
-            filter: loading ? "blur(5px)" : "none",
-          }}
-        >
+   <div style={{ position: 'relative', filter: loading ? 'blur(5px)' : 'none' }}>
       <div className="m-4 space-y-8 mb-5">
         
-        <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
+        <h4 className="text-lg font-semibold mb-4" style={{ color: '#2A4862' }}>
           User Credentials
         </h4>
 
         <Autocomplete
+          multiple
+          disableCloseOnSelect
           options={userOptions}
           getOptionLabel={(option) => option.label}
           onChange={(event, value) => setSelectedUserOption(value)}
-          renderInput={(params) => (
-            <TextField {...params} label="User Client Credentials" />
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={<CheckBoxOutlineBlank fontSize="small" />}
+                checkedIcon={<CheckBox fontSize="small" />}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              <ListItemText primary={option.label} />
+            </li>
           )}
-          PopperProps={{
-            className: "mt-4", // Adjust this value as needed
-          }}
+          renderInput={(params) => (
+            <TextField {...params} placeholder="Select User Credentials" />
+          )}
+          value={selectedUserOption}
+          PopperComponent={(popperProps) => (
+            <Popper {...popperProps} placement="bottom-start" className="mt-4" />
+          )}
         />
-        {selectedUserOption && (
+        
+        {selectedUserOption.length > 0 && (
           <div>
-            <h3
-              className="text-lg font-semibold mb-4"
-              style={{ color: "#2A4862" }}
-            >
+            <h3 className="text-lg font-semibold mb-4" style={{ color: '#2A4862' }}>
               Selected User Details:
             </h3>
             <table className="w-full mt-4 border-collapse border border-gray-300">
@@ -305,50 +314,57 @@ const MigrateSA = () => {
                 <tr className="bg-gray-200">
                   <th className="border border-gray-300 px-4 py-2">ID</th>
                   <th className="border border-gray-300 px-4 py-2">Name</th>
-                  <th className="border border-gray-300 px-4 py-2">
-                    Description
-                  </th>
+                  <th className="border border-gray-300 px-4 py-2">Description</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {selectedUserOption.User}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {selectedUserOption.Name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {selectedUserOption.Description}
-                  </td>
-                </tr>
+                {selectedUserOption.map((option, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">{option.User}</td>
+                    <td className="border border-gray-300 px-4 py-2">{option.Name}</td>
+                    <td className="border border-gray-300 px-4 py-2">{option.Description}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
         )}
       </div>
+
       <div className="m-4 space-y-8">
-        <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
+        <h4 className="text-lg font-semibold mb-4" style={{ color: '#2A4862' }}>
           Oauth2 Client Credentials
         </h4>
+
         <Autocomplete
           multiple
+          disableCloseOnSelect
           options={oauthOptions}
           getOptionLabel={(option) => option.label}
           onChange={(event, value) => setSelectedOauthOptions(value)}
-          renderInput={(params) => (
-            <TextField {...params} label="Ouath Client Credentials" />
+          renderOption={(props, option, { selected }) => (
+            <li {...props}>
+              <Checkbox
+                icon={<CheckBoxOutlineBlank fontSize="small" />}
+                checkedIcon={<CheckBox fontSize="small" />}
+                style={{ marginRight: 8 }}
+                checked={selected}
+              />
+              <ListItemText primary={option.label} />
+            </li>
           )}
-          PopperProps={{
-            className: "mt-4", // Adjust this value as needed
-          }}
+          renderInput={(params) => (
+            <TextField {...params} placeholder="Select Oauth2 Client Credentials" />
+          )}
+          value={selectedOauthOptions}
+          PopperComponent={(popperProps) => (
+            <Popper {...popperProps} placement="bottom-start" className="mt-4" />
+          )}
         />
+
         {selectedOauthOptions.length > 0 && (
           <div>
-            <h3
-              className="text-lg font-semibold mb-4"
-              style={{ color: "#2A4862" }}
-            >
+            <h3 className="text-lg font-semibold mb-4" style={{ color: '#2A4862' }}>
               Selected Options Details:
             </h3>
             <table className="w-full mt-4 border-collapse border border-gray-300">
@@ -359,65 +375,65 @@ const MigrateSA = () => {
                 </tr>
               </thead>
               <tbody>
-                {selectedOauthOptions.map((option) => (
-                  <tr key={option.id}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {option.id}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {option.label}
-                    </td>
+                {selectedOauthOptions.map((option, index) => (
+                  <tr key={index}>
+                    <td className="border border-gray-300 px-4 py-2">{option.id}</td>
+                    <td className="border border-gray-300 px-4 py-2">{option.label}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         )}
+
         <div className="">
-          <h4
-            className="text-lg font-semibold mb-4"
-            style={{ color: "#2A4862" }}
-          >
+          <h4 className="text-lg font-semibold mb-4" style={{ color: '#2A4862' }}>
             Custom Certificates
           </h4>
+
           <Autocomplete
             multiple
+            disableCloseOnSelect
             options={certificateOptions}
             getOptionLabel={(option) => option.label}
             onChange={(event, value) => setSelectedCertificates(value)}
-            renderInput={(params) => (
-              <TextField {...params} label="Custom Certificates" />
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={<CheckBoxOutlineBlank fontSize="small" />}
+                  checkedIcon={<CheckBox fontSize="small" />}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                <ListItemText primary={option.label} />
+              </li>
             )}
-            PopperProps={{
-              className: "mt-4", // Adjust this value as needed
-            }}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Select Custom Certificates" />
+            )}
+            value={selectedCertificates}
+            PopperComponent={(popperProps) => (
+              <Popper {...popperProps} placement="bottom-start" className="mt-4" />
+            )}
           />
+
           {selectedCertificates.length > 0 && (
             <div>
-              <h3
-                className="text-lg font-semibold mb-4"
-                style={{ color: "#2A4862" }}
-              >
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#2A4862' }}>
                 Selected Certificates:
               </h3>
               <table className="w-full mt-4 border-collapse border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
                     <th className="border border-gray-300 px-4 py-2">Name</th>
-                    <th className="border border-gray-300 px-4 py-2">
-                      Content
-                    </th>
+                    <th className="border border-gray-300 px-4 py-2">Content</th>
                   </tr>
                 </thead>
                 <tbody>
                   {selectedCertificates.map((cert, index) => (
                     <tr key={index}>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {cert.id}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {cert.label}
-                      </td>
+                      <td className="border border-gray-300 px-4 py-2">{cert.id}</td>
+                      <td className="border border-gray-300 px-4 py-2">{cert.label}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -431,7 +447,7 @@ const MigrateSA = () => {
             variant="contained"
             color="primary"
             onClick={handleOpenModal}
-            style={{ marginRight: "auto" }}
+            style={{ marginRight: 'auto' }}
           >
             Check Uploaded Credentials
           </Button>
@@ -440,14 +456,14 @@ const MigrateSA = () => {
               variant="contained"
               color="primary"
               onClick={handleSubmit}
-              style={{ marginLeft: "auto" }}
+              style={{ marginLeft: 'auto' }}
             >
               Submit
             </Button>
           )}
         </div>
       </div>
-      </div>  
+    </div>
       {loading && (
         <Box
           display="flex"
