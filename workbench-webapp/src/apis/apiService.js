@@ -2,14 +2,24 @@ import axios from "axios";
 import "react-toastify/dist/ReactToastify.css";
 import { toast } from "react-toastify";
 
+let config = () => {
+  let header = {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  };
+  return header;
+};
+
 export const postApi = async (apiURL, toPostData) => {
   try {
-    const res = await axios.post(apiURL, toPostData);
+    const res = await axios.post(apiURL, toPostData, config());
     return res.data;
   } catch (e) {
     return null;
   }
 };
+
+// const apiUrl = "https://integration-workbench.cfapps.eu10-004.hana.ondemand.com/api"
+const apiUrl = "/java_services";
 
 export const postESRConnection = async (
   formData,
@@ -18,14 +28,11 @@ export const postESRConnection = async (
   setConnectionMessage
 ) => {
   await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/esr",
+    `${apiUrl}/v1/migration/configuration/connect/esr`,
     formData
   ).then((data) => {
     if (data && data.status === "Success") {
-      postApi(
-        "http://localhost:8080/api/v1/migration/configuration/connect/id",
-        formData
-      )
+      postApi(`${apiUrl}/v1/migration/configuration/connect/id`, formData)
         .then((data2) => {
           if (data2 && data2.status === "Success") {
             const prevData =
@@ -72,7 +79,7 @@ export const postCPIData = async (
   setConnectionMessage
 ) => {
   await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/is/cpi",
+    `${apiUrl}/v1/migration/configuration/connect/is/cpi`,
     formData
   ).then((data) => {
     try {
@@ -109,7 +116,7 @@ export const postAPIData = async (
   setConnectionMessage
 ) => {
   await postApi(
-    "http://localhost:8080/api/v1/migration/configuration/connect/is/api",
+    `${apiUrl}/v1/migration/configuration/connect/is/api`,
     formData
   ).then((data) => {
     try {
@@ -147,8 +154,9 @@ export const handleIcoList = async (poData) => {
   try {
     const toPostData = poData;
     const response = await axios.post(
-      "http://localhost:8080/api/v1/metadata/get/ico/list",
-      toPostData
+      `${apiUrl}/v1/metadata/get/ico/list`,
+      toPostData,
+      config()
     );
     // console.log(response);
     if (response.data.status === "Success") {
@@ -167,8 +175,9 @@ export const handlePackageList = (cpiData) => {
   const toPostData = cpiData;
   return axios
     .post(
-      "http://localhost:8080/api/v1/migration/designtime/get/package/list",
-      toPostData
+      `${apiUrl}/v1/migration/designtime/get/package/list`,
+      toPostData,
+      config()
     )
     .then((response) => {
       if (response?.data?.status === "Success") {
@@ -188,8 +197,9 @@ export const handleCreatePackage = async (data) => {
   try {
     const toPostData = data;
     const response = await axios.post(
-      "http://localhost:8080/api/v1/migration/designtime/create/package",
-      toPostData
+      `${apiUrl}/v1/migration/designtime/create/package`,
+      toPostData,
+      config()
     );
     if (response?.data?.status === "Success") {
       return response?.data;
@@ -205,7 +215,7 @@ export const handleCreatePackage = async (data) => {
 export const handleIcoDetails = (data) => {
   const toPostData = data;
   return postApi(
-    "http://localhost:8080/api/v1/migration/designtime/get/iflow/details",
+    `${apiUrl}/v1/migration/designtime/get/iflow/details`,
     toPostData
   ).then((response) => {
     const { iflowName, description } = response.payload;
@@ -218,7 +228,7 @@ export const handleExceptionServices = async (data) => {
   try {
     const toPostData = data;
     const response = await postApi(
-      "http://localhost:8080/api/v1/migration/designtime/create/exception/service",
+      `${apiUrl}/v1/migration/designtime/create/exception/service`,
       toPostData
     );
     if (response) {
@@ -236,17 +246,15 @@ export const handleExceptionServices = async (data) => {
 export const handleMigration = async (data, type) => {
   try {
     const toPostData = data;
-    let apiUrl;
+    let apiUrl2;
 
     if (type === "icos") {
-      apiUrl =
-        "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/iflow";
+      apiUrl2 = `${apiUrl}/v1/migration/designtime/migrate/ico/to/iflow`;
     } else {
-      apiUrl =
-        "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm";
+      apiUrl2 = `${apiUrl}/v1/migration/designtime/migrate/ico/to/vm`;
     }
 
-    const response = await postApi(apiUrl, toPostData);
+    const response = await postApi(apiUrl2, toPostData);
     return response;
   } catch (error) {
     console.error("Error during migration:", error);
@@ -254,7 +262,7 @@ export const handleMigration = async (data, type) => {
 };
 
 // export const compareFiles = async (data) => {
-//   await postApi("http://localhost:8081/api/v1/comparison/files", data).then(
+//   await postApi("${apiUrl}/v1/comparison/files", data).then(
 //     (data) => {
 //       if (data?.status == "Success") {
 //         return data?.message;
@@ -280,20 +288,21 @@ export const postFileCompareApi = async (files) => {
 
   // Append files from xmlFile1
   files.xmlFile1.forEach((file) => {
-    formData.append("xmlFile1", file);
+    formData.append("requestFiles", file);
   });
 
   // Append files from xmlFile2
   files.xmlFile2.forEach((file) => {
-    formData.append("xmlFile2", file);
+    formData.append("responseFiles", file);
   });
 
   try {
     const response = await axios.post(
-      "http://localhost:8081/api/v1/comparison/files",
+      `${apiUrl}/v1/comparison/files`,
       formData,
       {
         headers: {
+          ...config().headers,
           "Content-Type": "multipart/form-data",
         },
       }
@@ -309,8 +318,9 @@ export const getIFlows = async (poData) => {
   try {
     const toPostData = poData;
     const response = await axios.post(
-      "http://localhost:8081/api/v1/comparison/get/artifacts/Id",
-      toPostData
+      `${apiUrl}/v1/comparison/get/artifacts/Id`,
+      toPostData,
+      config()
     );
     // console.log(response);
     if (response.data.status === "Success") {
@@ -328,8 +338,9 @@ export const generateReport = async (data) => {
   const toPostData = data;
   try {
     const response = await axios.post(
-      "http://localhost:8081/api/v1/comparison/generate/report",
-      toPostData
+      `${apiUrl}/v1/comparison/generate/report`,
+      toPostData,
+      config()
     );
 
     // Check if the status code is in the range of 200-299 (success)
@@ -349,8 +360,9 @@ export const generateReport = async (data) => {
 export const valueMappingList = async (data) => {
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/v1/metadata/get/vm/list",
-      data
+      `${apiUrl}/v1/metadata/get/vm/list`,
+      data,
+      config()
     );
 
     if (response.data.status === "Success") {
@@ -366,13 +378,14 @@ export const valueMappingList = async (data) => {
 export const migrateValueMapping = async (data) => {
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/v1/migration/designtime/migrate/ico/to/vm",
-      data
+      `${apiUrl}/v1/migration/designtime/migrate/ico/to/vm`,
+      data,
+      config()
     );
-    console.log("status:", response.data.status);
-    if (response?.data?.status === "Success") return response?.data;
 
+    // if(response.data.status === "Success")
     // console.log(response);
+    return response;
   } catch (error) {
     return error.message;
   }

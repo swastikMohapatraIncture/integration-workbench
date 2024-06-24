@@ -39,10 +39,10 @@ const NeoDetails = ({
 
   const requiredFields = [
     "name",
-    "integrationHost",
-    "oauthHost",
-    "oauthClientId",
-    "oauthSecret",
+    "url",
+    "tokenUrl",
+    "clientId",
+    "clientSecret",
     "environment",
   ];
 
@@ -139,8 +139,8 @@ const NeoDetails = ({
             size="small"
             placeholder="Enter Host Name"
             variant="outlined"
-            value={Neodetails?.integrationHost || ""}
-            onChange={(e) => handleChange(e, "integrationHost")}
+            value={Neodetails?.url || ""}
+            onChange={(e) => handleChange(e, "url")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -153,8 +153,8 @@ const NeoDetails = ({
             size="small"
             placeholder="Oauth Host"
             variant="outlined"
-            value={Neodetails?.oauthHost || ""}
-            onChange={(e) => handleChange(e, "oauthHost")}
+            value={Neodetails?.tokenUrl || ""}
+            onChange={(e) => handleChange(e, "tokenUrl")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -167,8 +167,8 @@ const NeoDetails = ({
             size="small"
             placeholder="Oauth Client Id"
             variant="outlined"
-            value={Neodetails?.oauthClientId || ""}
-            onChange={(e) => handleChange(e, "oauthClientId")}
+            value={Neodetails?.clientId || ""}
+            onChange={(e) => handleChange(e, "clientId")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}
@@ -180,8 +180,8 @@ const NeoDetails = ({
             size="small"
             placeholder="Oauth Secret"
             variant="outlined"
-            value={Neodetails?.oauthSecret || ""}
-            onChange={(e) => handleChange(e, "oauthSecret")}
+            value={Neodetails?.clientSecret || ""}
+            onChange={(e) => handleChange(e, "clientSecret")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4", padding: "6px 12px" },
             }}

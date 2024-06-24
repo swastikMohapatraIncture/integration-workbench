@@ -198,8 +198,8 @@ const AutomatedTesting = () => {
 
       const payload = {
         poAgentDTO: poDetails,
-        apiAgent: cpiDetails,
-        cpiAgent: apiDetails,
+        apiAgent: apiDetails,
+        cpiAgent: cpiDetails,
         fileComparePayload,
       };
 

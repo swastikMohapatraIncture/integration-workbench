@@ -13,6 +13,9 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Checkbox,
+  ListItemText,
+  Popper,
 } from "@mui/material";
 import {
   fetchUserCredentials,
@@ -20,11 +23,14 @@ import {
   fetchCertificates,
 } from "../../../apis/apiServiceNeo"; // Import your fetch functions
 import Loader from "../../Loader";
+import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material";
+
+const baseURL = "/java_services/";
 
 const MigrateSA = () => {
   const [userOptions, setUserOptions] = useState([]);
   const [oauthOptions, setOAuthOptions] = useState([]);
-  const [selectedUserOption, setSelectedUserOption] = useState(null);
+  const [selectedUserOption, setSelectedUserOption] = useState([]);
   const [selectedOauthOptions, setSelectedOauthOptions] = useState([]);
   const [userCredentials, setuserCredentials] = useState([]);
   const [certificateOptions, setCertificateOptions] = useState([]);
@@ -54,12 +60,12 @@ const MigrateSA = () => {
     };
 
     getCertificates();
-    console.log("SC: ", selectedCertificates);
     loadUserCredentials();
     loadOAuthCredentials();
-  }, [selectedCertificates]);
+  }, []);
 
   const handleSubmit = async () => {
+    console.log(selectedOauthOptions);
     if (
       !selectedUserOption &&
       !selectedOauthOptions.length &&
@@ -68,17 +74,18 @@ const MigrateSA = () => {
       return;
 
     setLoading(true);
+    console.log(selectedUserOption);
 
-    const userPayload = selectedUserOption
-      ? {
-          User: selectedUserOption.User,
-          Description: selectedUserOption.Description,
-          CompanyId: selectedUserOption.CompanyId,
-          Kind: selectedUserOption.Kind,
-          Name: selectedUserOption.Name,
-          Password: selectedUserOption.Password,
-        }
-      : null;
+    const userPayloads = selectedUserOption.map((option) => ({
+      User: option.User,
+      Description: option.Description,
+      CompanyId: option.CompanyId,
+      Kind: option.Kind,
+      Name: option.Name,
+      Password: option.Password,
+    }));
+
+    console.log("userPayloads - ", userPayloads);
 
     const oauthPayloads = selectedOauthOptions.map((option) => ({
       Description: option.description,
@@ -91,94 +98,130 @@ const MigrateSA = () => {
       ScopeContentType: option.ScopeContentType,
     }));
 
+    console.log("oauthPayloads - ", oauthPayloads);
+
     try {
       // Post user credentials
-      if (userPayload) {
-        const userResponse = await fetch(
-          "http://localhost:8082/api/v1/migration/Upload/UserCredentials",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(userPayload),
-          }
-        );
+      if (userPayloads) {
+        for (let userPayload of userPayloads) {
+          try {
+            const userResponse = await fetch(
+              `${baseURL}/v1/migration/designtime/upload/credentials`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(userPayload),
+              }
+            );
 
-        if (userResponse.ok) {
-          setNotification({
-            open: true,
-            message: "User credentials uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: "User credentials with the same name already exist",
-            severity: "error",
-          });
+            const res = await userResponse.json();
+
+            if (userResponse.ok) {
+              setNotification({
+                open: true,
+                message: `User credential ${userPayload.Name} uploaded successfully`,
+                severity: "success",
+              });
+            } else {
+              setNotification({
+                open: true,
+                message: res.message,
+                severity: "error",
+              });
+            }
+          } catch (error) {
+            setNotification({
+              open: true,
+              message: "Error uploading user credentials",
+              severity: "error",
+            });
+          }
         }
       }
 
       // Post OAuth credentials
       for (const oauthPayload of oauthPayloads) {
-        const oauthResponse = await fetch(
-          "http://localhost:8082/api/v1/migration/Upload/OAuthCredentials",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(oauthPayload),
-          }
-        );
+        try {
+          const oauthResponse = await fetch(
+            `${baseURL}/v1/migration/designtime/upload/oauthcredentials`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(oauthPayload),
+            }
+          );
+          const res = await oauthResponse.json();
 
-        if (oauthResponse.ok) {
+          if (oauthResponse.ok) {
+            setNotification({
+              open: true,
+              message: `OAuth credentials ${oauthPayload.Name} uploaded successfully`,
+              severity: "success",
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: res.message,
+              severity: "error",
+            });
+          }
+        } catch (error) {
           setNotification({
             open: true,
-            message: "OAuth credentials uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: "OAuth Cedentials with same name already exists",
+            message: "Error uploading OAuth credentials",
             severity: "error",
           });
         }
       }
 
-      if (selectedCertificates) {
-        const certificateHexalias = selectedCertificates[0].id;
+      // Post certificates
+      if (selectedCertificates && selectedCertificates.length > 0) {
+        for (let certificate of selectedCertificates) {
+          try {
+            const certificateHexalias = certificate.id;
 
-        const certResponse = await fetch(
-          `http://localhost:8082/api/v1/migration/Upload/customPublicCertificates?certificateHexalias=${certificateHexalias}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            const certResponse = await fetch(
+              `${baseURL}/v1/migration/designtime/upload/custompubliccertificates?certificateHexalias=${certificateHexalias}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+
+            const res = await certResponse.json();
+
+            if (certResponse.ok) {
+              setNotification({
+                open: true,
+                message: `Certificate ${certificate.id} uploaded successfully`,
+                severity: "success",
+              });
+            } else {
+              setNotification({
+                open: true,
+                message: res.message,
+                severity: "error",
+              });
+            }
+          } catch (error) {
+            setNotification({
+              open: true,
+              message: "Error uploading certificate",
+              severity: "error",
+            });
           }
-        );
-        console.log(certResponse);
-        if (certResponse.ok) {
-          setNotification({
-            open: true,
-            message: "Certificate uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: "Certificate with the same name already exists",
-            severity: "error",
-          });
         }
       }
     } catch (error) {
       setNotification({
         open: true,
-        message: "Error uploading credentials",
+        message: "Unexpected error during upload",
         severity: "error",
       });
     } finally {
@@ -195,16 +238,16 @@ const MigrateSA = () => {
   };
 
   const isButtonVisible =
-    selectedUserOption !== null ||
+    selectedUserOption.length > 0 ||
     selectedOauthOptions.length ||
     selectedCertificates.length > 0;
 
   const handleOpenModal = async () => {
     setLoading(true);
-    setModalOpen(true);
+
     try {
       const response = await fetch(
-        "http://localhost:8082/api/v1/migration/Get/Target/OAuthCredentials"
+        `${baseURL}/v1/migration/designtime/get/target/oauthcredentials`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch uploaded credentials");
@@ -216,7 +259,7 @@ const MigrateSA = () => {
       //  Fetch User Credentials
 
       const userResponse = await fetch(
-        "http://localhost:8082/api/v1/migration/Get/Target/UserCredentials"
+        `${baseURL}/v1/migration/designtime/get/target/usercredentials`
       );
       if (!userResponse.ok) {
         throw new Error("Failed to fetch user credentials");
@@ -232,6 +275,7 @@ const MigrateSA = () => {
       });
     } finally {
       setLoading(false);
+      setModalOpen(true);
     }
   };
 
@@ -241,147 +285,76 @@ const MigrateSA = () => {
 
   return (
     <>
-      <div className="m-4 space-y-8 mb-5">
-        <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
-          User Credentials
-        </h4>
-
-        <Autocomplete
-          options={userOptions}
-          getOptionLabel={(option) => option.label}
-          onChange={(event, value) => setSelectedUserOption(value)}
-          renderInput={(params) => (
-            <TextField {...params} label="User Client Credentials" />
-          )}
-          PopperProps={{
-            className: "mt-4", // Adjust this value as needed
-          }}
-        />
-        {selectedUserOption && (
-          <div>
-            <h3
-              className="text-lg font-semibold mb-4"
-              style={{ color: "#2A4862" }}
-            >
-              Selected User Details:
-            </h3>
-            <table className="w-full mt-4 border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-gray-300 px-4 py-2">ID</th>
-                  <th className="border border-gray-300 px-4 py-2">Name</th>
-                  <th className="border border-gray-300 px-4 py-2">
-                    Description
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {selectedUserOption.User}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {selectedUserOption.Name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {selectedUserOption.Description}
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-      <div className="m-4 space-y-8">
-        <h4 className="text-lg font-semibold mb-4" style={{ color: "#2A4862" }}>
-          Oauth2 Client Credentials
-        </h4>
-        <Autocomplete
-          multiple
-          options={oauthOptions}
-          getOptionLabel={(option) => option.label}
-          onChange={(event, value) => setSelectedOauthOptions(value)}
-          renderInput={(params) => (
-            <TextField {...params} label="Ouath Client Credentials" />
-          )}
-          PopperProps={{
-            className: "mt-4", // Adjust this value as needed
-          }}
-        />
-        {selectedOauthOptions.length > 0 && (
-          <div>
-            <h3
-              className="text-lg font-semibold mb-4"
-              style={{ color: "#2A4862" }}
-            >
-              Selected Options Details:
-            </h3>
-            <table className="w-full mt-4 border-collapse border border-gray-300">
-              <thead>
-                <tr className="bg-gray-200">
-                  <th className="border border-gray-300 px-4 py-2">ID</th>
-                  <th className="border border-gray-300 px-4 py-2">Name</th>
-                </tr>
-              </thead>
-              <tbody>
-                {selectedOauthOptions.map((option) => (
-                  <tr key={option.id}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {option.id}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {option.label}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        <div className="">
+      <div
+        style={{ position: "relative", filter: loading ? "blur(5px)" : "none" }}
+      >
+        <div className="m-4 space-y-8 mb-5">
           <h4
             className="text-lg font-semibold mb-4"
             style={{ color: "#2A4862" }}
           >
-            Custom Certificates
+            User Credentials
           </h4>
+
           <Autocomplete
             multiple
-            options={certificateOptions}
+            disableCloseOnSelect
+            options={userOptions}
             getOptionLabel={(option) => option.label}
-            onChange={(event, value) => setSelectedCertificates(value)}
-            renderInput={(params) => (
-              <TextField {...params} label="Custom Certificates" />
+            onChange={(event, value) => setSelectedUserOption(value)}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={<CheckBoxOutlineBlank fontSize="small" />}
+                  checkedIcon={<CheckBox fontSize="small" />}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                <ListItemText primary={option.label} />
+              </li>
             )}
-            PopperProps={{
-              className: "mt-4", // Adjust this value as needed
-            }}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Select User Credentials" />
+            )}
+            value={selectedUserOption}
+            PopperComponent={(popperProps) => (
+              <Popper
+                {...popperProps}
+                placement="bottom-start"
+                className="mt-4"
+              />
+            )}
           />
-          {selectedCertificates.length > 0 && (
+
+          {selectedUserOption.length > 0 && (
             <div>
               <h3
                 className="text-lg font-semibold mb-4"
                 style={{ color: "#2A4862" }}
               >
-                Selected Certificates:
+                Selected User Details:
               </h3>
               <table className="w-full mt-4 border-collapse border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
+                    <th className="border border-gray-300 px-4 py-2">ID</th>
                     <th className="border border-gray-300 px-4 py-2">Name</th>
                     <th className="border border-gray-300 px-4 py-2">
-                      Content
+                      Description
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedCertificates.map((cert, index) => (
+                  {selectedUserOption.map((option, index) => (
                     <tr key={index}>
                       <td className="border border-gray-300 px-4 py-2">
-                        {cert.id}
+                        {option.User}
                       </td>
                       <td className="border border-gray-300 px-4 py-2">
-                        {cert.label}
+                        {option.Name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {option.Description}
                       </td>
                     </tr>
                   ))}
@@ -391,25 +364,173 @@ const MigrateSA = () => {
           )}
         </div>
 
-        <div className="flex justify-between">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleOpenModal}
-            style={{ marginRight: "auto" }}
+        <div className="m-4 space-y-8">
+          <h4
+            className="text-lg font-semibold mb-4"
+            style={{ color: "#2A4862" }}
           >
-            Check Uploaded Credentials
-          </Button>
-          {isButtonVisible && (
+            Oauth2 Client Credentials
+          </h4>
+
+          <Autocomplete
+            multiple
+            disableCloseOnSelect
+            options={oauthOptions}
+            getOptionLabel={(option) => option.label}
+            onChange={(event, value) => setSelectedOauthOptions(value)}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={<CheckBoxOutlineBlank fontSize="small" />}
+                  checkedIcon={<CheckBox fontSize="small" />}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                <ListItemText primary={option.label} />
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                placeholder="Select Oauth2 Client Credentials"
+              />
+            )}
+            value={selectedOauthOptions}
+            PopperComponent={(popperProps) => (
+              <Popper
+                {...popperProps}
+                placement="bottom-start"
+                className="mt-4"
+              />
+            )}
+          />
+
+          {selectedOauthOptions.length > 0 && (
+            <div>
+              <h3
+                className="text-lg font-semibold mb-4"
+                style={{ color: "#2A4862" }}
+              >
+                Selected Options Details:
+              </h3>
+              <table className="w-full mt-4 border-collapse border border-gray-300">
+                <thead>
+                  <tr className="bg-gray-200">
+                    <th className="border border-gray-300 px-4 py-2">ID</th>
+                    <th className="border border-gray-300 px-4 py-2">Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedOauthOptions.map((option, index) => (
+                    <tr key={index}>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {option.id}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {option.label}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          <div className="">
+            <h4
+              className="text-lg font-semibold mb-4"
+              style={{ color: "#2A4862" }}
+            >
+              Custom Certificates
+            </h4>
+
+            <Autocomplete
+              multiple
+              disableCloseOnSelect
+              options={certificateOptions}
+              getOptionLabel={(option) => option.label}
+              onChange={(event, value) => setSelectedCertificates(value)}
+              renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                  <Checkbox
+                    icon={<CheckBoxOutlineBlank fontSize="small" />}
+                    checkedIcon={<CheckBox fontSize="small" />}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  <ListItemText primary={option.label} />
+                </li>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  placeholder="Select Custom Certificates"
+                />
+              )}
+              value={selectedCertificates}
+              PopperComponent={(popperProps) => (
+                <Popper
+                  {...popperProps}
+                  placement="bottom-start"
+                  className="mt-4"
+                />
+              )}
+            />
+
+            {selectedCertificates.length > 0 && (
+              <div>
+                <h3
+                  className="text-lg font-semibold mb-4"
+                  style={{ color: "#2A4862" }}
+                >
+                  Selected Certificates:
+                </h3>
+                <table className="w-full mt-4 border-collapse border border-gray-300">
+                  <thead>
+                    <tr className="bg-gray-200">
+                      <th className="border border-gray-300 px-4 py-2">Name</th>
+                      <th className="border border-gray-300 px-4 py-2">
+                        Content
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedCertificates.map((cert, index) => (
+                      <tr key={index}>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {cert.id}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {cert.label}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between">
             <Button
               variant="contained"
               color="primary"
-              onClick={handleSubmit}
-              style={{ marginLeft: "auto" }}
+              onClick={handleOpenModal}
+              style={{ marginRight: "auto" }}
             >
-              Submit
+              Check Uploaded Credentials
             </Button>
-          )}
+            {isButtonVisible && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                style={{ marginLeft: "auto" }}
+              >
+                Submit
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       {loading && (

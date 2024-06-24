@@ -6,7 +6,7 @@ import { readinessCheck } from "../../../apis/apiServiceNeo";
 import "./RMP.css";
 import Loader from "../../Loader";
 
-const ReadinessCheckMainPage = () => {
+const ReadinessCheckMainPage = ({ setDisableNext }) => {
   const [checkData, setCheckData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,6 +19,7 @@ const ReadinessCheckMainPage = () => {
         console.error(error);
       } finally {
         setLoading(false);
+        setDisableNext(false);
       }
     };
 

@@ -35,12 +35,12 @@ const TableWithPagination = () => {
     if (
       !inputValue ||
       !selectedValue ||
-      !tableData.some((row) => row?.checked)
+      !tableData?.some((row) => row?.checked)
     ) {
       setErrors({
         inputValue: !inputValue,
         selectedValue: !selectedValue,
-        tableData: !tableData.some((row) => row.checked),
+        tableData: !tableData?.some((row) => row?.checked),
       });
       toast.error("Please Enter the required details.");
       return;
@@ -48,15 +48,15 @@ const TableWithPagination = () => {
 
     try {
       setIsLoading(true);
-      const storedCurrAgent = localStorage.getItem("currAgent");
+      const storedCurrAgent = localStorage?.getItem("currAgent");
       const currAgent = storedCurrAgent ? JSON.parse(storedCurrAgent) : null;
 
       const payload = {
-        poAgent: currAgent.poData,
-        apiAgent: currAgent.apiData,
+        poAgent: currAgent?.poData,
+        apiAgent: currAgent?.apiData,
         migrationDetails: {
           valueMappingObject: tableData
-            .filter((row) => row.checked)
+            .filter((row) => row?.checked)
             .map((row) => ({
               agency: row?.agencyName,
               name: row?.valueMapping,
@@ -69,9 +69,9 @@ const TableWithPagination = () => {
       };
 
       const response = await migrateValueMapping(payload);
-      console.log("Testing response", response);
-      setbase64Url(response?.payload);
-      if (response.status === "Success") {
+      // console.log("Testing response", response);
+      setbase64Url(response?.data?.payload);
+      if (response?.data?.status === "Success") {
         toast.success("Value Mapping migrated successfully");
         setSelectedValue(undefined);
         setName(inputValue);
@@ -85,7 +85,7 @@ const TableWithPagination = () => {
         toast.error("Failed to migrate Value Mapping, try again.");
       }
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error?.message);
     } finally {
       setIsLoading(false);
     }
@@ -94,13 +94,13 @@ const TableWithPagination = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      const currAgent = JSON.parse(localStorage.getItem("currAgent"));
-      if (currAgent && currAgent.poData) {
-        const fetchedData = await valueMappingList(currAgent.poData);
-        const formattedData = fetchedData.map((item) => ({
-          groupid: item.groupid,
-          agencyName: item.agency,
-          valueMapping: item.groupname,
+      const currAgent = JSON.parse(localStorage?.getItem("currAgent"));
+      if (currAgent && currAgent?.poData) {
+        const fetchedData = await valueMappingList(currAgent?.poData);
+        const formattedData = fetchedData?.map((item) => ({
+          groupid: item?.groupid,
+          agencyName: item?.agency,
+          valueMapping: item?.groupname,
           checked: false,
         }));
         setTableData(formattedData);
@@ -112,12 +112,12 @@ const TableWithPagination = () => {
   }, []);
 
   useEffect(() => {
-    const savedState = JSON.parse(localStorage.getItem("checkboxState"));
+    const savedState = JSON.parse(localStorage?.getItem("checkboxState"));
     if (savedState) {
       setTableData((prevData) =>
         prevData.map((row) => ({
           ...row,
-          checked: savedState[row.groupid] ? savedState[row.groupid] : false,
+          checked: savedState[row?.groupid] ? savedState[row?.groupid] : false,
         }))
       );
     }
@@ -125,7 +125,7 @@ const TableWithPagination = () => {
 
   useEffect(() => {
     const checkboxState = tableData.reduce((acc, curr) => {
-      acc[curr.groupid] = curr.checked;
+      acc[curr.groupid] = curr?.checked;
       return acc;
     }, {});
     localStorage.setItem("checkboxState", JSON.stringify(checkboxState));
@@ -204,7 +204,7 @@ const TableWithPagination = () => {
               >
                 <input
                   type="checkbox"
-                  checked={tableData.every((row) => row.checked)}
+                  checked={tableData.every((row) => row?.checked)}
                   className="h-4 w-4"
                   onChange={handleSelectAll}
                 />
@@ -231,7 +231,7 @@ const TableWithPagination = () => {
                     type="checkbox"
                     checked={row.checked}
                     className="h-4 w-4"
-                    onChange={() => handleCheckboxChange(row.groupid)}
+                    onChange={() => handleCheckboxChange(row?.groupid)}
                   />
                 </td>
                 <td className="w-1/2 p-3 border-r-2 border-[#E5E5E5]">

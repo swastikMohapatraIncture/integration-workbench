@@ -165,7 +165,9 @@ const TenantModal = ({
                   />
                 )}
 
-                {activeStep === 3 && <ReadinessCheck />}
+                {activeStep === 3 && (
+                  <ReadinessCheck setDisableNext={setDisableNext} />
+                )}
               </div>
             </div>
             <div className="flex items-center gap-3 justify-end px-4 py-3 border-t border-solid border-blueGray-200 rounded-b">
@@ -204,7 +206,10 @@ const TenantModal = ({
               )}
               <button
                 className="py-1 px-3 rounded-md border border-modalColor text-modalColor"
-                onClick={() => setOpenModal(false)}
+                onClick={() => {
+                  setOpenModal(false);
+                  setAgentSelected(true);
+                }}
               >
                 Cancel
               </button>

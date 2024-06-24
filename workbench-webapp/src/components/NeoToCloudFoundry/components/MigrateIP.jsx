@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import Autocomplete from "@mui/material/Autocomplete";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-import Box from "@mui/material/Box";
-import Alert from "@mui/material/Alert"; // Import Alert component from MUI
 import { PostPackages } from "../../../apis/apiServiceNeo";
 import Loader from "../../Loader";
+import { TextField, Autocomplete, Button, Box, Alert,Popper,Checkbox,ListItemText} from "@mui/material";
+import { CheckBoxOutlineBlank, CheckBox } from '@mui/icons-material';
 
 const MigrateIP = ({ prepackages, custompackages }) => {
   const [prePackageOptions, setPrePackageOptions] = useState([]);
@@ -43,22 +40,23 @@ const MigrateIP = ({ prepackages, custompackages }) => {
     try {
       const postPack = await PostPackages(
         selectedPrePackages,
-        selectedCustomPackages
+        selectedCustomPackages,
+        setNotification
       );
       console.log("Post Package value: ", postPack);
-      if (postPack) {
-        setNotification({
-          open: true,
-          message: "Migration completed successfully!",
-          severity: "success",
-        });
-      } else {
-        setNotification({
-          open: true,
-          message: "Migration failed. Please check the console for details.",
-          severity: "error",
-        });
-      }
+      // if (postPack) {
+      //   setNotification({
+      //     open: true,
+      //     message: "Migration completed successfully!",
+      //     severity: "success",
+      //   });
+      // } else {
+      //   setNotification({
+      //     open: true,
+      //     message: "Migration failed. Please check the console for details.",
+      //     severity: "error",
+      //   });
+      // }
     } catch (error) {
       setNotification({
         open: true,
@@ -91,20 +89,30 @@ const MigrateIP = ({ prepackages, custompackages }) => {
         </h4>
         <div className="w-full mb-5">
           <Autocomplete
-            multiple
-            options={prePackageOptions}
-            value={selectedPrePackages}
-            onChange={(event, value) =>
-              handleOptionChange(event, value, setSelectedPrePackages)
-            }
-            getOptionLabel={(option) => option.label}
-            renderInput={(params) => (
-              <TextField {...params} label="Pre-Packages (SAP Integration)" />
-            )}
-            PopperProps={{
-              className: "mt-4", // Adjust this value as needed
-            }}
+      multiple
+      disableCloseOnSelect
+      options={prePackageOptions}
+      getOptionLabel={(option) => option.label}
+      onChange={(event, value) => setSelectedPrePackages(value)}
+      renderOption={(props, option, { selected }) => (
+        <li {...props}>
+          <Checkbox
+            icon={<CheckBoxOutlineBlank fontSize="small" />}
+            checkedIcon={<CheckBox fontSize="small" />}
+            style={{ marginRight: 8 }}
+            checked={selected}
           />
+          <ListItemText primary={option.label} />
+        </li>
+      )}
+      renderInput={(params) => (
+        <TextField {...params} label="Custom-Packages (SAP Integration)" placeholder="Custom-Packages (SAP Integration)" />
+      )}
+      value={selectedPrePackages}
+      PopperComponent={(popperProps) => (
+        <Popper {...popperProps} placement="bottom-start" className="mt-4" />
+      )}
+    />
           {selectedPrePackages.length > 0 && (
             <div>
               {/* Table for selected options */}
@@ -135,24 +143,31 @@ const MigrateIP = ({ prepackages, custompackages }) => {
           Custom Packages
         </h4>
         <div className="w-full">
-          <Autocomplete
-            multiple
-            options={customPackageOptions}
-            value={selectedCustomPackages}
-            onChange={(event, value) =>
-              handleOptionChange(event, value, setSelectedCustomPackages)
-            }
-            getOptionLabel={(option) => option.label}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Custom-Packages (SAP Integration)"
-              />
-            )}
-            PopperProps={{
-              className: "mt-4", // Adjust this value as needed
-            }}
+           <Autocomplete
+      multiple
+      disableCloseOnSelect
+      options={customPackageOptions}
+      getOptionLabel={(option) => option.label}
+      onChange={(event, value) => setSelectedCustomPackages(value)}
+      renderOption={(props, option, { selected }) => (
+        <li {...props}>
+          <Checkbox
+            icon={<CheckBoxOutlineBlank fontSize="small" />}
+            checkedIcon={<CheckBox fontSize="small" />}
+            style={{ marginRight: 8 }}
+            checked={selected}
           />
+          <ListItemText primary={option.label} />
+        </li>
+      )}
+      renderInput={(params) => (
+        <TextField {...params} label="Custom-Packages (SAP Integration)" placeholder="Custom-Packages (SAP Integration)" />
+      )}
+      value={selectedCustomPackages}
+      PopperComponent={(popperProps) => (
+        <Popper {...popperProps} placement="bottom-start" className="mt-4" />
+      )}
+    />
           {selectedCustomPackages.length > 0 && (
             <div>
               {/* Table for selected options */}

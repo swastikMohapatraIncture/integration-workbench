@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { TextField, Autocomplete, Button, Box, Alert } from "@mui/material";
+import {
+  TextField,
+  Autocomplete,
+  Button,
+  Box,
+  Alert,
+  Popper,
+  Checkbox,
+  ListItemText,
+} from "@mui/material";
+import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import Loader from "../../Loader";
 import {
@@ -14,13 +24,13 @@ import {
 
 const MigrateOA = () => {
   const [numberRanges, setNumberRanges] = useState([]);
-  const [selectedNumberRange, setSelectedNumberRange] = useState(null);
+  const [selectedNumberRange, setSelectedNumberRange] = useState([]);
 
   const [variables, setVariables] = useState([]);
-  const [selectedVariable, setSelectedVariable] = useState(null);
+  const [selectedVariable, setSelectedVariable] = useState([]);
 
   const [dataStores, setDataStores] = useState([]);
-  const [selectedDataStore, setSelectedDataStore] = useState(null);
+  const [selectedDataStore, setSelectedDataStore] = useState([]);
 
   const [notification, setNotification] = useState({
     open: false,
@@ -44,17 +54,17 @@ const MigrateOA = () => {
       const promises = [];
 
       // Handle number range submission
-      if (selectedNumberRange) {
+      if (selectedNumberRange.length > 0) {
         promises.push(postNumberRanges(selectedNumberRange, setNotification));
       }
 
       // Handle variable submission
-      if (selectedVariable) {
+      if (selectedVariable.length > 0) {
         promises.push(postVariables(selectedVariable, setNotification));
       }
 
       // Handle data store submission
-      if (selectedDataStore) {
+      if (selectedDataStore.length > 0) {
         promises.push(postDataStore(selectedDataStore, setNotification));
       }
 
@@ -106,18 +116,36 @@ const MigrateOA = () => {
           </h4>
 
           <Autocomplete
+            multiple
+            disableCloseOnSelect
             options={numberRanges}
             getOptionLabel={(option) => option.Name}
             onChange={(event, value) => setSelectedNumberRange(value)}
-            renderInput={(params) => (
-              <TextField {...params} label="Select Number Range" />
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={<CheckBoxOutlineBlank fontSize="small" />}
+                  checkedIcon={<CheckBox fontSize="small" />}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                <ListItemText primary={option.Name} />
+              </li>
             )}
-            PopperProps={{
-              className: "mt-4",
-            }}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Select Number Ranges" />
+            )}
+            value={selectedNumberRange}
+            PopperComponent={(popperProps) => (
+              <Popper
+                {...popperProps}
+                placement="bottom-start"
+                className="mt-4"
+              />
+            )}
           />
 
-          {selectedNumberRange && (
+          {selectedNumberRange.length > 0 && (
             <div>
               <h3
                 className="text-lg font-semibold mb-4"
@@ -128,21 +156,31 @@ const MigrateOA = () => {
               <table className="w-full mt-4 border-collapse border border-gray-300">
                 <thead>
                   <tr className="bg-gray-200">
-                    <th className="border border-gray-300 px-4 py-2">Name</th>
-                    <th className="border border-gray-300 px-4 py-2">
+                    <th
+                      className="border border-gray-300 px-4 py-2 "
+                      style={{ width: "19%" }}
+                    >
+                      Name
+                    </th>
+                    <th
+                      className="border border-gray-300 px-4 py-2"
+                      style={{ width: "30%" }}
+                    >
                       Description
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {selectedNumberRange.Name}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {selectedNumberRange.Description}
-                    </td>
-                  </tr>
+                  {selectedNumberRange.map((option) => (
+                    <tr>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {option.Name}
+                      </td>
+                      <td className="border border-gray-300 px-4 py-2">
+                        {option.Description}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -157,18 +195,35 @@ const MigrateOA = () => {
             </h4>
 
             <Autocomplete
+              multiple
+              disableCloseOnSelect
               options={variables}
               getOptionLabel={(option) => option.VariableName}
               onChange={(event, value) => setSelectedVariable(value)}
-              renderInput={(params) => (
-                <TextField {...params} label="Select Variable" />
+              renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                  <Checkbox
+                    icon={<CheckBoxOutlineBlank fontSize="small" />}
+                    checkedIcon={<CheckBox fontSize="small" />}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  <ListItemText primary={option.VariableName} />
+                </li>
               )}
-              PopperProps={{
-                className: "mt-4",
-              }}
+              renderInput={(params) => (
+                <TextField {...params} placeholder="Select Variables" />
+              )}
+              value={selectedVariable}
+              PopperComponent={(popperProps) => (
+                <Popper
+                  {...popperProps}
+                  placement="bottom-start"
+                  className="mt-4"
+                />
+              )}
             />
-
-            {selectedVariable && (
+            {selectedVariable.length > 0 && (
               <div>
                 <h3
                   className="text-lg font-semibold mb-4"
@@ -186,14 +241,16 @@ const MigrateOA = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {selectedVariable.VariableName}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {selectedVariable.IntegrationFlow}
-                      </td>
-                    </tr>
+                    {selectedVariable.map((option) => (
+                      <tr>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {option.VariableName}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {option.IntegrationFlow}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -209,18 +266,35 @@ const MigrateOA = () => {
             </h4>
 
             <Autocomplete
+              multiple
+              disableCloseOnSelect
               options={dataStores}
               getOptionLabel={(option) => option.DataStoreName}
               onChange={(event, value) => setSelectedDataStore(value)}
-              renderInput={(params) => (
-                <TextField {...params} label="Select Data Store" />
+              renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                  <Checkbox
+                    icon={<CheckBoxOutlineBlank fontSize="small" />}
+                    checkedIcon={<CheckBox fontSize="small" />}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  <ListItemText primary={option.DataStoreName} />
+                </li>
               )}
-              PopperProps={{
-                className: "mt-4",
-              }}
+              renderInput={(params) => (
+                <TextField {...params} placeholder="Select User Credentials" />
+              )}
+              value={selectedDataStore}
+              PopperComponent={(popperProps) => (
+                <Popper
+                  {...popperProps}
+                  placement="bottom-start"
+                  className="mt-4"
+                />
+              )}
             />
-
-            {selectedDataStore && (
+            {selectedDataStore.length > 0 && (
               <div>
                 <h3
                   className="text-lg font-semibold mb-4"
@@ -238,16 +312,18 @@ const MigrateOA = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {selectedDataStore.DataStoreName}
-                      </td>
-                      <td className="border border-gray-300 px-4 py-2">
-                        {selectedDataStore.IntegrationFlow === ""
-                          ? "Global"
-                          : selectedDataStore.IntegrationFlow}
-                      </td>
-                    </tr>
+                    {selectedDataStore.map((option) => (
+                      <tr>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {option.DataStoreName}
+                        </td>
+                        <td className="border border-gray-300 px-4 py-2">
+                          {option.IntegrationFlow === ""
+                            ? "Global"
+                            : option.IntegrationFlow}
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

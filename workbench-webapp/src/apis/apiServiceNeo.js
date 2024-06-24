@@ -26,6 +26,9 @@ export const postApi = async (apiURL, toPostData) => {
   }
 };
 
+// const baseURL = "https://integration-workbench-testing.cfapps.eu10-004.hana.ondemand.com";
+const baseURL = "/java_services/";
+
 export const postNEOConnection = async (
   formData,
   setDisableNext,
@@ -36,10 +39,10 @@ export const postNEOConnection = async (
     // Get Access Token
     console.log(formData);
     const tokenResponse = await fetch(
-      "http://localhost:8082/api/v1/migration/get/source/access/token",
+      `${baseURL}/v1/migration/configuration/connect/source/is`,
       {
         method: "POST",
-        body: JSON.stringify({ formData: formData }),
+        body: JSON.stringify(formData),
         headers: { "Content-Type": "application/json" },
       }
     );
@@ -86,8 +89,8 @@ export const postCFData = async (
 ) => {
   console.log(formData);
   await postApi(
-    "http://localhost:8082/api/v1/migration/get/target/access/token",
-    { oauth: formData }
+    `${baseURL}/v1/migration/configuration/connect/target/is`,
+    formData
   ).then((data) => {
     console.log(data);
     try {
@@ -126,7 +129,7 @@ export const postCFData = async (
 export const readinessCheck = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/Readiness/Check/PreIntegrationPackages",
+      `${baseURL}/v1/metadata/readiness/check/preintegrationpackages`,
       {
         method: "GET",
         headers: {
@@ -192,7 +195,7 @@ export const readinessCheck = async () => {
       // Check integration flows version
       console.log("Checking Iflow's version of PACKAGE : ", id);
       const checkIflowVersionReq = await fetch(
-        `http://localhost:8082/api/v1/migration/Readiness/Check/IntegrationFlowsVersion?PackageId=${id}`,
+        `${baseURL}/v1/metadata/readiness/check/integrationflowsversion?PackageId=${id}`,
         {
           method: "GET",
           headers: {
@@ -233,7 +236,7 @@ export const readinessCheck = async () => {
       // Value mappings version check
 
       const checkValueMappingsVersionReq = await fetch(
-        `http://localhost:8082/api/v1/migration/Readiness/Check/ValueMappingsVersion?PackageId=${id}`,
+        `${baseURL}/v1/metadata/readiness/check/valuemappingsversion?PackageId=${id}`,
         {
           method: "GET",
           headers: {
@@ -289,7 +292,7 @@ export const readinessCheck = async () => {
       "********************  Entering Request 'Check Source JMS Resources'  ********************"
     );
     const sourceJmsResponse = await fetch(
-      "http://localhost:8082/api/v1/migration/Readiness/Check/Source/JMSResources",
+      `${baseURL}/v1/metadata/readiness/check/source/jmsResources`,
       {
         method: "GET",
         headers: {
@@ -316,7 +319,7 @@ export const readinessCheck = async () => {
         "********************  Entering Request 'Check Target JMS Resources'  ********************"
       );
       const targetJmsResponse = await fetch(
-        "http://localhost:8082/api/v1/migration/Readiness/Check/Target/JMSResources",
+        `${baseURL}/v1/metadata/readiness/check/target/jmsResources`,
         {
           method: "GET",
           headers: {
@@ -395,7 +398,7 @@ export const GetPackages = async () => {
 
   try {
     const fetchToken = await fetch(
-      "http://localhost:8082/api/v1/migration/get/source/access/token",
+      `${baseURL}/v1/migration/configuration/connect/source/is`,
       {
         method: "POST",
         body: JSON.stringify({ formData: currNeoAgent.NeoData }),
@@ -408,7 +411,7 @@ export const GetPackages = async () => {
     console.log(tokenParsed);
     if (fetchToken && fetchToken.ok === true) {
       const fetchPackagesRaw = await fetch(
-        "http://localhost:8082/api/v1/migration/Get/Custom/Packages",
+        `${baseURL}/v1/migration/designtime/get/custom/packages`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -450,7 +453,8 @@ export const GetPackages = async () => {
 
 export const PostPackages = async (
   selectedPrePackages,
-  selectedCustomPackages
+  selectedCustomPackages,
+  setNotification
 ) => {
   let successful = false;
   console.log(
@@ -461,7 +465,7 @@ export const PostPackages = async (
   console.log("Selected Custom Packages : ", selectedCustomPackages);
   try {
     const fetchToken = await fetch(
-      "http://localhost:8082/api/v1/migration/get/target/access/token",
+      `${baseURL}/v1/migration/configuration/connect/target/is`,
       {
         method: "POST",
         body: JSON.stringify({ oauth: currNeoAgent.CFdata }),
@@ -477,7 +481,7 @@ export const PostPackages = async (
           // Try Catch used for handling errors for each Pre Package individually
           try {
             const postPrePackageRaw = await fetch(
-              `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
+              `${baseURL}/v1/migration/designtime/upload/custom/packages?packageTechnicalName=${pkg.value}`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -488,13 +492,23 @@ export const PostPackages = async (
             console.log(postPrePackage);
 
             if (postPrePackage.statusCodeValue !== 200) {
+              setNotification({
+                open: true,
+                message: postPrePackage.body.message,
+                severity: "error",
+              });
               throw new Error(
                 `Failed to create Pre-Package ${pkg.value} message: ${postPrePackage.body.message}`
               );
             } else {
               console.log(`PRE PACKAGE ${pkg.value} MIGRATED SUCCESSFULLY !!`);
-              // add the pkg in a variable or local store
               await GetArtifacts(pkg.value);
+              await configureValueMappings(pkg.value);
+              setNotification({
+                open: true,
+                message: "Migration completed successfully!",
+                severity: "success",
+              });
               successful = true;
             }
           } catch (error) {
@@ -510,7 +524,7 @@ export const PostPackages = async (
           // Try Catch used for handling errors for each Post Package individually
           try {
             const postCustomPackageRaw = await fetch(
-              `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
+              `${baseURL}/v1/migration/designtime/upload/custom/packages?packageTechnicalName=${pkg.value}`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -520,6 +534,11 @@ export const PostPackages = async (
             const postCustomPackage = await postCustomPackageRaw.json();
             console.log("postCustomPackage Res - :", postCustomPackage);
             if (postCustomPackage.statusCodeValue !== 200) {
+              setNotification({
+                open: true,
+                message: postCustomPackage.body.message,
+                severity: "error",
+              });
               throw new Error(
                 `Failed to create Custom-Package ${pkg.value} message: ${postCustomPackage.body.message}`
               );
@@ -529,6 +548,11 @@ export const PostPackages = async (
               );
               await GetArtifacts(pkg.value);
               await configureValueMappings(pkg.value);
+              setNotification({
+                open: true,
+                message: "Migration completed successfully!",
+                severity: "success",
+              });
               successful = true;
             }
           } catch (error) {
@@ -563,7 +587,7 @@ export const GetArtifacts = async (pkgId) => {
   );
   try {
     const getArtifactsRaw = await fetch(
-      `http://localhost:8082/api/v1/migration/Get/Custom/Artifacts?packageTechnicalName=${pkgId}`,
+      `${baseURL}/v1/migration/designtime/get/custom/artifacts?packageTechnicalName=${pkgId}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -584,7 +608,7 @@ export const GetArtifacts = async (pkgId) => {
       // Try Catch used for handling errors for each Artifact individually
       try {
         const uploadArtifactRaw = await fetch(
-          `http://localhost:8082/api/v1/migration/Set/Custom/Configurations?artifactId=${artifact.Id}`,
+          `${baseURL}/v1/migration/designtime/set/custom/Configurations?artifactId=${artifact.Id}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -624,7 +648,7 @@ export const GetArtifacts = async (pkgId) => {
 export const fetchUserCredentials = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/Get/Source/UserCredentials",
+      `${baseURL}/v1/migration/designtime/get/source/usercredentials`,
       {
         method: "GET",
         headers: {
@@ -657,7 +681,7 @@ export const fetchUserCredentials = async () => {
 export const fetchOAuthCredentials = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/Get/Source/OAuthCredentials"
+      `${baseURL}/v1/migration/designtime/get/source/oauthcredentials`
     );
     if (!response.ok) {
       throw new Error("Failed to fetch OAuth credentials");
@@ -684,7 +708,7 @@ export const configureValueMappings = async (pkgId) => {
 
   try {
     const getValueMapping = await fetch(
-      `http://localhost:8082/api/v1/migration/get/valuemappings`,
+      `${baseURL}/v1/migration/designtime/get/valuemappings`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -704,7 +728,7 @@ export const configureValueMappings = async (pkgId) => {
         if (!pkgNotMigrated.includes(valueMapping.PackageId)) {
           try {
             const configureValueMapping = await fetch(
-              `http://localhost:8082/api/v1/migration/Upload/ValueMappings?artifactId=${valueMapping.Id}`,
+              `${baseURL}/v1/migration/designtime/upload/valuemappings?artifactId=${valueMapping.Id}`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -741,7 +765,7 @@ export const configureValueMappings = async (pkgId) => {
 export const fetchCertificates = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:8082/api/v1/migration/Get/customPublicCertificates"
+      `${baseURL}/v1/migration/designtime/get/custompubliccertificates`
     );
     const certificates = response.data.map((cert) => ({
       id: cert.Hexalias,
@@ -757,7 +781,7 @@ export const fetchCertificates = async () => {
 export const fetchNumberRanges = async (setNumberRanges) => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/Get/NumberRanges"
+      `${baseURL}/v1/migration/designtime/get/numberranges`
     );
     const data = await response.json();
     setNumberRanges(data.d.results);
@@ -767,49 +791,51 @@ export const fetchNumberRanges = async (setNumberRanges) => {
 };
 
 export const postNumberRanges = async (
-  selectedNumberRange,
+  selectedNumberRanges,
   setNotification
 ) => {
-  try {
-    const response = await fetch(
-      `http://localhost:8082/api/v1/migration/Upload/NumberRanges?NumberRangeName=${selectedNumberRange.Name}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+  for (let selectedNumberRange of selectedNumberRanges) {
+    try {
+      const response = await fetch(
+        `${baseURL}/v1/migration/designtime/upload/numberranges?NumberRangeName=${selectedNumberRange.Name}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setNotification({
+          open: true,
+          message: `Number range ${selectedNumberRange.Name} uploaded successfully`,
+          severity: "success",
+        });
+      } else {
+        setNotification({
+          open: true,
+          message: data.message,
+          severity: "error",
+        });
       }
-    );
-
-    const data = await response.json();
-
-    if (response.ok) {
+    } catch (error) {
+      console.error("Error uploading number range:", error);
       setNotification({
         open: true,
-        message: "Number range uploaded successfully",
-        severity: "success",
-      });
-    } else {
-      setNotification({
-        open: true,
-        message: data.message,
+        message: "An error occurred while uploading the number range",
         severity: "error",
       });
     }
-  } catch (error) {
-    console.error("Error uploading number range:", error);
-    setNotification({
-      open: true,
-      message: "An error occurred while uploading the number range",
-      severity: "error",
-    });
   }
 };
 
 export const fetchVariables = async (setVariables) => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/get/variables"
+      `${baseURL}/v1/migration/designtime/get/variables`
     );
     const data = await response.json();
     setVariables(data.d.results);
@@ -818,11 +844,11 @@ export const fetchVariables = async (setVariables) => {
   }
 };
 
-export const postVariables = async (selectedVariable, setNotification) => {
+export const postVariables = async (selectedVariables, setNotification) => {
   const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
 
   const fetchSourceToken = await fetch(
-    "http://localhost:8082/api/v1/migration/get/source/access/token",
+    `${baseURL}/v1/migration/configuration/connect/source/is`,
     {
       method: "POST",
       body: JSON.stringify({ formData: currNeoAgent.NeoData }),
@@ -836,56 +862,62 @@ export const postVariables = async (selectedVariable, setNotification) => {
 
   try {
     if (fetchSourceToken && fetchSourceToken.ok === true) {
-      try {
-        const uploadVariable = await fetch(
-          `http://localhost:8082/api/v1/migration/upload/variables?VariableName=${selectedVariable.VariableName}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+      for (let selectedVariable of selectedVariables) {
+        try {
+          const uploadVariable = await fetch(
+            `${baseURL}/v1/migration/designtime/upload/variables?VariableName=${selectedVariable.VariableName}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log(uploadVariable);
+
+          const uploadedVariable = await uploadVariable.json();
+
+          // Checking if the name of DataStore is in CF Tenant
+          const getvariablesCf = await fetch(
+            `${baseURL}/v1/migration/designtime/get/target/variables`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const variablesCf = await getvariablesCf.json();
+          const variablesInCf = variablesCf.d.results.map(
+            (result) => result.VariableName
+          );
+          console.log(`All the Variables in CF`, variablesInCf);
+
+          if (
+            variablesInCf.includes(selectedVariable.VariableName) &&
+            uploadVariable.ok
+          ) {
+            setNotification({
+              open: true,
+              message: `Variable ${selectedVariable.VariableName} uploaded successfully`,
+              severity: "success",
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: uploadedVariable.message,
+              severity: "error",
+            });
           }
-        );
-
-        const uploadedVariable = await uploadVariable.json();
-
-        // Checking if the name of DataStore is in CF Tenant
-        const getvariablesCf = await fetch(
-          `http://localhost:8082/api/v1/migration/get/target/variables`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const variablesCf = await getvariablesCf.json();
-        const variablesInCf = variablesCf.d.results.map(
-          (result) => result.VariableName
-        );
-        console.log(`All the Variables in CF`, variablesInCf);
-
-        if (variablesInCf.includes(selectedVariable.VariableName)) {
+        } catch (error) {
+          console.error("Error uploading variable:", error);
           setNotification({
             open: true,
-            message: "Variable uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: uploadedVariable.message,
+            message: "An error occurred while uploading the variable",
             severity: "error",
           });
         }
-      } catch (error) {
-        console.error("Error uploading variable:", error);
-        setNotification({
-          open: true,
-          message: "An error occurred while uploading the variable",
-          severity: "error",
-        });
       }
     } else {
       throw new Error("Source Token fetching not successful");
@@ -894,7 +926,7 @@ export const postVariables = async (selectedVariable, setNotification) => {
     console.error("Error fetching source token:", error);
     setNotification({
       open: true,
-      message: `An error occurred while uploading the variable`,
+      message: `Error Fetching soruce token`,
       severity: "error",
     });
   }
@@ -903,7 +935,7 @@ export const postVariables = async (selectedVariable, setNotification) => {
 export const fetchDataStores = async (setDataStores) => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/get/datastores"
+      `${baseURL}/v1/migration/designtime/get/datastores`
     );
 
     const data = await response.json();
@@ -913,11 +945,11 @@ export const fetchDataStores = async (setDataStores) => {
   }
 };
 
-export const postDataStore = async (selectedDataStore, setNotification) => {
+export const postDataStore = async (selectedDataStores, setNotification) => {
   const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
 
   const fetchSourceToken = await fetch(
-    "http://localhost:8082/api/v1/migration/get/source/access/token",
+    `${baseURL}/v1/migration/configuration/connect/source/is`,
     {
       method: "POST",
       body: JSON.stringify({ formData: currNeoAgent.NeoData }),
@@ -931,74 +963,79 @@ export const postDataStore = async (selectedDataStore, setNotification) => {
 
   try {
     if (fetchSourceToken && fetchSourceToken.ok === true) {
-      try {
-        const getDataStoreIds = await fetch(
-          `http://localhost:8082/api/v1/migration/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
+      for (let selectedDataStore of selectedDataStores) {
+        try {
+          const getDataStoreIds = await fetch(
+            `${baseURL}/v1/migration/designtime/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const dataStoresIds = await getDataStoreIds.json();
+          console.log(
+            `Data Store ${selectedDataStore.DataStoreName} Id: `,
+            dataStoresIds
+          );
+          const dataStoreId = dataStoresIds.d.results[0].Id;
+
+          const uploadDataStore = await fetch(
+            `${baseURL}/v1/migration/designtime/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          console.log("Uploading res raw - ", uploadDataStore);
+          const uploadedDataStore = await uploadDataStore.json();
+          console.log("Data Store Uploaded: ", uploadedDataStore);
+
+          // Checking if the name of DataStore is in CF Tenant
+          const getDataStoresCf = await fetch(
+            `${baseURL}/v1/migration/designtime/get/target/datastores`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+
+          const dataStoresCf = await getDataStoresCf.json();
+          const dataStoreInCf = dataStoresCf.d.results.map(
+            (result) => result.DataStoreName
+          );
+          console.log(`All the DataStores in CF`, dataStoreInCf);
+
+          if (
+            dataStoreInCf.includes(selectedDataStore.DataStoreName) &&
+            uploadDataStore.ok
+          ) {
+            setNotification({
+              open: true,
+              message: "Data store uploaded successfully",
+              severity: "success",
+            });
+          } else {
+            setNotification({
+              open: true,
+              message: uploadedDataStore.message,
+              severity: "error",
+            });
           }
-        );
-        const dataStoresIds = await getDataStoreIds.json();
-        console.log(
-          `Data Store ${selectedDataStore.DataStoreName} Id: `,
-          dataStoresIds
-        );
-        const dataStoreId = dataStoresIds.d.results[0].Id;
-
-        const uploadDataStore = await fetch(
-          `http://localhost:8082/api/v1/migration/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        console.log("Uploading res raw - ", uploadDataStore);
-        const uploadedDataStore = await uploadDataStore.json();
-        console.log("Data Store Uploaded: ", uploadedDataStore);
-
-        // Checking if the name of DataStore is in CF Tenant
-        const getDataStoresCf = await fetch(
-          `http://localhost:8082/api/v1/migration/get/target/datastores`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-
-        const dataStoresCf = await getDataStoresCf.json();
-        const dataStoreInCf = dataStoresCf.d.results.map(
-          (result) => result.DataStoreName
-        );
-        console.log(`All the DataStores in CF`, dataStoreInCf);
-
-        if (dataStoreInCf.includes(selectedDataStore.DataStoreName)) {
+        } catch (error) {
+          console.error("Error uploading data store:", error);
           setNotification({
             open: true,
-            message: "Data store uploaded successfully",
-            severity: "success",
-          });
-        } else {
-          setNotification({
-            open: true,
-            message: uploadedDataStore.message,
+            message: "An error occurred while uploading the data store",
             severity: "error",
           });
         }
-      } catch (error) {
-        console.error("Error uploading data store:", error);
-        setNotification({
-          open: true,
-          message: "An error occurred while uploading the data store",
-          severity: "error",
-        });
       }
     } else {
       throw new Error("Source Token fetching not successful");
@@ -1016,7 +1053,7 @@ export const postDataStore = async (selectedDataStore, setNotification) => {
 export const postCustomTags = async (setNotification) => {
   try {
     const postCustomTags = await fetch(
-      `http://localhost:8082/api/v1/migration/Upload/CustomTags`,
+      `${baseURL}/v1/migration/designtime/upload/CustomTags`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

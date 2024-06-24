@@ -270,7 +270,7 @@ const AutomatedForm = ({
                         ].testCaseName = e.target.value;
                         setSections(updatedSections);
                       }}
-                      placeholder={`Text Case ${fileIndex + 1}`}
+                      placeholder={`Test Case ${fileIndex + 1}`}
                     />
                   </div>
                   <div>
