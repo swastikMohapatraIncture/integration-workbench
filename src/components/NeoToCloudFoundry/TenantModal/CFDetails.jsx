@@ -55,9 +55,9 @@ const CFDetails = ({
 
   const requiredFields = [
     "name",
-    "clientid",
-    "clientsecret",
-    "tokenurl",
+    "clientId",
+    "clientSecret",
+    "tokenUrl",
     "url",
     "environment",
   ];
@@ -148,15 +148,15 @@ const CFDetails = ({
   const fillFormFields = (data) => {
     const { oauth } = data;
     if (oauth) {
-      const { clientid, clientsecret, url, tokenurl } = oauth;
+      const { clientId, clientSecret, url, tokenUrl } = oauth;
       setCFData((prevState) => ({
         ...prevState,
-        clientid: clientid,
-        clientsecret: clientsecret,
+        clientId: clientId,
+        clientSecret: clientSecret,
         url: url,
-        tokenurl: tokenurl,
+        tokenUrl: tokenUrl,
       }));
-      console.log("Updated CFData:", { clientid, clientsecret, url, tokenurl }); // Debugging statement
+      console.log("Updated CFData:", { clientId, clientSecret, url, tokenUrl }); // Debugging statement
     } else {
       console.error("Invalid JSON structure:", data); // Debugging statement
     }
@@ -183,8 +183,8 @@ const CFDetails = ({
           <TextField
             size="small"
             placeholder="Enter Client ID"
-            value={CFData?.clientid || ""}
-            onChange={(e) => handleChange(e, "clientid")}
+            value={CFData?.clientId || ""}
+            onChange={(e) => handleChange(e, "clientId")}
             variant="outlined"
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
@@ -197,8 +197,8 @@ const CFDetails = ({
             id="outlined-adornment-password"
             type={showPassword ? "text" : "password"}
             placeholder="Enter Client secret"
-            value={CFData?.clientsecret || ""}
-            onChange={(e) => handleChange(e, "clientsecret")}
+            value={CFData?.clientSecret || ""}
+            onChange={(e) => handleChange(e, "clientSecret")}
             size="small"
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
@@ -223,8 +223,8 @@ const CFDetails = ({
             size="small"
             placeholder="Token URL"
             variant="outlined"
-            value={CFData?.tokenurl || ""}
-            onChange={(e) => handleChange(e, "tokenurl")}
+            value={CFData?.tokenUrl || ""}
+            onChange={(e) => handleChange(e, "tokenUrl")}
             sx={{
               "& .MuiInputBase-input": { height: "1.4em", padding: "6px 12px" },
             }}

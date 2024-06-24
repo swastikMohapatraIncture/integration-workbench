@@ -25,6 +25,8 @@ import {
 import Loader from "../../Loader";
 import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material";
 
+const baseURL = "/java_services/";
+
 const MigrateSA = () => {
   const [userOptions, setUserOptions] = useState([]);
   const [oauthOptions, setOAuthOptions] = useState([]);
@@ -104,7 +106,7 @@ const MigrateSA = () => {
         for (let userPayload of userPayloads) {
           try {
             const userResponse = await fetch(
-              "http://localhost:8082/api/v1/migration/Upload/UserCredentials",
+              `${baseURL}/v1/migration/designtime/upload/credentials`,
               {
                 method: "POST",
                 headers: {
@@ -143,7 +145,7 @@ const MigrateSA = () => {
       for (const oauthPayload of oauthPayloads) {
         try {
           const oauthResponse = await fetch(
-            "http://localhost:8082/api/v1/migration/Upload/OAuthCredentials",
+            `${baseURL}/v1/migration/designtime/upload/oauthcredentials`,
             {
               method: "POST",
               headers: {
@@ -183,7 +185,7 @@ const MigrateSA = () => {
             const certificateHexalias = certificate.id;
 
             const certResponse = await fetch(
-              `http://localhost:8082/api/v1/migration/Upload/customPublicCertificates?certificateHexalias=${certificateHexalias}`,
+              `${baseURL}/v1/migration/designtime/upload/custompubliccertificates?certificateHexalias=${certificateHexalias}`,
               {
                 method: "POST",
                 headers: {
@@ -245,7 +247,7 @@ const MigrateSA = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:8082/api/v1/migration/Get/Target/OAuthCredentials"
+        `${baseURL}/v1/migration/designtime/get/target/oauthcredentials`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch uploaded credentials");
@@ -257,7 +259,7 @@ const MigrateSA = () => {
       //  Fetch User Credentials
 
       const userResponse = await fetch(
-        "http://localhost:8082/api/v1/migration/Get/Target/UserCredentials"
+        `${baseURL}/v1/migration/designtime/get/target/usercredentials`
       );
       if (!userResponse.ok) {
         throw new Error("Failed to fetch user credentials");

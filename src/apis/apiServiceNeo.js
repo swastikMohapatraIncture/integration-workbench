@@ -26,6 +26,9 @@ export const postApi = async (apiURL, toPostData) => {
   }
 };
 
+// const baseURL = "https://integration-workbench-testing.cfapps.eu10-004.hana.ondemand.com";
+const baseURL = "/java_services/";
+
 export const postNEOConnection = async (
   formData,
   setDisableNext,
@@ -36,10 +39,10 @@ export const postNEOConnection = async (
     // Get Access Token
     console.log(formData);
     const tokenResponse = await fetch(
-      "http://localhost:8082/api/v1/migration/get/source/access/token",
+      `${baseURL}/v1/migration/configuration/connect/source/is`,
       {
         method: "POST",
-        body: JSON.stringify({ formData: formData }),
+        body: JSON.stringify(formData),
         headers: { "Content-Type": "application/json" },
       }
     );
@@ -86,8 +89,8 @@ export const postCFData = async (
 ) => {
   console.log(formData);
   await postApi(
-    "http://localhost:8082/api/v1/migration/get/target/access/token",
-    { oauth: formData }
+    `${baseURL}/v1/migration/configuration/connect/target/is`,
+    formData
   ).then((data) => {
     console.log(data);
     try {
@@ -126,7 +129,7 @@ export const postCFData = async (
 export const readinessCheck = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/Readiness/Check/PreIntegrationPackages",
+      `${baseURL}/v1/metadata/readiness/check/preintegrationpackages`,
       {
         method: "GET",
         headers: {
@@ -192,7 +195,7 @@ export const readinessCheck = async () => {
       // Check integration flows version
       console.log("Checking Iflow's version of PACKAGE : ", id);
       const checkIflowVersionReq = await fetch(
-        `http://localhost:8082/api/v1/migration/Readiness/Check/IntegrationFlowsVersion?PackageId=${id}`,
+        `${baseURL}/v1/metadata/readiness/check/integrationflowsversion?PackageId=${id}`,
         {
           method: "GET",
           headers: {
@@ -233,7 +236,7 @@ export const readinessCheck = async () => {
       // Value mappings version check
 
       const checkValueMappingsVersionReq = await fetch(
-        `http://localhost:8082/api/v1/migration/Readiness/Check/ValueMappingsVersion?PackageId=${id}`,
+        `${baseURL}/v1/metadata/readiness/check/valuemappingsversion?PackageId=${id}`,
         {
           method: "GET",
           headers: {
@@ -289,7 +292,7 @@ export const readinessCheck = async () => {
       "********************  Entering Request 'Check Source JMS Resources'  ********************"
     );
     const sourceJmsResponse = await fetch(
-      "http://localhost:8082/api/v1/migration/Readiness/Check/Source/JMSResources",
+      `${baseURL}/v1/metadata/readiness/check/source/jmsResources`,
       {
         method: "GET",
         headers: {
@@ -316,7 +319,7 @@ export const readinessCheck = async () => {
         "********************  Entering Request 'Check Target JMS Resources'  ********************"
       );
       const targetJmsResponse = await fetch(
-        "http://localhost:8082/api/v1/migration/Readiness/Check/Target/JMSResources",
+        `${baseURL}/v1/metadata/readiness/check/target/jmsResources`,
         {
           method: "GET",
           headers: {
@@ -395,7 +398,7 @@ export const GetPackages = async () => {
 
   try {
     const fetchToken = await fetch(
-      "http://localhost:8082/api/v1/migration/get/source/access/token",
+      `${baseURL}/v1/migration/configuration/connect/source/is`,
       {
         method: "POST",
         body: JSON.stringify({ formData: currNeoAgent.NeoData }),
@@ -408,7 +411,7 @@ export const GetPackages = async () => {
     console.log(tokenParsed);
     if (fetchToken && fetchToken.ok === true) {
       const fetchPackagesRaw = await fetch(
-        "http://localhost:8082/api/v1/migration/Get/Custom/Packages",
+        `${baseURL}/v1/migration/designtime/get/custom/packages`,
         {
           method: "GET",
           headers: { "Content-Type": "application/json" },
@@ -462,7 +465,7 @@ export const PostPackages = async (
   console.log("Selected Custom Packages : ", selectedCustomPackages);
   try {
     const fetchToken = await fetch(
-      "http://localhost:8082/api/v1/migration/get/target/access/token",
+      `${baseURL}/v1/migration/configuration/connect/target/is`,
       {
         method: "POST",
         body: JSON.stringify({ oauth: currNeoAgent.CFdata }),
@@ -478,7 +481,7 @@ export const PostPackages = async (
           // Try Catch used for handling errors for each Pre Package individually
           try {
             const postPrePackageRaw = await fetch(
-              `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
+              `${baseURL}/v1/migration/designtime/upload/custom/packages?packageTechnicalName=${pkg.value}`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -521,7 +524,7 @@ export const PostPackages = async (
           // Try Catch used for handling errors for each Post Package individually
           try {
             const postCustomPackageRaw = await fetch(
-              `http://localhost:8082/api/v1/migration/Upload/Custom/Package?packageTechnicalName=${pkg.value}`,
+              `${baseURL}/v1/migration/designtime/upload/custom/packages?packageTechnicalName=${pkg.value}`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -584,7 +587,7 @@ export const GetArtifacts = async (pkgId) => {
   );
   try {
     const getArtifactsRaw = await fetch(
-      `http://localhost:8082/api/v1/migration/Get/Custom/Artifacts?packageTechnicalName=${pkgId}`,
+      `${baseURL}/v1/migration/designtime/get/custom/artifacts?packageTechnicalName=${pkgId}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -605,7 +608,7 @@ export const GetArtifacts = async (pkgId) => {
       // Try Catch used for handling errors for each Artifact individually
       try {
         const uploadArtifactRaw = await fetch(
-          `http://localhost:8082/api/v1/migration/Set/Custom/Configurations?artifactId=${artifact.Id}`,
+          `${baseURL}/v1/migration/designtime/set/custom/Configurations?artifactId=${artifact.Id}`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -645,7 +648,7 @@ export const GetArtifacts = async (pkgId) => {
 export const fetchUserCredentials = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/Get/Source/UserCredentials",
+      `${baseURL}/v1/migration/designtime/get/source/usercredentials`,
       {
         method: "GET",
         headers: {
@@ -678,7 +681,7 @@ export const fetchUserCredentials = async () => {
 export const fetchOAuthCredentials = async () => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/Get/Source/OAuthCredentials"
+      `${baseURL}/v1/migration/designtime/get/source/oauthcredentials`
     );
     if (!response.ok) {
       throw new Error("Failed to fetch OAuth credentials");
@@ -705,7 +708,7 @@ export const configureValueMappings = async (pkgId) => {
 
   try {
     const getValueMapping = await fetch(
-      `http://localhost:8082/api/v1/migration/get/valuemappings`,
+      `${baseURL}/v1/migration/designtime/get/valuemappings`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -725,7 +728,7 @@ export const configureValueMappings = async (pkgId) => {
         if (!pkgNotMigrated.includes(valueMapping.PackageId)) {
           try {
             const configureValueMapping = await fetch(
-              `http://localhost:8082/api/v1/migration/Upload/ValueMappings?artifactId=${valueMapping.Id}`,
+              `${baseURL}/v1/migration/designtime/upload/valuemappings?artifactId=${valueMapping.Id}`,
               {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -762,7 +765,7 @@ export const configureValueMappings = async (pkgId) => {
 export const fetchCertificates = async () => {
   try {
     const response = await axios.get(
-      "http://localhost:8082/api/v1/migration/Get/customPublicCertificates"
+      `${baseURL}/v1/migration/designtime/get/custompubliccertificates`
     );
     const certificates = response.data.map((cert) => ({
       id: cert.Hexalias,
@@ -778,7 +781,7 @@ export const fetchCertificates = async () => {
 export const fetchNumberRanges = async (setNumberRanges) => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/Get/NumberRanges"
+      `${baseURL}/v1/migration/designtime/get/numberranges`
     );
     const data = await response.json();
     setNumberRanges(data.d.results);
@@ -794,7 +797,7 @@ export const postNumberRanges = async (
   for (let selectedNumberRange of selectedNumberRanges) {
     try {
       const response = await fetch(
-        `http://localhost:8082/api/v1/migration/Upload/NumberRanges?NumberRangeName=${selectedNumberRange.Name}`,
+        `${baseURL}/v1/migration/designtime/upload/numberranges?NumberRangeName=${selectedNumberRange.Name}`,
         {
           method: "POST",
           headers: {
@@ -832,7 +835,7 @@ export const postNumberRanges = async (
 export const fetchVariables = async (setVariables) => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/get/variables"
+      `${baseURL}/v1/migration/designtime/get/variables`
     );
     const data = await response.json();
     setVariables(data.d.results);
@@ -845,7 +848,7 @@ export const postVariables = async (selectedVariables, setNotification) => {
   const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
 
   const fetchSourceToken = await fetch(
-    "http://localhost:8082/api/v1/migration/get/source/access/token",
+    `${baseURL}/v1/migration/configuration/connect/source/is`,
     {
       method: "POST",
       body: JSON.stringify({ formData: currNeoAgent.NeoData }),
@@ -862,7 +865,7 @@ export const postVariables = async (selectedVariables, setNotification) => {
       for (let selectedVariable of selectedVariables) {
         try {
           const uploadVariable = await fetch(
-            `http://localhost:8082/api/v1/migration/upload/variables?VariableName=${selectedVariable.VariableName}`,
+            `${baseURL}/v1/migration/designtime/upload/variables?VariableName=${selectedVariable.VariableName}`,
             {
               method: "POST",
               headers: {
@@ -876,7 +879,7 @@ export const postVariables = async (selectedVariables, setNotification) => {
 
           // Checking if the name of DataStore is in CF Tenant
           const getvariablesCf = await fetch(
-            `http://localhost:8082/api/v1/migration/get/target/variables`,
+            `${baseURL}/v1/migration/designtime/get/target/variables`,
             {
               method: "GET",
               headers: {
@@ -932,7 +935,7 @@ export const postVariables = async (selectedVariables, setNotification) => {
 export const fetchDataStores = async (setDataStores) => {
   try {
     const response = await fetch(
-      "http://localhost:8082/api/v1/migration/get/datastores"
+      `${baseURL}/v1/migration/designtime/get/datastores`
     );
 
     const data = await response.json();
@@ -946,7 +949,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
   const currNeoAgent = JSON.parse(localStorage.getItem("currNeoAgent")) || {};
 
   const fetchSourceToken = await fetch(
-    "http://localhost:8082/api/v1/migration/get/source/access/token",
+    `${baseURL}/v1/migration/configuration/connect/source/is`,
     {
       method: "POST",
       body: JSON.stringify({ formData: currNeoAgent.NeoData }),
@@ -963,7 +966,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
       for (let selectedDataStore of selectedDataStores) {
         try {
           const getDataStoreIds = await fetch(
-            `http://localhost:8082/api/v1/migration/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
+            `${baseURL}/v1/migration/designtime/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
             {
               method: "GET",
               headers: {
@@ -979,7 +982,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
           const dataStoreId = dataStoresIds.d.results[0].Id;
 
           const uploadDataStore = await fetch(
-            `http://localhost:8082/api/v1/migration/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
+            `${baseURL}/v1/migration/designtime/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
             {
               method: "POST",
               headers: {
@@ -994,7 +997,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
 
           // Checking if the name of DataStore is in CF Tenant
           const getDataStoresCf = await fetch(
-            `http://localhost:8082/api/v1/migration/get/target/datastores`,
+            `${baseURL}/v1/migration/designtime/get/target/datastores`,
             {
               method: "GET",
               headers: {
@@ -1050,7 +1053,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
 export const postCustomTags = async (setNotification) => {
   try {
     const postCustomTags = await fetch(
-      `http://localhost:8082/api/v1/migration/Upload/CustomTags`,
+      `${baseURL}/v1/migration/designtime/upload/CustomTags`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
