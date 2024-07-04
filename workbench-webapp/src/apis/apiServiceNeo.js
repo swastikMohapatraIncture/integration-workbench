@@ -17,9 +17,16 @@ function addToPkgNotMigrate(newItem) {
   localStorage.setItem("pkgNotMigrate", JSON.stringify(uniqueArray));
 }
 
+let config = () => {
+  let header = {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+  };
+  return header;
+};
+
 export const postApi = async (apiURL, toPostData) => {
   try {
-    const res = await axios.post(apiURL, toPostData);
+    const res = await axios.post(apiURL, toPostData, config());
     return res.data;
   } catch (e) {
     return null;
@@ -30,6 +37,7 @@ export const postApi = async (apiURL, toPostData) => {
 const baseURL = "/java_services/";
 
 const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+
 
 export const postNEOConnection = async (
   formData,

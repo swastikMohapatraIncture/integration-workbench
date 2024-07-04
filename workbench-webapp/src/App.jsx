@@ -19,18 +19,21 @@ import NeoMigration from "./components/NeoToCloudFoundry/pages/NeoMigration";
 import GetArtifactsPage from "./components/NeoToCloudFoundry/pages/GetArtifactsPage";
 
 import axios from "axios";
+import { useEffect, useState } from "react";
+import Loader from "./components/Loader";
 
 function App() {
   const [token, setToken] = useState(null);
   useEffect(() => {
     const getToken = () => {
-      axios.get("/user").then((res) => {
-        if (res?.data?.token) {
-          setToken(res?.data?.token);
+      axios.get("/user").then((res)=>{
+        if(res?.data?.token){
+          setToken(res?.data?.token)
           localStorage.setItem("token", res?.data?.token);
+          
         }
-        console.log(res);
-      });
+        console.log(res)
+      })
       // fetch("/user")
       //   .then((response) => response.text())
       //   .then((result) => {
@@ -41,13 +44,15 @@ function App() {
       //     }
       //   })
       //   .catch((error) => console.error(error));
-    };
+    }
 
-    getToken();
-  }, []);
+    getToken()
+
+  }, [])
 
   if (!token) {
-    <Loader></Loader>;
+    <Loader></Loader>
+  
   } else {
     return (
       <>
