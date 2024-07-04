@@ -29,6 +29,8 @@ export const postApi = async (apiURL, toPostData) => {
 // const baseURL = "https://integration-workbench-testing.cfapps.eu10-004.hana.ondemand.com";
 const baseURL = "/java_services/";
 
+const headers = { Authorization: `Bearer ${localStorage.getItem("token")}` };
+
 export const postNEOConnection = async (
   formData,
   setDisableNext,
@@ -43,7 +45,7 @@ export const postNEOConnection = async (
       {
         method: "POST",
         body: JSON.stringify(formData),
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
       }
     );
 
@@ -132,10 +134,7 @@ export const readinessCheck = async () => {
       `${baseURL}/v1/metadata/readiness/check/preintegrationpackages`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        redirect: "follow",
+        headers: headers,
       }
     );
     if (!response.ok) {
@@ -198,9 +197,7 @@ export const readinessCheck = async () => {
         `${baseURL}/v1/metadata/readiness/check/integrationflowsversion?PackageId=${id}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         }
       );
 
@@ -239,9 +236,7 @@ export const readinessCheck = async () => {
         `${baseURL}/v1/metadata/readiness/check/valuemappingsversion?PackageId=${id}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         }
       );
 
@@ -295,9 +290,7 @@ export const readinessCheck = async () => {
       `${baseURL}/v1/metadata/readiness/check/source/jmsResources`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: headers,
       }
     );
 
@@ -322,9 +315,7 @@ export const readinessCheck = async () => {
         `${baseURL}/v1/metadata/readiness/check/target/jmsResources`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         }
       );
 
@@ -402,7 +393,7 @@ export const GetPackages = async () => {
       {
         method: "POST",
         body: JSON.stringify({ formData: currNeoAgent.NeoData }),
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
       }
     );
 
@@ -414,7 +405,7 @@ export const GetPackages = async () => {
         `${baseURL}/v1/migration/designtime/get/custom/packages`,
         {
           method: "GET",
-          headers: { "Content-Type": "application/json" },
+          headers: headers,
         }
       );
       console.log("fetchPackagesRaw :", fetchPackagesRaw);
@@ -469,7 +460,7 @@ export const PostPackages = async (
       {
         method: "POST",
         body: JSON.stringify({ oauth: currNeoAgent.CFdata }),
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
       }
     );
 
@@ -484,7 +475,7 @@ export const PostPackages = async (
               `${baseURL}/v1/migration/designtime/upload/custom/packages?packageTechnicalName=${pkg.value}`,
               {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: headers,
               }
             );
 
@@ -527,7 +518,7 @@ export const PostPackages = async (
               `${baseURL}/v1/migration/designtime/upload/custom/packages?packageTechnicalName=${pkg.value}`,
               {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: headers,
               }
             );
 
@@ -590,7 +581,7 @@ export const GetArtifacts = async (pkgId) => {
       `${baseURL}/v1/migration/designtime/get/custom/artifacts?packageTechnicalName=${pkgId}`,
       {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
       }
     );
 
@@ -611,7 +602,7 @@ export const GetArtifacts = async (pkgId) => {
           `${baseURL}/v1/migration/designtime/set/custom/Configurations?artifactId=${artifact.Id}`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: headers,
           }
         );
 
@@ -651,10 +642,7 @@ export const fetchUserCredentials = async () => {
       `${baseURL}/v1/migration/designtime/get/source/usercredentials`,
       {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        redirect: "follow",
+        headers: headers,
       }
     );
 
@@ -681,7 +669,11 @@ export const fetchUserCredentials = async () => {
 export const fetchOAuthCredentials = async () => {
   try {
     const response = await fetch(
-      `${baseURL}/v1/migration/designtime/get/source/oauthcredentials`
+      `${baseURL}/v1/migration/designtime/get/source/oauthcredentials`,
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
     if (!response.ok) {
       throw new Error("Failed to fetch OAuth credentials");
@@ -711,7 +703,7 @@ export const configureValueMappings = async (pkgId) => {
       `${baseURL}/v1/migration/designtime/get/valuemappings`,
       {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
       }
     );
 
@@ -731,7 +723,7 @@ export const configureValueMappings = async (pkgId) => {
               `${baseURL}/v1/migration/designtime/upload/valuemappings?artifactId=${valueMapping.Id}`,
               {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: headers,
               }
             );
 
@@ -765,7 +757,11 @@ export const configureValueMappings = async (pkgId) => {
 export const fetchCertificates = async () => {
   try {
     const response = await axios.get(
-      `${baseURL}/v1/migration/designtime/get/custompubliccertificates`
+      `${baseURL}/v1/migration/designtime/get/custompubliccertificates`,
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
     const certificates = response.data.map((cert) => ({
       id: cert.Hexalias,
@@ -781,7 +777,11 @@ export const fetchCertificates = async () => {
 export const fetchNumberRanges = async (setNumberRanges) => {
   try {
     const response = await fetch(
-      `${baseURL}/v1/migration/designtime/get/numberranges`
+      `${baseURL}/v1/migration/designtime/get/numberranges`,
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
     const data = await response.json();
     setNumberRanges(data.d.results);
@@ -800,9 +800,7 @@ export const postNumberRanges = async (
         `${baseURL}/v1/migration/designtime/upload/numberranges?NumberRangeName=${selectedNumberRange.Name}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: headers,
         }
       );
 
@@ -835,7 +833,11 @@ export const postNumberRanges = async (
 export const fetchVariables = async (setVariables) => {
   try {
     const response = await fetch(
-      `${baseURL}/v1/migration/designtime/get/variables`
+      `${baseURL}/v1/migration/designtime/get/variables`,
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
     const data = await response.json();
     setVariables(data.d.results);
@@ -852,7 +854,7 @@ export const postVariables = async (selectedVariables, setNotification) => {
     {
       method: "POST",
       body: JSON.stringify({ formData: currNeoAgent.NeoData }),
-      headers: { "Content-Type": "application/json" },
+      headers: headers,
     }
   );
 
@@ -868,9 +870,7 @@ export const postVariables = async (selectedVariables, setNotification) => {
             `${baseURL}/v1/migration/designtime/upload/variables?VariableName=${selectedVariable.VariableName}`,
             {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: headers,
             }
           );
           console.log(uploadVariable);
@@ -882,9 +882,7 @@ export const postVariables = async (selectedVariables, setNotification) => {
             `${baseURL}/v1/migration/designtime/get/target/variables`,
             {
               method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: headers,
             }
           );
 
@@ -935,7 +933,11 @@ export const postVariables = async (selectedVariables, setNotification) => {
 export const fetchDataStores = async (setDataStores) => {
   try {
     const response = await fetch(
-      `${baseURL}/v1/migration/designtime/get/datastores`
+      `${baseURL}/v1/migration/designtime/get/datastores`,
+      {
+        method: "GET",
+        headers: headers,
+      }
     );
 
     const data = await response.json();
@@ -953,7 +955,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
     {
       method: "POST",
       body: JSON.stringify({ formData: currNeoAgent.NeoData }),
-      headers: { "Content-Type": "application/json" },
+      headers: headers,
     }
   );
 
@@ -969,9 +971,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
             `${baseURL}/v1/migration/designtime/get/datastoresid?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}`,
             {
               method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: headers,
             }
           );
           const dataStoresIds = await getDataStoreIds.json();
@@ -985,9 +985,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
             `${baseURL}/v1/migration/designtime/upload/datastores?DataStoreName=${selectedDataStore.DataStoreName}&IntegrationFlow=${selectedDataStore.IntegrationFlow}&DataStoreId=${dataStoreId}`,
             {
               method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: headers,
             }
           );
 
@@ -1000,9 +998,7 @@ export const postDataStore = async (selectedDataStores, setNotification) => {
             `${baseURL}/v1/migration/designtime/get/target/datastores`,
             {
               method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-              },
+              headers: headers,
             }
           );
 
@@ -1056,7 +1052,7 @@ export const postCustomTags = async (setNotification) => {
       `${baseURL}/v1/migration/designtime/upload/CustomTags`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: headers,
       }
     );
 
@@ -1085,5 +1081,174 @@ export const postCustomTags = async (setNotification) => {
       message: "An error occurred while calling the API",
       severity: "error",
     });
+  }
+};
+
+export const postUserCredentials = async (userPayloads, setNotification) => {
+  if (userPayloads) {
+    for (let userPayload of userPayloads) {
+      try {
+        const userResponse = await fetch(
+          `${baseURL}/v1/migration/designtime/upload/credentials`,
+          {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(userPayload),
+          }
+        );
+
+        const res = await userResponse.json();
+
+        if (userResponse.ok) {
+          setNotification({
+            open: true,
+            message: `User credential ${userPayload.Name} uploaded successfully`,
+            severity: "success",
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: res.message,
+            severity: "error",
+          });
+        }
+      } catch (error) {
+        setNotification({
+          open: true,
+          message: "Error uploading user credentials",
+          severity: "error",
+        });
+      }
+    }
+  }
+};
+
+export const postOauthCredentials = async (oauthPayloads, setNotification) => {
+  if (oauthPayloads) {
+    for (const oauthPayload of oauthPayloads) {
+      try {
+        const oauthResponse = await fetch(
+          `${baseURL}/v1/migration/designtime/upload/oauthcredentials`,
+          {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(oauthPayload),
+          }
+        );
+        const res = await oauthResponse.json();
+
+        if (oauthResponse.ok) {
+          setNotification({
+            open: true,
+            message: `OAuth credentials ${oauthPayload.Name} uploaded successfully`,
+            severity: "success",
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: res.message,
+            severity: "error",
+          });
+        }
+      } catch (error) {
+        setNotification({
+          open: true,
+          message: "Error uploading OAuth credentials",
+          severity: "error",
+        });
+      }
+    }
+  }
+};
+
+export const postCustomCertificates = async (
+  selectedCertificates,
+  setNotification
+) => {
+  if (selectedCertificates && selectedCertificates.length > 0) {
+    for (let certificate of selectedCertificates) {
+      try {
+        const certificateHexalias = certificate.id;
+
+        const certResponse = await fetch(
+          `${baseURL}/v1/migration/designtime/upload/custompubliccertificates?certificateHexalias=${certificateHexalias}`,
+          {
+            method: "POST",
+            headers: headers,
+          }
+        );
+
+        const res = await certResponse.json();
+
+        if (certResponse.ok) {
+          setNotification({
+            open: true,
+            message: `Certificate ${certificate.id} uploaded successfully`,
+            severity: "success",
+          });
+        } else {
+          setNotification({
+            open: true,
+            message: res.message,
+            severity: "error",
+          });
+        }
+      } catch (error) {
+        setNotification({
+          open: true,
+          message: "Error uploading certificate",
+          severity: "error",
+        });
+      }
+    }
+  }
+};
+
+export const checkUploadedCredentials = async (
+  setUploadedCredentials,
+  setuserCredentials,
+  setNotification,
+  setLoading,
+  setModalOpen
+) => {
+  try {
+    const oauthResponse = await fetch(
+      `${baseURL}/v1/migration/designtime/get/target/oauthcredentials`,
+      {
+        method: "GET",
+        headers: headers,
+      }
+    );
+    if (!oauthResponse.ok) {
+      throw new Error("Failed to fetch uploaded credentials");
+    }
+    const oauthData = await oauthResponse.json();
+    console.log(oauthData);
+    setUploadedCredentials(oauthData);
+
+    //  Fetch User Credentials
+
+    const userResponse = await fetch(
+      `${baseURL}/v1/migration/designtime/get/target/usercredentials`,
+      {
+        method: "GET",
+        headers: headers,
+      }
+    );
+    if (!userResponse.ok) {
+      throw new Error("Failed to fetch user credentials");
+    }
+
+    const userData = await userResponse.json();
+    setuserCredentials(userData);
+  } catch (error) {
+    setNotification({
+      open: true,
+      message: "Error fetching uploaded credentials",
+      severity: "error",
+    });
+  } finally {
+    setLoading(false);
+    setModalOpen(true);
   }
 };

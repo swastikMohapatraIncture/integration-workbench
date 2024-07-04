@@ -21,11 +21,13 @@ import {
   fetchUserCredentials,
   fetchOAuthCredentials,
   fetchCertificates,
+  postUserCredentials,
+  postOauthCredentials,
+  postCustomCertificates,
+  checkUploadedCredentials,
 } from "../../../apis/apiServiceNeo"; // Import your fetch functions
 import Loader from "../../Loader";
 import { CheckBoxOutlineBlank, CheckBox } from "@mui/icons-material";
-
-const baseURL = "/java_services/";
 
 const MigrateSA = () => {
   const [userOptions, setUserOptions] = useState([]);
@@ -101,123 +103,20 @@ const MigrateSA = () => {
     console.log("oauthPayloads - ", oauthPayloads);
 
     try {
+      const promises = [];
+
       // Post user credentials
-      if (userPayloads) {
-        for (let userPayload of userPayloads) {
-          try {
-            const userResponse = await fetch(
-              `${baseURL}/v1/migration/designtime/upload/credentials`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(userPayload),
-              }
-            );
-
-            const res = await userResponse.json();
-
-            if (userResponse.ok) {
-              setNotification({
-                open: true,
-                message: `User credential ${userPayload.Name} uploaded successfully`,
-                severity: "success",
-              });
-            } else {
-              setNotification({
-                open: true,
-                message: res.message,
-                severity: "error",
-              });
-            }
-          } catch (error) {
-            setNotification({
-              open: true,
-              message: "Error uploading user credentials",
-              severity: "error",
-            });
-          }
-        }
-      }
+      promises.push(postUserCredentials(userPayloads, setNotification));
 
       // Post OAuth credentials
-      for (const oauthPayload of oauthPayloads) {
-        try {
-          const oauthResponse = await fetch(
-            `${baseURL}/v1/migration/designtime/upload/oauthcredentials`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(oauthPayload),
-            }
-          );
-          const res = await oauthResponse.json();
-
-          if (oauthResponse.ok) {
-            setNotification({
-              open: true,
-              message: `OAuth credentials ${oauthPayload.Name} uploaded successfully`,
-              severity: "success",
-            });
-          } else {
-            setNotification({
-              open: true,
-              message: res.message,
-              severity: "error",
-            });
-          }
-        } catch (error) {
-          setNotification({
-            open: true,
-            message: "Error uploading OAuth credentials",
-            severity: "error",
-          });
-        }
-      }
+      promises.push(postOauthCredentials(oauthPayloads, setNotification));
 
       // Post certificates
-      if (selectedCertificates && selectedCertificates.length > 0) {
-        for (let certificate of selectedCertificates) {
-          try {
-            const certificateHexalias = certificate.id;
+      promises.push(
+        postCustomCertificates(selectedCertificates, setNotification)
+      );
 
-            const certResponse = await fetch(
-              `${baseURL}/v1/migration/designtime/upload/custompubliccertificates?certificateHexalias=${certificateHexalias}`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-
-            const res = await certResponse.json();
-
-            if (certResponse.ok) {
-              setNotification({
-                open: true,
-                message: `Certificate ${certificate.id} uploaded successfully`,
-                severity: "success",
-              });
-            } else {
-              setNotification({
-                open: true,
-                message: res.message,
-                severity: "error",
-              });
-            }
-          } catch (error) {
-            setNotification({
-              open: true,
-              message: "Error uploading certificate",
-              severity: "error",
-            });
-          }
-        }
-      }
+      await Promise.all(promises);
     } catch (error) {
       setNotification({
         open: true,
@@ -245,38 +144,13 @@ const MigrateSA = () => {
   const handleOpenModal = async () => {
     setLoading(true);
 
-    try {
-      const response = await fetch(
-        `${baseURL}/v1/migration/designtime/get/target/oauthcredentials`
-      );
-      if (!response.ok) {
-        throw new Error("Failed to fetch uploaded credentials");
-      }
-      const data = await response.json();
-      console.log(data);
-      setUploadedCredentials(data);
-
-      //  Fetch User Credentials
-
-      const userResponse = await fetch(
-        `${baseURL}/v1/migration/designtime/get/target/usercredentials`
-      );
-      if (!userResponse.ok) {
-        throw new Error("Failed to fetch user credentials");
-      }
-
-      const userData = await userResponse.json();
-      setuserCredentials(userData);
-    } catch (error) {
-      setNotification({
-        open: true,
-        message: "Error fetching uploaded credentials",
-        severity: "error",
-      });
-    } finally {
-      setLoading(false);
-      setModalOpen(true);
-    }
+    checkUploadedCredentials(
+      setUploadedCredentials,
+      setuserCredentials,
+      setNotification,
+      setLoading,
+      setModalOpen
+    );
   };
 
   const handleCloseModal = () => {
