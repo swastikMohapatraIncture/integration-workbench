@@ -191,7 +191,7 @@ const AutomatedForm = ({
         <div key={sectionIndex} className="border p-4 rounded mb-4">
           <div className="grid grid-cols-2 text-sm gap-3 mb-2">
             <div className="flex flex-col">
-              <span className="mb-2">Select ICO</span>
+              <span className="mb-2">Select iFlow(NEO)</span>
               <Autocomplete
                 disablePortal
                 // freeSolo
@@ -208,12 +208,12 @@ const AutomatedForm = ({
                   },
                 }}
                 renderInput={(params) => (
-                  <TextField {...params} placeholder="ICO" />
+                  <TextField {...params} placeholder="iFlow" />
                 )}
               />
             </div>
             <div className="flex flex-col">
-              <span className="mb-2">Select iFlow</span>
+              <span className="mb-2">Select iFlow(CF)</span>
               <Autocomplete
                 disablePortal
                 // freeSolo

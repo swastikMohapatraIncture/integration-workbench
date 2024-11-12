@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { PostPackages } from "../../../apis/apiServiceNeo";
 import Loader from "../../Loader";
-import { TextField, Autocomplete, Button, Box, Alert,Popper,Checkbox,ListItemText} from "@mui/material";
+import { TextField, Autocomplete, Button, Box, Alert, Popper, Checkbox, ListItemText } from "@mui/material";
 import { CheckBoxOutlineBlank, CheckBox } from '@mui/icons-material';
+
 
 const MigrateIP = ({ prepackages, custompackages }) => {
   const [prePackageOptions, setPrePackageOptions] = useState([]);
   const [customPackageOptions, setCustomPackageOptions] = useState([]);
   const [selectedPrePackages, setSelectedPrePackages] = useState([]);
   const [selectedCustomPackages, setSelectedCustomPackages] = useState([]);
+  const [isReport, setIsReport] = useState(false);
   const [notification, setNotification] = useState({
     open: false,
     message: "",
@@ -34,6 +36,25 @@ const MigrateIP = ({ prepackages, custompackages }) => {
   const handleOptionChange = (event, value, setOptions) => {
     setOptions(value);
   };
+  const handleDownloadReport = async () => {
+    if (selectedPrePackages.length) {
+      const link = document.createElement('a');
+      link.href = `/migration_report2.xlsx`;
+      link.download = 'migration_report.xlsx';
+      link.click();
+      setIsReport(false)
+      return
+    }
+    if (selectedCustomPackages.length) {
+      const link = document.createElement('a');
+      link.href = `/migration_report.xlsx`;
+      link.download = 'migration_report.xlsx';
+      link.click();
+      setIsReport(false)
+      return
+    }
+
+  }
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -43,6 +64,9 @@ const MigrateIP = ({ prepackages, custompackages }) => {
         selectedCustomPackages,
         setNotification
       );
+      if (postPack) {
+        setIsReport(true)
+      }
       console.log("Post Package value: ", postPack);
       // if (postPack) {
       //   setNotification({
@@ -58,12 +82,14 @@ const MigrateIP = ({ prepackages, custompackages }) => {
       //   });
       // }
     } catch (error) {
+      setIsReport(false)
       setNotification({
         open: true,
         message: "Migration failed. Please check the console for details.",
         severity: "error",
       });
     } finally {
+      // setIsReport(false)
       setLoading(false);
     }
 
@@ -75,6 +101,7 @@ const MigrateIP = ({ prepackages, custompackages }) => {
   const handleCloseNotification = () => {
     setNotification({ ...notification, open: false });
   };
+
 
   const isButtonVisible =
     selectedPrePackages.length > 0 || selectedCustomPackages.length > 0;
@@ -89,30 +116,30 @@ const MigrateIP = ({ prepackages, custompackages }) => {
         </h4>
         <div className="w-full mb-5">
           <Autocomplete
-      multiple
-      disableCloseOnSelect
-      options={prePackageOptions}
-      getOptionLabel={(option) => option.label}
-      onChange={(event, value) => setSelectedPrePackages(value)}
-      renderOption={(props, option, { selected }) => (
-        <li {...props}>
-          <Checkbox
-            icon={<CheckBoxOutlineBlank fontSize="small" />}
-            checkedIcon={<CheckBox fontSize="small" />}
-            style={{ marginRight: 8 }}
-            checked={selected}
+            multiple
+            disableCloseOnSelect
+            options={prePackageOptions}
+            getOptionLabel={(option) => option.label}
+            onChange={(event, value) => setSelectedPrePackages(value)}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={<CheckBoxOutlineBlank fontSize="small" />}
+                  checkedIcon={<CheckBox fontSize="small" />}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                <ListItemText primary={option.label} />
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Pre-Packages (SAP Integration)" />
+            )}
+            value={selectedPrePackages}
+            PopperComponent={(popperProps) => (
+              <Popper {...popperProps} placement="bottom-start" className="mt-4" />
+            )}
           />
-          <ListItemText primary={option.label} />
-        </li>
-      )}
-      renderInput={(params) => (
-        <TextField {...params} placeholder="Pre-Packages (SAP Integration)" />
-      )}
-      value={selectedPrePackages}
-      PopperComponent={(popperProps) => (
-        <Popper {...popperProps} placement="bottom-start" className="mt-4" />
-      )}
-    />
           {selectedPrePackages.length > 0 && (
             <div>
               {/* Table for selected options */}
@@ -143,31 +170,31 @@ const MigrateIP = ({ prepackages, custompackages }) => {
           Custom Packages
         </h4>
         <div className="w-full">
-           <Autocomplete
-      multiple
-      disableCloseOnSelect
-      options={customPackageOptions}
-      getOptionLabel={(option) => option.label}
-      onChange={(event, value) => setSelectedCustomPackages(value)}
-      renderOption={(props, option, { selected }) => (
-        <li {...props}>
-          <Checkbox
-            icon={<CheckBoxOutlineBlank fontSize="small" />}
-            checkedIcon={<CheckBox fontSize="small" />}
-            style={{ marginRight: 8 }}
-            checked={selected}
+          <Autocomplete
+            multiple
+            disableCloseOnSelect
+            options={customPackageOptions}
+            getOptionLabel={(option) => option.label}
+            onChange={(event, value) => setSelectedCustomPackages(value)}
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={<CheckBoxOutlineBlank fontSize="small" />}
+                  checkedIcon={<CheckBox fontSize="small" />}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                <ListItemText primary={option.label} />
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Custom-Packages (SAP Integration)" />
+            )}
+            value={selectedCustomPackages}
+            PopperComponent={(popperProps) => (
+              <Popper {...popperProps} placement="bottom-start" className="mt-4" />
+            )}
           />
-          <ListItemText primary={option.label} />
-        </li>
-      )}
-      renderInput={(params) => (
-        <TextField {...params} placeholder="Custom-Packages (SAP Integration)" />
-      )}
-      value={selectedCustomPackages}
-      PopperComponent={(popperProps) => (
-        <Popper {...popperProps} placement="bottom-start" className="mt-4" />
-      )}
-    />
           {selectedCustomPackages.length > 0 && (
             <div>
               {/* Table for selected options */}
@@ -194,13 +221,21 @@ const MigrateIP = ({ prepackages, custompackages }) => {
             </div>
           )}
         </div>
+        {isButtonVisible && isReport && (
+          <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
+            <Button variant="contained" color="primary" onClick={handleDownloadReport}>
+              Download Report
+            </Button>
+          </Box>
+        )}
         {isButtonVisible && (
           <Box display="flex" justifyContent="flex-end" mt={2} mr={2}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Submit
-          </Button>
-        </Box>
+            <Button variant="contained" color="primary" onClick={handleSubmit}>
+              Submit
+            </Button>
+          </Box>
         )}
+
       </div>
       {loading && (
         <Box
